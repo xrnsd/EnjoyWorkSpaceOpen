@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kuyou.openlive">
+    
+    <uses-feature android:name="android.hardware.camera2.full" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- 事件分发框架相关   -->
+    <permission android:name="remote.event.permission" />
+    <uses-permission android:name="remote.event.permission" />
+
+    <application
+        android:name=".ModuleApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:directBootAware="true">
+        <activity
+            android:name=".MainActivity"
+            android:label="live_main"
+            android:screenOrientation="nosensor"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" />  -->
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".EventDisPatcher"
+            android:permission="remote.event.permission">
+            <intent-filter>
+                <action android:name="action.remote.event" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".activities.VideoPushActivity"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.AudioPushActivity"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.base.SettingsActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.InfearedPushActivity"
+            android:screenOrientation="nosensor"
+            android:label="InfearedPushActivity"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/seekware_device_filter" />
+        </activity>
+
+        <activity
+            android:name="com.kuyou.openlive.activities.TakePhoto"
+            android:label="TakePhoto"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden|mnc|mcc|smallestScreenSize|uiMode|screenLayout|navigation|keyboard|touchscreen"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="io.agora.advancedvideo.externvideosource.ExternalVideoInputService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection"/>
+    </application>
+
+</manifest>

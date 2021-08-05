@@ -1,0 +1,91 @@
+apply plugin: 'com.android.application'
+
+//配套配置信息
+ext {
+    //应用名称
+    applicationName = "OpenLive"
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file("${rootProject.ext.KeyStoreFllePath}")
+            storePassword KeyStorePassword
+            keyAlias KeyAlias
+            keyPassword KeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 29
+
+    defaultConfig {
+        applicationId "com.kuyou.openlive"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 10
+        versionName "${versionNumberCustom()}"
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            zipAlignEnabled true
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //加入签名配置
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.ext.projectHardwareName}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: "libs", include: ["*.aar"])
+    compileOnly files('compileOnlyLibs/framework.jar')
+
+    implementation project(path: ':common')
+    implementation project(path: ':common_ku09')
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+}
+
+//added by wgx
+def versionNumberCustom() {
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    //return "${project.applicationName}_" +"${project.projectClientName}_" + "${cardType}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+    //return "${project.applicationName}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+    return "${project.applicationName}_" + "${buildType}_" + rootProject.ext.versionDate;
+}
+
+boolean isReleaseBuildType() {
+    for (String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}

@@ -1,0 +1,10 @@
+include ':common_ku09'
+include ':module_tts'
+include ':module_voicecontrol'
+include ':module_openlive'
+include ':sdk_jt808'
+include ':module_jt808'
+
+include 'common'
+project(':common').projectDir =file('../KU_Common/common')
+
