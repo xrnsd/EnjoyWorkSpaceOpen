@@ -50,7 +50,7 @@ public class WriterImpl implements IWriter<IIOCoreOptions> {
         if (sendable != null) {
             try {
                 byte[] sendBytes = sendable.parse();
-                Log.d("kuyou.sdk.jt808 >"," sendBytes > "+ ByteUtils.bytes2Hex(sendBytes));
+                //Log.d("kuyou.sdk.jt808 >"," sendBytes > "+ ByteUtils.bytes2Hex(sendBytes));
                 int packageSize = mOkOptions.getWritePackageBytes();
                 int remainingCount = sendBytes.length;
                 ByteBuffer writeBuf = ByteBuffer.allocate(packageSize);

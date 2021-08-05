@@ -1,7 +1,6 @@
 package com.kuyou.jt808.location;
 
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -9,17 +8,17 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.kuyou.jt808.info.LocationInfo;
+import com.kuyou.jt808.location.base.ILocationProvider;
 
 /**
- * action :
+ * action :位置上报器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-4-12 <br/>
  * </p>
  */
-public class LocationReportHandler extends Handler implements HMLocationProvider.IOnLocationChangeListener {
+public class LocationReportHandler extends Handler{
     protected final String TAG = "com.kuyou.jt808 > " + this.getClass().getSimpleName();
 
     public static final int MSG_REPORT_LOCATION = 2;
@@ -28,9 +27,8 @@ public class LocationReportHandler extends Handler implements HMLocationProvider
 
     private int mReportLocationFreq = 5000;
 
-    private IOnLocationReportCallBack mCallBack;
-
-    private Location mLocation = null, mLocationFake = null;
+    private ILocationProvider mLocationProvider;
+    private IOnLocationReportCallBack mLocationReportCallBack;
 
     private LocationReportHandler() {
         super();
@@ -40,12 +38,21 @@ public class LocationReportHandler extends Handler implements HMLocationProvider
         super(looper);
     }
 
-    public static LocationReportHandler getInstance(Looper looper, IOnLocationReportCallBack callBack) {
+    public static LocationReportHandler getInstance(Looper looper) {
         if (null == sMain) {
             sMain = new LocationReportHandler(looper);
-            sMain.mCallBack = callBack;
         }
         return sMain;
+    }
+
+    public LocationReportHandler setLocationProvider(ILocationProvider locationProvider) {
+        mLocationProvider = locationProvider;
+        return LocationReportHandler.this;
+    }
+
+    public LocationReportHandler setLocationReportCallBack(IOnLocationReportCallBack locationReportCallBack) {
+        mLocationReportCallBack = locationReportCallBack;
+        return LocationReportHandler.this;
     }
 
     @Override
@@ -76,30 +83,15 @@ public class LocationReportHandler extends Handler implements HMLocationProvider
     }
 
     private void onLocationReport() {
-        if (null == mCallBack) {
+        if (null == mLocationReportCallBack) {
             Log.e(TAG, "onLocationReport > process fail : mCallBack is null");
             return;
         }
-        Log.d(TAG, "onLocationReport > ");
-        mCallBack.onLocationReport(getLocation());
-    }
-
-    private Location getLocation() {
-        if (null == mLocation) {
-            if (null == mLocationFake) {
-                mLocationFake = new Location(LocationManager.NETWORK_PROVIDER);
-                mLocationFake.setLongitude(113.907817D);
-                mLocationFake.setLatitude(22.548229D);
-                mLocationFake.setProvider(LocationInfo.CONFIG.FAKE_PROVIDER);
-            }
-            return mLocationFake;
+        if (null == mLocationProvider) {
+            Log.e(TAG, "onLocationReport > process fail : mLocationProvider is null");
+            return;
         }
-        return mLocation;
-    }
-
-    @Override
-    public void onLocationChange(Location location) {
-        mLocation = location;
+        mLocationReportCallBack.onLocationReport(mLocationProvider.getLocation());
     }
 
     public static interface IOnLocationReportCallBack {

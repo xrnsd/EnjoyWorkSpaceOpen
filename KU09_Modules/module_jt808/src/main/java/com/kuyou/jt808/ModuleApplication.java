@@ -1,7 +1,6 @@
 package com.kuyou.jt808;
 
 import android.app.IHelmetModule808Callback;
-import android.app.IHelmetModuleLocationCallback;
 import android.content.Context;
 import android.location.Location;
 import android.net.wifi.WifiManager;
@@ -14,9 +13,9 @@ import com.kuyou.jt808.alarm.ALARM;
 import com.kuyou.jt808.business.HelmetSocketManager;
 import com.kuyou.jt808.info.AuthenticationInfo;
 import com.kuyou.jt808.info.LocationInfo;
-import com.kuyou.jt808.location.AmapLocationProvider;
-import com.kuyou.jt808.location.HMLocationProvider;
+import com.kuyou.jt808.location.base.HMLocationProvider;
 import com.kuyou.jt808.location.LocationReportHandler;
+import com.kuyou.jt808.location.NormalFilterLocationProvider;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseApplication;
@@ -35,8 +34,6 @@ import kuyou.common.ku09.event.jt808.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.jt808.alarm.EventAlarmSos;
 import kuyou.common.ku09.event.jt808.base.EventResult;
 import kuyou.common.ku09.event.jt808.base.ModuleEventJt808;
-import kuyou.common.ku09.event.openlive.EventPhotoTakeResult;
-import kuyou.common.ku09.event.openlive.base.ModuleEventOpenLive;
 import kuyou.common.ku09.key.KeyConfig;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.common.utils.SystemPropertiesUtils;
@@ -93,30 +90,26 @@ public class ModuleApplication extends BaseApplication {
                 return ModuleApplication.this.mOnlinePlatformMessageHandler.getRequestAudioVideoParametersStatus();
             }
         });
-//        mHelmetModuleManageServiceManager.registerHelmetModuleLocationCallback(new IHelmetModuleLocationCallback.Stub() {
-//            @Override
-//            public void onLocationChange(Location location) throws RemoteException {
-//                Log.d(TAG, "onLocationChange > location+"+location);
-//                ModuleApplication.this.getLocationProvider().dispatchEventLocationChange(location);
-//            }
-//        });
     }
 
     private void initLocation() {
         if (null != mLocationProvider) {
             return;
         }
-        mLocationProvider = AmapLocationProvider.getInstance(getApplicationContext());
-        mLocationReportHandler = LocationReportHandler
-                .getInstance(getHandlerKeepAliveClient().getLooper(), new LocationReportHandler.IOnLocationReportCallBack() {
+        mLocationProvider = NormalFilterLocationProvider.getInstance(getApplicationContext());
+        mLocationReportHandler = LocationReportHandler.getInstance(getHandlerKeepAliveClient().getLooper())
+                .setLocationProvider(mLocationProvider)
+                .setLocationReportCallBack( new LocationReportHandler.IOnLocationReportCallBack() {
                     @Override
                     public void onLocationReport(Location location) {
-                        sendToOnlinePlatform(
-                                ModuleApplication.this.getLocationInfo().setLocation(location).reportLocation());
+                        sendToOnlinePlatform(ModuleApplication.this
+                                .getLocationInfo()
+                                .setLocation(location)
+                                .reportLocation());
                     }
-                });
+                }
+        );
         mLocationReportHandler.setReportLocationFreq(getConfig().getHeartbeatInterval());
-        mLocationProvider.setLocationChangeListener(mLocationReportHandler);
     }
 
     protected void initHelmetSocketManager() {
@@ -283,7 +276,7 @@ public class ModuleApplication extends BaseApplication {
         super.onPowerStatus(status);
         isEnableNearPowerAlarm = EventPowerChange.POWER_STATUS.CHARGE != status
                 && EventPowerChange.POWER_STATUS.SHUTDOWN != status;
-        Log.d(TAG, "onPowerStatus > isEnableNearPowerAlarm = "+isEnableNearPowerAlarm);
+        Log.d(TAG, "onPowerStatus > isEnableNearPowerAlarm = " + isEnableNearPowerAlarm);
     }
 
     @Override

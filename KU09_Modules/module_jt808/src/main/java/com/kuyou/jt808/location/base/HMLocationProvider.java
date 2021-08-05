@@ -1,4 +1,4 @@
-package com.kuyou.jt808.location;
+package com.kuyou.jt808.location.base;
 
 import android.content.Context;
 import android.location.Location;
@@ -18,10 +18,10 @@ import kuyou.sdk.jt808.base.Jt808Config;
  * date: 21-4-2 <br/>
  * </p>
  */
-public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCallBack {
+public abstract class HMLocationProvider implements
+        LocationInfo.CONFIG,
+        ILocationProvider {
     protected final String TAG = "com.kuyou.jt808.location > " + this.getClass().getSimpleName();
-
-    protected abstract int getLocationFreq();
 
     private IOnLocationChangeListener mLocationChangeListener = null;
     private Location mLocationFake = null;
@@ -29,6 +29,8 @@ public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCa
 
     protected Location mLocation = null;
     protected Context mContext = null;
+    
+    protected Jt808Config mJt808Config;
 
     public HMLocationProvider(Context context) {
         mContext = context.getApplicationContext();
@@ -37,16 +39,13 @@ public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCa
 
     protected abstract void init();
 
-    public void setLocationChangeListener(IOnLocationChangeListener locationChangeListener) {
-        mLocationChangeListener = locationChangeListener;
+    public void setLocationChangeListener(IOnLocationChangeListener listener) {
+        mLocationChangeListener = listener;
     }
 
-    public static interface IOnLocationChangeListener {
-        public void onLocationChange(Location location);
-    }
-
-    public void dispatchEventLocationChange(Location location) {
+    public void dispatchLocation(Location location) {
         mLocation = location;
+        getLocationInfo().setLocation(location);
         if (null == mLocationChangeListener) {
             Log.w(TAG, "dispatchEventLocationChange > process fail : mLocationChangeListener is null");
             return;
@@ -54,13 +53,14 @@ public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCa
         mLocationChangeListener.onLocationChange(location);
     }
 
-    protected Location getLocation() {
+    @Override
+    public Location getLocation() {
         if (!isValidLocation()) {
-            android.util.Log.d(TAG, "getLocationFake > 未正常定位,将使用模拟位置信息");
             if (null == mLocationFake) {
                 mLocationFake = new Location(LocationManager.NETWORK_PROVIDER);
-                mLocationFake.setLongitude(113.907817D);
-                mLocationFake.setLatitude(22.548229D);
+                //未实际定位前，模拟定位到北京天安门
+                mLocationFake.setLongitude(116.38D);
+                mLocationFake.setLatitude(39.90D);
                 mLocationFake.setProvider(FAKE_PROVIDER);
             }
             return mLocationFake;
@@ -68,11 +68,22 @@ public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCa
         return mLocation;
     }
 
-    public LocationInfo getLocationInfo(Jt808Config config) {
+    public Jt808Config getJt808Config() {
+        return mJt808Config;
+    }
+
+    public void setJt808Config(Jt808Config jt808Config) {
+        mJt808Config = jt808Config;
+    }
+
+    public LocationInfo getLocationInfo() {
+        if(null == mJt808Config){
+            throw new NullPointerException("mJt808Config is null,please perform method : setJt808Config");
+        }
         if (null == mPulseLocationData) {
             mPulseLocationData = new PulseLocationData();
             mPulseLocationData.setLocation(getLocation());
-            mPulseLocationData.getLocationInfo().setConfig(config);
+            mPulseLocationData.getLocationInfo().setConfig(mJt808Config);
         }
         mPulseLocationData.setLocation(mLocation);
         return mPulseLocationData.getLocationInfo();
@@ -82,21 +93,7 @@ public abstract class HMLocationProvider implements LocationInfo.CONFIG, ILiveCa
         return null != mLocation;
     }
 
-    public ILiveCallBack getLiveCallBack() {
-        return HMLocationProvider.this;
+    public static interface IOnLocationChangeListener {
+        public void onLocationChange(Location location);
     }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    public abstract void startLocation();
-
-    public abstract void startLocation(Context context);
 }

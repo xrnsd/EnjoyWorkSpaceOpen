@@ -92,6 +92,7 @@ public class LocationInfo extends MsgInfo {
     }
 
     public byte[] reportLocation() {
+        //Log.i(TAG, "reportLocation > reportLocation="+ByteUtils.byte2hex(reportLocation(false)));
         return reportLocation(false);
     }
 

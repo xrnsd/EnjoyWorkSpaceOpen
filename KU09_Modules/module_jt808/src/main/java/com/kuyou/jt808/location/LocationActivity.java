@@ -86,7 +86,7 @@ public abstract class LocationActivity extends BasePermissionsActivity
         }
         if (location.getErrorCode() == 0) { //定位成功,进行处理
             ModuleApplication.getInstance()
-                    .getLocationProvider().dispatchEventLocationChange(location);
+                    .getLocationProvider().dispatchLocation(location);
         }
         printfAMapLocationInfo(location);
     }

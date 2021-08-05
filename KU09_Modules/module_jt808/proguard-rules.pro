@@ -50,6 +50,8 @@
 -keep class com.a.a.**  {*;}
 -keep class android.app.**  {*;}
 
--keep class * extends com.kuyou.jt808.location.HMLocationProvider {
+-keep class com.kuyou.jt808.location.filter.**  {*;}
+
+-keep class * extends com.kuyou.jt808.location.base.HMLocationProvider {
     *;
 }

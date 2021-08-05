@@ -33,6 +33,7 @@ public class AuthenticationInfo extends MsgInfo {
     public byte[] getAuthenticationMsgBytes() {
         byte[] authCode = Base64Util.encrypt(getConfig().getDevId());
         byte[] authCodeMsg = ByteUtils.byteMergerAll(new byte[]{ByteUtils.int2Byte(authCode.length)}, authCode, getItemAddition());
+        //Log.i(TAG, kuyou.common.utils.ByteUtils.bytes2hex(JTT808Coding.generate808(0x0102, getConfig(), authCodeMsg)));
         Log.d(TAG, toString());
         return JTT808Coding.generate808(0x0102, getConfig(), authCodeMsg);
     }
