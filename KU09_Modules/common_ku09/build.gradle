@@ -38,15 +38,13 @@ android {
 
 dependencies {
     compileOnly files('compileOnlyLibs/framework.jar')
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
 
-    implementation project(path: ':common')
-    
+    compileOnly project(path: ':common')
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.google.code.gson:gson:2.8.0'
-
-    //implementation 'org.greenrobot:eventbus:3.1.1'
 }
 
 //added by wgx
@@ -66,4 +64,8 @@ boolean isReleaseBuildType(){
         }
     }
     return false
+}
+
+configurations {
+    all*. exclude group: 'org.greenrobot.eventbus.AsyncPoster'
 }

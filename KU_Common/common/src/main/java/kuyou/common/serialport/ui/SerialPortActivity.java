@@ -7,7 +7,7 @@ import kuyou.common.serialport.base.Param;
 import kuyou.common.serialport.base.SerialPort;
 import kuyou.common.serialport.protocol.SerialPortImpl;
 import kuyou.common.ui.ActivityBase;
-import kuyou.common.utils.ByteUtils;
+import kuyou.common.bytes.ByteUtils;
 
 /**
  * action :串口读写封装，用于快速调试开发

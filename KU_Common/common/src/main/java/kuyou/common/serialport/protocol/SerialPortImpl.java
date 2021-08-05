@@ -8,7 +8,7 @@ import java.util.Map;
 
 import kuyou.common.serialport.base.Param;
 import kuyou.common.serialport.base.SerialPort;
-import kuyou.common.utils.ByteUtils;
+import kuyou.common.bytes.ByteUtils;
 
 
 /**

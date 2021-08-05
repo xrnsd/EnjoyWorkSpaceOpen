@@ -1,7 +1,6 @@
 package kuyou.common.ku09.event.common;
 
 import kuyou.common.ku09.event.common.base.EventKey;
-import kuyou.common.ku09.event.common.base.ModuleEventCommon;
 
 /**
  * action :

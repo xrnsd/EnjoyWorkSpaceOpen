@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kuyou.rc">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 用于获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CONFIGURE_WIFI_DISPLAY" />
+    <uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />
+
+    <!-- 用于访问网络，网络定位需要上网 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 存储 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 用于申请调用A-GPS模块 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!-- 用于申请获取蓝牙信息进行室内定位 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- 事件分发框架相关   -->
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <permission android:name="remote.event.permission" />
+    <uses-permission android:name="remote.event.permission" />
+
+    <application
+        android:name="com.kuyou.rc.ModuleApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name="com.kuyou.rc.MainActivity"
+            android:label="RC_MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:theme="@style/translucent"
+            android:noHistory="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            </intent-filter>
+        </activity>
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="1e6a1022b541c132359ff790a7e63a9c" />
+    </application>
+</manifest>

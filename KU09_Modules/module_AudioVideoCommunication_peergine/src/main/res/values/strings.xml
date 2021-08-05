@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">AudioVideoCommunication_peergine</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="txtServer">Server:</string>
+    <string name="btnServerSet">Set</string>
+    <string name="txtDevID">Device ID:</string>
+    <string name="btnStop">Stop</string>
+    <string name="btnStart">Start</string>
+    <string name="btnCamera">Camera</string>
+    <string name="btnScan">Scan</string>
+    <string name="btnCut">Clip</string>
+    <string name="btnWhole">Whole</string>
+    <string name="btnSend">Send</string>
+    <string name="btnPut">File Put</string>
+    <string name="btnGet">File Get</string>
+    <string name="btnAccept">File Accept</string>
+    <string name="btnRefuse">File Reject</string>
+    <string name="btnCancel">File Cancel</string>
+    <string name="media_request_open_request">正在为您打开<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="media_request_close_request">正在为您关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="media_request_open_handle_fail">无法打开<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="media_request_open_handle_parameter_fail">打开失败请重新尝试</string>
+    <string name="media_request_open_success"><xliff:g id="query" example="device_id">%1$s</xliff:g>打开成功</string>
+    <string name="media_request_close_success"><xliff:g id="query" example="device_id">%1$s</xliff:g>已关闭</string>
+    <string name="key_switch_mode_cancel_title">请先单击通话键关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="key_switch_mode_success_title"><xliff:g id="query" example="device_id">%1$s</xliff:g>模式</string>
+
+</resources>

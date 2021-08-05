@@ -14,15 +14,20 @@ import androidx.annotation.NonNull;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.List;
+
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.event.base.IDispatchEventCallBack;
+import kuyou.common.ipc.RemoteEventHandler;
+import kuyou.common.ku09.config.DevicesConfig;
+import kuyou.common.ku09.event.IDispatchEventCallBack;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.base.EventKey;
 import kuyou.common.ku09.event.tts.EventTtsPlayRequest;
+import kuyou.common.ku09.key.IKeyEventListener;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.SystemPropertiesUtils;
 
@@ -35,24 +40,38 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 2 BaseApplication 实现了模块活动保持,按键事件分发,等模块间公共接口
  * <p>
  */
-public abstract class BaseApplication extends Application implements IDispatchEventCallBack {
+public abstract class BaseApplication extends Application implements
+        IDispatchEventCallBack,
+        IPowerStatusListener,
+        IKeyEventListener,
+        IModuleManager,
+        RemoteEventBus.IFrameLiveListener {
 
     protected String TAG = "kuyou.common.ku09 > BaseApplication";
+
     protected HelmetModuleManageServiceManager mHelmetModuleManageServiceManager;
 
     @Override
     public final void onCreate() {
         super.onCreate();
-        //事件分发相关
-        if (!RemoteEventBus.getInstance().register(this, getApplicationContext())) {
-            return;
-        }
         init();
     }
+
+    protected abstract List<Integer> getEventDispatchList();
 
     protected void init() {
         TAG = new StringBuilder(getPackageName()).append(" > ModuleApplication").toString();
         TAG_THREAD_WATCH_DOG = getApplicationName() + TAG_THREAD_WATCH_DOG;
+
+        //事件分发相关
+        RemoteEventHandler handler = RemoteEventHandler.getInstance()
+                .setLocalModulePackageName(getPackageName())
+                .setEventDispatchList(getEventDispatchList());
+        RemoteEventBus.getInstance(getApplicationContext())
+                .setFrameLiveListener(getIpcFrameLiveListener())
+                .register(this, handler);
+
+        //log相关
         initLogcatLocal();
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -72,7 +91,7 @@ public abstract class BaseApplication extends Application implements IDispatchEv
         final String key = "persist.hm.log.save";
         if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
             Log.d(TAG, "initLogcatLocal > LogcatHelper is disable");
-            //return;
+            return;
         }
         LogcatHelper.getInstance(getApplicationContext())
                 .setSaveLogDirPath("/" + getApplicationName())
@@ -84,9 +103,12 @@ public abstract class BaseApplication extends Application implements IDispatchEv
      * action:初始化模块服务回调
      */
     protected void initCallBack() {
+
         Log.i(TAG, new StringBuilder()
-                .append("======================================================\n\n    ")
-                .append(getApplicationName()).append(" 模块启动 ,注册回调")
+                .append("======================================================\n    ")
+                .append("\n模块：").append(getApplicationName())
+                .append("\n状态：").append("模块启动")
+                .append("\n操作：").append("注册回调")
                 .append("    \n\n======================================================")
                 .toString());
     }
@@ -98,6 +120,17 @@ public abstract class BaseApplication extends Application implements IDispatchEv
             return;
         }
         mHelmetModuleManageServiceManager = (HelmetModuleManageServiceManager) getSystemService("helmet_module_manage_service");
+    }
+
+    // =========================== 设备配置 ==============================
+
+    private DevicesConfig mDevicesConfig;
+
+    public DevicesConfig getDevicesConfig() {
+        if (null == mDevicesConfig) {
+            mDevicesConfig = new DevicesConfig();
+        }
+        return mDevicesConfig;
     }
 
     // ============================ 模块活动保持 ============================
@@ -112,10 +145,13 @@ public abstract class BaseApplication extends Application implements IDispatchEv
 
     private void initKeepAliveConfig() {
         if (!isEnableWatchDog()) {
+            Log.d(TAG, "initKeepAliveConfig > watch dog is disable");
             return;
         }
-        if (null != mHandlerThreadKeepAliveClient)
+        if (null != mHandlerThreadKeepAliveClient) {
+            Log.w(TAG, "initKeepAliveConfig > mHandlerThreadKeepAliveClient has been initialized");
             return;
+        }
         mHandlerThreadKeepAliveClient = new HandlerThread(TAG_THREAD_WATCH_DOG);
         mHandlerThreadKeepAliveClient.start();
         mHandlerKeepAliveClient = new Handler(mHandlerThreadKeepAliveClient.getLooper()) {
@@ -153,11 +189,13 @@ public abstract class BaseApplication extends Application implements IDispatchEv
     protected void handleMessageAliveClient(@NonNull Message msg) {
         Log.d(TAG, TAG_THREAD_WATCH_DOG + " > MSG_WATCHDOG_2_FEED ");
 
-        if (isReady()) {
+        String status = isReady();
+
+        if (null == status || status.replaceAll(" ", "").length() == 0) {
             //提醒boss自己还没挂,和运行状态
             mHelmetModuleManageServiceManager.feedWatchDog(getPackageName(), System.currentTimeMillis());
         } else {
-            onDogBitesLazyBug(-1);
+            onDogBitesLazyBug(-1, status);
         }
     }
 
@@ -181,8 +219,12 @@ public abstract class BaseApplication extends Application implements IDispatchEv
     /**
      * action:模块活动保持 > 模块返回活动状态
      */
-    protected boolean isReady() {
-        return true;
+    protected String isReady() {
+        boolean isReady = RemoteEventBus.getInstance(getApplicationContext()).isRegister(getPackageName());
+        if (!isReady) {
+            return "远程模块框架未初始化完成";
+        }
+        return null;
     }
 
     /**
@@ -190,16 +232,20 @@ public abstract class BaseApplication extends Application implements IDispatchEv
      *
      * @param flag 重启的等待时间,毫秒
      */
-    protected void onDogBitesLazyBug(int flag) {
+    protected void onDogBitesLazyBug(int flag, String stasMsg) {
         StringBuilder logInfo = new StringBuilder()
-                .append("------------------------- ")
-                .append(getApplicationName())
-                .append("状态异常 ---------------------------------");
+                .append("======================================================\n")
+                .append("\n模块：").append(getApplicationName())
+                .append("\n异常状态:").append(stasMsg)
+                .append("\n操作：");
         if (-1 != flag) {
             flag = Math.abs(flag) < 5000 ? 5000 : flag;
-            logInfo.append("\n模块重启将在:").append(flag).append("毫秒后重启");
+            logInfo.append("在").append(flag).append("毫秒后重启");
+        } else {
+            logInfo.append("重启模块");
         }
-        Log.e(TAG, logInfo.toString());
+        Log.e(TAG, logInfo.append("\n\n======================================================").toString());
+
         getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), -flag);
         android.os.Process.killProcess(android.os.Process.myPid());
     }
@@ -209,6 +255,20 @@ public abstract class BaseApplication extends Application implements IDispatchEv
     }
 
     // ============== 基础事件相关 ============================
+    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
+        return BaseApplication.this;
+    }
+
+    @Override
+    public void onIpcFrameResisterSuccess() {
+
+    }
+
+    @Override
+    public void onIpcFrameUnResister() {
+
+    }
+
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
     protected void initKeyHandlers() {
@@ -241,27 +301,32 @@ public abstract class BaseApplication extends Application implements IDispatchEv
     public void onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventPowerChange.Code.POWER_CHANGE:
-                int val = EventPowerChange.getPowerStatus(event);
+                final int val = EventPowerChange.getPowerStatus(event);
                 if (val == getPowerStatus()) {
                     return;
                 }
-                onPowerStatus(val);
+                getPowerStatusListener().onPowerStatus(val);
                 break;
             case EventKey.Code.KEY_CLICK:
-                onKeyClick(EventKey.getKeyCode(event));
+                getKeyListener().onKeyClick(EventKey.getKeyCode(event));
                 break;
             case EventKey.Code.KEY_LONG_CLICK:
-                onKeyLongClick(EventKey.getKeyCode(event));
+                getKeyListener().onKeyLongClick(EventKey.getKeyCode(event));
                 break;
             case EventKey.Code.KEY_DOUBLE_CLICK:
-                onKeyDoubleClick(EventKey.getKeyCode(event));
+                getKeyListener().onKeyDoubleClick(EventKey.getKeyCode(event));
                 break;
             default:
                 break;
         }
     }
 
-    protected void onPowerStatus(int status) {
+    protected IPowerStatusListener getPowerStatusListener() {
+        return BaseApplication.this;
+    }
+
+    @Override
+    public void onPowerStatus(int status) {
         Log.d(TAG, "onPowerStatus > status = " + status);
         mPowerStatus = status;
     }
@@ -270,16 +335,21 @@ public abstract class BaseApplication extends Application implements IDispatchEv
         return mPowerStatus;
     }
 
-    protected void onKeyClick(int keyCode) {
-        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
+    protected IKeyEventListener getKeyListener() {
+        return BaseApplication.this;
     }
 
-    protected void onKeyDoubleClick(int keyCode) {
-        Log.d(TAG, "onKeyDoubleClick > keyCode = " + keyCode);
+    @Override
+    public void onKeyClick(int keyCode) {
+
     }
 
-    protected void onKeyLongClick(int keyCode) {
-        Log.d(TAG, "onKeyLongClick > keyCode = " + keyCode);
+    @Override
+    public void onKeyDoubleClick(int keyCode) {
+    }
+
+    @Override
+    public void onKeyLongClick(int keyCode) {
     }
 
     //============================ 公开接口 ============================
@@ -290,34 +360,11 @@ public abstract class BaseApplication extends Application implements IDispatchEv
 
     public void play(String content) {
         if (null == content || content.length() <= 0) {
+            Log.e(TAG, "play > process fail : content is invalid");
             return;
         }
         Log.d(TAG, "play > content= " + content);
         dispatchEvent(new EventTtsPlayRequest(content));
-    }
-
-    /**
-     * action: 808模块的音频申请状态状态
-     */
-    public int getAudioVideoParameterApplyStatus() {
-        try {
-            return getHelmetModuleManageServiceManager().getAudioVideoParameterApplyStatus();
-        } catch (Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
-        return -1;
-    }
-
-    /**
-     * action: 808模块的音频申请状态状态
-     */
-    public int getLiveStatus() {
-        try {
-            return getHelmetModuleManageServiceManager().getLiveStatus();
-        } catch (Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
-        return -1;
     }
 
     @Override
@@ -325,9 +372,7 @@ public abstract class BaseApplication extends Application implements IDispatchEv
         RemoteEventBus.getInstance().dispatch(event);
     }
 
-    /**
-     * action: 重启模块
-     */
+    @Override
     public void reboot(int delayedMillisecond) {
         getHelmetModuleManageServiceManager().rebootModule(
                 getPackageName(),

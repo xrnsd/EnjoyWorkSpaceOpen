@@ -21,10 +21,10 @@
 #-renamesourcefileattribute SourceFile
 
 #disable debug log
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-}
+#-assumenosideeffects class android.util.Log {
+#    public static *** d(...);
+#    public static *** v(...);
+#}
 
 #eventBus
 -keepattributes *Annotation*
@@ -34,8 +34,8 @@
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
 #IPC
--keep class kuyou.common.ipc.**  {*;}
--keep class * extends kuyou.common.ipc.RemoteEventConverter {
+-keep class kuyou.common.ipc**  {*;}
+-keep class * extends kuyou.common.ipcRemoteEventConverter {
     *;
 }
 

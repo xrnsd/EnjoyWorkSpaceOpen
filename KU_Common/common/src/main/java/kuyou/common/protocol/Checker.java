@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import kuyou.common.serialport.base.SerialPort.IOnSerialPortListener;
-import kuyou.common.utils.ByteUtils;
+import kuyou.common.bytes.ByteUtils;
 
 /**
  * action :串口数据校验器[抽象]

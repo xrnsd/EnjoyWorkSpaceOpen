@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.kuyou.avc">
+    <!-- 存储 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
+    <application
+        android:name=".ModuleApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:requestLegacyExternalStorage="true"
+        tools:replace="android:icon">
+        <activity android:name=".MainActivity"
+            android:theme="@style/translucent"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:noHistory="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.TakePhoto"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="TakePhoto"
+            android:noHistory="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.MultiCaptureVideo"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="MultiCaptureVideo"
+            android:noHistory="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.MultiCaptureAudio"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="MultiCaptureAudio"
+            android:noHistory="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.MultiCaptureGroup"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="MultiCaptureGroup"
+            android:noHistory="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.MultiRenderGroup"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="MultiRenderGroup"
+            android:noHistory="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

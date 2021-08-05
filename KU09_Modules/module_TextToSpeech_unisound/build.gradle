@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+
+//配套配置信息
+ext {
+    //APP名
+    applicationName = "TextToSpeech_unisound"
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file("${rootProject.ext.KeyStoreFllePath}")
+            storePassword KeyStorePassword
+            keyAlias KeyAlias
+            keyPassword KeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.kuyou.tts"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "${versionNumberCustom()}"
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+    }
+    sourceSets{
+        main{
+            //jni libs path set
+            jniLibs.srcDirs = ['libs'];
+        }
+    }
+
+    buildTypes {
+        release {
+            zipAlignEnabled true
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //加入签名配置
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.ext.projectHardwareName}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    compileOnly files('compileOnlyLibs/framework.jar')
+
+    implementation project(path: ':common')
+    implementation project(path: ':common_ku09')
+    
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+
+}
+
+//added by wgx
+def versionNumberCustom() {
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    return "${project.applicationName}_" + "${buildType}_" + rootProject.ext.versionDate;
+}
+
+boolean isReleaseBuildType(){
+    for(String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}

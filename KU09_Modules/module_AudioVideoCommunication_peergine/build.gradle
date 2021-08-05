@@ -1,0 +1,100 @@
+plugins {
+    id 'com.android.application'
+}
+//配套配置信息
+ext {
+    //应用名称
+    applicationName = "AudioVideoCommunication_peergine"
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file("${rootProject.ext.KeyStoreFllePath}")
+            storePassword KeyStorePassword
+            keyAlias KeyAlias
+            keyPassword KeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.kuyou.avc"
+        minSdkVersion 22
+        targetSdkVersion 28
+        versionCode 1
+
+        versionName "${versionNumberCustom()}"
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+//            zipAlignEnabled true
+//            minifyEnabled true
+//            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //加入签名配置
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.ext.projectHardwareName}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.activity:activity:1.3.0-alpha03'
+    implementation 'androidx.fragment:fragment:1.3.0'
+    
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    
+    implementation fileTree(dir: 'libs', include: ['seek_android_sdk_4.1.2.0.aar'])
+
+    api files('libs/pgnpp.jar')
+    api files('libs/pgliblivemulti.jar')
+
+    compileOnly files('compileOnlyLibs/framework.jar')
+    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
+
+    implementation project(path: ':common')
+    implementation project(path: ':common_ku09')
+}
+
+//added by wgx
+def versionNumberCustom() {
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    return "${project.applicationName}_" + "${buildType}_" + rootProject.ext.versionDate;
+}
+
+boolean isReleaseBuildType() {
+    for (String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}

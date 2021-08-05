@@ -1,10 +1,14 @@
-include ':common_ku09'
-include ':module_tts'
-include ':module_voicecontrol'
-include ':module_openlive'
-include ':sdk_jt808'
-include ':module_jt808'
-
 include 'common'
 project(':common').projectDir =file('../KU_Common/common')
+include ':common_ku09'
+include ':module_InterProcessCommunication_kuyou'
+
+include ':module_TextToSpeech_unisound'
+include ':module_VoiceControl_unisound'
+include ':module_RemoteControl_geointech:sdk_public_jt808'
+include ':module_RemoteControl_geointech'
+
+include ':module_AudioVideoCommunication_peergine'
+//include ':module_AudioVideoCommunication_agora'
+
 

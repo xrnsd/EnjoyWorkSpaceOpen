@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import kuyou.common.utils.ByteUtils;
+import kuyou.common.bytes.ByteUtils;
 
 public abstract class SerialPort {
 

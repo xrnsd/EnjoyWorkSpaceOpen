@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import kuyou.common.protocol.Codec;
-import kuyou.common.utils.ByteUtils;
+import kuyou.common.bytes.ByteUtils;
 import kuyou.common.protocol.Info;
 
 

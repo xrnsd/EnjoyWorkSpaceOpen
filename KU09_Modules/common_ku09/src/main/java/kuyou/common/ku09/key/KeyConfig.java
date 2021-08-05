@@ -2,9 +2,6 @@ package kuyou.common.ku09.key;
 
 import android.view.KeyEvent;
 
-import kuyou.common.ku09.event.jt808.alarm.EventAlarmGas;
-import kuyou.common.ku09.event.jt808.alarm.EventAlarmNearPower;
-
 /**
  * action :
  * <p>

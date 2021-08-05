@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-23 <br/>
  * </p>
  */
-public abstract class EventKey extends ModuleEventCommon {
+public abstract class EventKey extends EventCommon {
     public static final String KEY_CODE = "key.code";
 
     public EventKey() {

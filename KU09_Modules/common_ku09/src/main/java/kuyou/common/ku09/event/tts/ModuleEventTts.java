@@ -14,9 +14,9 @@ public abstract class ModuleEventTts extends RemoteEvent {
 
     protected final String TAG = "kuyou.common.ku09.event.tts > "+ this.getClass().getSimpleName();
 
-    protected final static int FLAG_CODE = 6144;
-
-    //6144~8191
+    //8292~10339
+    protected final static int FLAG_CODE = 8292;
+    //FLAG_CODE+0 ~ FLAG_CODE+2047
     public static interface Code {
         //模块状态相关 0~127
         public final static int MODULE_INIT_FINISH = FLAG_CODE + 0;

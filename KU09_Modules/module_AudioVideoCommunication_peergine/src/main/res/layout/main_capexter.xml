@@ -1,0 +1,167 @@
+<!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".MainActivity" >
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/layoutServer"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <TextView
+                android:id="@+id/textServer"
+                android:layout_width="80dip"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/txtServer" />
+
+            <EditText
+                android:id="@+id/editServer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutDevID"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <TextView
+                android:id="@+id/textViewDevID"
+                android:layout_width="80dip"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/txtDevID" />
+
+            <EditText
+                android:id="@+id/editDevID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutCnnt"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/btnStart" />
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/btnStop" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutVideo"
+            android:layout_width="match_parent"
+            android:layout_height="280dip"
+            android:background="#ff000000"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMessage"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <LinearLayout
+                android:id="@+id/layoutMsg1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+	            <EditText
+	                android:id="@+id/editMsg"
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:inputType="text" />
+	        </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/btnSend" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutSelectBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <Button
+                android:id="@+id/btnAccept"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:text="@string/btnAccept" />
+
+            <Button
+                android:id="@+id/btnRefuse"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:text="@string/btnRefuse" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutTransferInfo"
+            android:layout_width="match_parent"
+            android:layout_height="480dip"
+            android:background="#fffff0f0"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/TransferInfo"
+                android:layout_width="match_parent"
+                android:layout_height="60dip" />
+
+            <TextView
+                android:id="@+id/StatusInfo"
+                android:layout_width="320dip"
+                android:layout_height="60dip"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/debug"
+                android:layout_width="320dip"
+                android:layout_height="300dip"
+                android:scrollbars="vertical"
+                android:text="" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
