@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">KU_common</string>
+
+
+    <string name="cancel">取消</string>
+    <string name="sure">确认</string>
+    <string name="ok">确定</string>
+    <string name="tips_title">提示</string>
+
+    <string name="miss_permissions_config_title">缺少部分权限，需要手动开启</string>
+    <string name="error_configuration">请先配置</string>
+    <string name="error_security">该串口号没有读写权限</string>
+    <string name="error_unknown">打开失败，未知错误</string>
+</resources>

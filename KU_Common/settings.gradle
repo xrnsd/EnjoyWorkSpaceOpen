@@ -1,0 +1,2 @@
+include ':common'
+rootProject.name = "KU_Common"

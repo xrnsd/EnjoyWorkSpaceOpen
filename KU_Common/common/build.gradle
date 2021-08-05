@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.library'
+}
+//配套软硬件配置
+ext {
+    moduleName = "Common"
+}
+android {
+    signingConfigs {
+        release {
+            storeFile file("${rootProject.ext.KeyStoreFllePath}")
+            storePassword KeyStorePassword
+            keyAlias KeyAlias
+            keyPassword KeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "${versionNumberCustom()}"
+        consumerProguardFiles "consumer-rules.pro"
+
+        ndk {
+            moduleName "serial_port_common"
+            abiFilters "armeabi-v7a"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //加入签名配置
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    android.libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "${defaultConfig.versionName}.aar"
+        }
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+}
+
+//added by wgx
+def versionNumberCustom() {
+
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    return "${rootProject.ext.projectAuthorName}_${rootProject.ext.projectHardwareName}_${project.moduleName}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+}
+
+boolean isReleaseBuildType(){
+    for(String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
