@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+//配套配置信息
+project.ext.myProp = 'myValue'
+ext {
+    //硬件平台
+    projectHardwareName = "KU09"
+    //客户名：
+    //projectClientName = ""'
+    //应用名称
+    applicationName = "808ProtocolClient"
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.kuyou.jt808"
+        minSdkVersion 15
+        targetSdkVersion 29
+        versionCode 1
+        versionName "${versionNumberCustom()}"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'armeabi', 'x86'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${project.projectHardwareName}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly files('compileOnlyLibs/framework.jar')
+
+    implementation project(path: ':jt808_sdk')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    //testImplementation 'junit:junit:4.12'
+    //androidTestImplementation 'androidx.test:runner:1.2.0'
+    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.material:material:1.1.0-rc01'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation("com.google.guava:guava:28.2-android")
+    implementation 'com.amap.api:location:4.7.0'
+    implementation 'com.fanjun:keeplive:1.1.20'
+    implementation 'com.noober.light:core:1.1.0'
+    implementation("com.squareup.okhttp3:okhttp:4.2.0")
+}
+
+//added by wgx
+def versionNumberCustom() {
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    //return "${project.applicationName}_" +"${project.projectClientName}_" + "${cardType}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+    return "${project.applicationName}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+}
+
+boolean isReleaseBuildType(){
+    for(String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
