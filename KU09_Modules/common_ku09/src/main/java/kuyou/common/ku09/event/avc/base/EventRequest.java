@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.avc.base;
 
 /**
- * action :
+ * action :事件[音视频相关请求][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

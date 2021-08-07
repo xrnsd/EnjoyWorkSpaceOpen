@@ -13,7 +13,8 @@ import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
 
 /**
- * action :0x8F01,0x8F02,0xOF01
+ * action : 协议解码器[图片请求/回复]
+ * <br/>0x8F01,0x8F02,0xOF01
  * <p>
  * author: wuguoxian <br/>
  * date: 20-10-19 <br/>
@@ -85,7 +86,7 @@ public class ImageInfo extends MsgInfo {
                     Log.d(TAG, sb.toString());
                     return true;
                 case MSG_ID_8F02:
-                    shoot("开始拍照");
+                    shoot();
                     return true;
                 default:
                     break;
@@ -97,9 +98,9 @@ public class ImageInfo extends MsgInfo {
         return false;
     }
 
-    public void shoot(String text) {
+    public void shoot() {
         Log.d(TAG, toString());
-        onHandlerTts(MSG_ID_8F02, text);
+        onHandlerTts(MSG_ID_8F02, "text");
     }
 
     /**

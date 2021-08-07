@@ -81,6 +81,12 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
         @Override
         public void event(String sAct, String sData, String sRenID) {
             onPeerginEvent(sAct,sData,sRenID);
+            Log.d(TAG, new StringBuilder()
+                    .append("pgLibLiveMultiCapture.OnEventListener > event >")
+                    .append("\nsAct=").append(sAct)
+                    .append("\nsData=").append(sData)
+                    .append("\nsRenID=").append(sRenID)
+                    .toString());
             // TODO Auto-generated method stub
             if (sAct.equals("VideoStatus")) {
                 // Video status report
@@ -141,6 +147,9 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                     onResult(IAudioVideo.RESULT_SUCCESS);
                 } else {
+                    if("8".equals(sData)){
+                        onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                    }
                     onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     String sInfo = "Login failed, error=" + sData;
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
@@ -419,7 +428,6 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
         int iErr = m_Live.Initialize(m_sDevID, "", getConfig().getServerAddress(), "", 3, sInitParam, this);
         if (iErr != 0) {
             Log.d(TAG, "LiveStart: Live.Initialize failed! iErr=" + iErr);
-            //Alert("Error", "LiveStart: Live.Initialize failed! iErr=" + iErr);
             onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
             return;
         }

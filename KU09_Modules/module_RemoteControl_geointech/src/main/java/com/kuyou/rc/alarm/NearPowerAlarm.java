@@ -5,7 +5,6 @@ import android.util.Log;
 
 import kuyou.common.file.FileUtils;
 
-import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.info.LocationInfo;
 
 /**

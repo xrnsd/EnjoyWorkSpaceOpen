@@ -20,7 +20,7 @@ import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
-import kuyou.common.ku09.event.vc.base.ModuleEventVoiceControl;
+import kuyou.common.ku09.event.vc.base.EventVoiceControl;
 import kuyou.common.ku09.key.KeyConfig;
 
 /**
@@ -235,7 +235,7 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
     public void onModuleEvent(RemoteEvent event) {
         super.onModuleEvent(event);
         switch (event.getCode()) {
-            case ModuleEventVoiceControl.Code.VOICE_WAKEUP:
+            case EventVoiceControl.Code.VOICE_WAKEUP:
                 play("正在为您打开语音");
                 getVoiceControl().start();
                 break;

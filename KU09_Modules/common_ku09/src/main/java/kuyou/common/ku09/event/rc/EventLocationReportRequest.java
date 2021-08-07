@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 
 /**
- * action :
+ * action :暂时弃用
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

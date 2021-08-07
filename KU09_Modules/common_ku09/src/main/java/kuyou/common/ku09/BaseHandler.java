@@ -5,10 +5,10 @@ import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.IDispatchEventCallBack;
-import kuyou.common.ku09.event.tts.EventTtsPlayRequest;
+import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
 /**
- * action :
+ * action :业务处理器[抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -55,7 +55,7 @@ public abstract class BaseHandler {
             Log.e(TAG, "play > process fail : content is invalid");
             return;
         }
-        dispatchEvent(new EventTtsPlayRequest(content));
+        dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 
     protected void reboot(int delayedMillisecond) {

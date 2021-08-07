@@ -10,15 +10,15 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventTtsPlayRequest extends ModuleEventTts {
+public class EventTextToSpeechPlayRequest extends EventTextToSpeech {
 
     public final static String KEY_DATA_PLAT_TEXT = "key.data.play.text";
 
-    public EventTtsPlayRequest() {
+    public EventTextToSpeechPlayRequest() {
         setRemote(false);
     }
 
-    public EventTtsPlayRequest(String text) {
+    public EventTextToSpeechPlayRequest(String text) {
         getData().putString(KEY_DATA_PLAT_TEXT, text);
         setRemote(true);
     }

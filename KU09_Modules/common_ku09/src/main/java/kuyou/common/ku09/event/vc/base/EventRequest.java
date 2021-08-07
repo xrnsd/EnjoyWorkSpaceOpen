@@ -3,14 +3,14 @@ package kuyou.common.ku09.event.vc.base;
 import android.util.Log;
 
 /**
- * action :
+ * action :事件[语音控制相关请求][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventRequest extends ModuleEventVoiceControl {
+public class EventRequest extends EventVoiceControl {
 
     public static final String KEY_REQUEST_CODE = "request.code";
 

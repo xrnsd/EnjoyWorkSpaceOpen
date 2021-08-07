@@ -13,6 +13,8 @@ import com.kuyou.rc.info.LocationInfo;
  * </p>
  */
 public interface ILocationProvider {
+    
+    public boolean isValidLocation();
 
     public Location getLocation();
 

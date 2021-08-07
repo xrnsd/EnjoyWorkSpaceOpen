@@ -3,14 +3,14 @@ package kuyou.common.ku09.event.vc.base;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :事件[语言控制][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-3-29 <br/>
  * </p>
  */
-public abstract class ModuleEventVoiceControl extends RemoteEvent {
+public abstract class EventVoiceControl extends RemoteEvent {
 
     protected final String TAG = "kuyou.common.ku09.event.voicecontrol > " + this.getClass().getSimpleName();
 

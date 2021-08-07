@@ -105,6 +105,7 @@ public class HMLocationProvider implements
         return mLocationInfo;
     }
 
+    @Override
     public boolean isValidLocation() {
         return null != mLocation;
     }

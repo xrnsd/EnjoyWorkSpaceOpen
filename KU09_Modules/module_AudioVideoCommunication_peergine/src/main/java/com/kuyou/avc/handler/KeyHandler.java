@@ -92,19 +92,15 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
     public void onKeyDoubleClick(int keyCode) {
         switch (keyCode) {
             case KeyConfig.VOICE_CONTROL:
-                if (mAudioVideoHandler.getHandlerStatus() != IAudioVideoRequestCallback.HS_NORMAL) {
-                    String content = null;
-                    mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_cancel_title);
-                    if (null != content) {
-                        play(content);
-                        return;
-                    }
-                }
-                mAudioVideoType = mAudioVideoType >= MEDIA_TYPE_GROUP
-                        ? mAudioVideoType = MEDIA_TYPE_AUDIO
-                        : mAudioVideoType + 1;
                 String content = null;
-                content = mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_success_title);
+                if (mAudioVideoHandler.getHandlerStatus() == IAudioVideoRequestCallback.HS_NORMAL) {
+                    mAudioVideoType = mAudioVideoType >= MEDIA_TYPE_GROUP
+                            ? mAudioVideoType = MEDIA_TYPE_AUDIO
+                            : mAudioVideoType + 1;
+                    content = mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_success_title);
+                } else {
+                    content = mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_cancel_title);
+                }
                 play(null != content ? content : "模式切换失败，请重新尝试");
                 break;
             default:

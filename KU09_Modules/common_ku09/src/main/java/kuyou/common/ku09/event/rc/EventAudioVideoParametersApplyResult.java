@@ -1,10 +1,9 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.base.EventResult;
 
 /**
- * action :
+ * action :事件[音视频参数申请]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

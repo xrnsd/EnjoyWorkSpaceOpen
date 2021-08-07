@@ -1,4 +1,4 @@
-package com.kuyou.rc.handler;
+package com.kuyou.rc.location;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -77,7 +77,6 @@ public class LocationReportHandler extends Handler {
             Log.e(TAG, "onLocationReport > process fail : mCallBack is null");
             return;
         }
-        Log.d(TAG, "onLocationReport > ");
         mCallBack.onLocationReport();
     }
 

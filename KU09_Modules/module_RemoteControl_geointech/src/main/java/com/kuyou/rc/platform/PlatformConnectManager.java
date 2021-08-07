@@ -1,4 +1,4 @@
-package com.kuyou.rc.business;
+package com.kuyou.rc.platform;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -16,11 +16,11 @@ import kuyou.sdk.jt808.oksocket.client.sdk.client.OkSocketOptions;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.action.SocketActionAdapter;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.connection.IConnectionManager;
 
-public class HelmetSocketManager {
+public class PlatformConnectManager {
 
-    private static final String TAG = "com.kuyou.rc > HelmetSocketManager";
+    private static final String TAG = "com.kuyou.rc > PlatformConnectManager";
 
-    private static HelmetSocketManager INSTANCE;
+    private static PlatformConnectManager INSTANCE;
     private static final Object SingleInstanceLocker = new Object();
     private ConnectionInfo info;
     private IConnectionManager mManager;
@@ -28,12 +28,13 @@ public class HelmetSocketManager {
     private SocketActionAdapter mSocketActionAdapter;
     private RemoteControlDeviceConfig mDeviceConfig;
 
-    public static HelmetSocketManager getInstance(RemoteControlDeviceConfig config) {
+    public static PlatformConnectManager getInstance(RemoteControlDeviceConfig config) {
         if (INSTANCE == null) {
             synchronized (SingleInstanceLocker) {
                 if (INSTANCE == null) {
-                    INSTANCE = new HelmetSocketManager();
+                    INSTANCE = new PlatformConnectManager();
                     INSTANCE.mDeviceConfig = config;
+                    INSTANCE.init();
                 }
             }
         }
@@ -80,8 +81,31 @@ public class HelmetSocketManager {
      * @param adapter
      * @throws
      */
+    public void connect(RemoteControlDeviceConfig config, SocketActionAdapter adapter) throws Exception {
+        connect(config.getRemoteControlServerAddress(), config.getRemoteControlServerPort(), adapter);
+    }
+
+    /**
+     * 连接和回调
+     * 如果是已连接 ， 则断开连接
+     *
+     * @param ip
+     * @param port
+     * @param adapter
+     * @throws
+     */
     public void connect(String ip, int port, SocketActionAdapter adapter) throws Exception {
+        try {
+            if (isConnect())
+                disconnect();
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+            return;
+        }
         if (mManager != null) {
+            Log.d(TAG, new StringBuilder("connect > ")
+                    .append("\nserverUrl = ").append(ip)
+                    .append("\nserverPort = ").append(port).toString());
             if (!mManager.isConnect()) {
                 //调用通道进行连接
                 initManager(ip, port);

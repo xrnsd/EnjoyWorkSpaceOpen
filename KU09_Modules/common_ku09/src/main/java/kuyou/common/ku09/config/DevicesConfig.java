@@ -5,7 +5,7 @@ import android.util.Log;
 import kuyou.common.utils.SystemPropertiesUtils;
 
 /**
- * action :
+ * action :设备配置[安全帽全局固定配置]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

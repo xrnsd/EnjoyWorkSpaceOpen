@@ -6,7 +6,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 
 /**
- * action :
+ * action :事件[设备位置变化]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

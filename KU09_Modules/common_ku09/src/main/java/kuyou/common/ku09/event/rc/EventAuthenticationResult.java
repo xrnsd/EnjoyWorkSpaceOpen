@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc;
 import kuyou.common.ku09.event.rc.base.EventResult;
 
 /**
- * action :鉴权
+ * action :事件[鉴权结果]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

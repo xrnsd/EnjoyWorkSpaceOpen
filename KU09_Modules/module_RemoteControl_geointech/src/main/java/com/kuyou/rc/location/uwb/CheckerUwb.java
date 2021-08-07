@@ -3,7 +3,7 @@ package com.kuyou.rc.location.uwb;
 import kuyou.common.protocol.Checker;
 
 /**
- * action :
+ * action :协议校验器[安全帽的UWB模块]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

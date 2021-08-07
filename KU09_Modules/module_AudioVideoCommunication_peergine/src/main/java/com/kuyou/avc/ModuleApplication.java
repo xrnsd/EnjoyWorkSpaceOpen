@@ -1,12 +1,10 @@
 package com.kuyou.avc;
 
-import android.app.IHelmetModuleOpenLiveCallback;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.kuyou.avc.handler.FlashlightHandler;
 import com.kuyou.avc.handler.KeyHandler;
-import com.kuyou.avc.handler.PeergineAudioVideoRequestResultHandler;
+import com.kuyou.avc.handler.PeergineAudioVideoHandler;
 import com.kuyou.avc.handler.base.AudioVideoRequestResultHandler;
 import com.kuyou.avc.util.InfearedCameraControl;
 
@@ -61,10 +59,11 @@ public class ModuleApplication extends BaseApplication {
         if (null != mAudioVideoRequestHandler)
             return;
 
-        mAudioVideoRequestHandler = PeergineAudioVideoRequestResultHandler.getInstance(getApplicationContext());
+        mAudioVideoRequestHandler = PeergineAudioVideoHandler.getInstance(getApplicationContext());
         mAudioVideoRequestHandler.setDispatchEventCallBack(ModuleApplication.this)
                 .setModuleManager(ModuleApplication.this);
-        mAudioVideoRequestHandler.setDevicesConfig(getDevicesConfig());
+        mAudioVideoRequestHandler.setHandlerKeepAliveClient(getHandlerKeepAliveClient())
+                .setDevicesConfig(getDevicesConfig());
 
         registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
 
@@ -74,28 +73,6 @@ public class ModuleApplication extends BaseApplication {
                 .setModuleManager(ModuleApplication.this);
 
         mFlashlightHandler = FlashlightHandler.getInstance(getApplicationContext());
-    }
-
-    @Override
-    protected long getFeedTimeLong() {
-        return 60 * 1000;
-    }
-
-    @Override
-    protected String isReady() {
-        return super.isReady();
-    }
-
-    @Override
-    protected void initCallBack() {
-        super.initCallBack();
-        mHelmetModuleManageServiceManager.registerHelmetModuleOpenLiveCallback(new IHelmetModuleOpenLiveCallback.Stub() {
-            @Override
-            public int getLiveStatus() throws RemoteException {
-                return -1;
-            }
-        });
-        mHelmetModuleManageServiceManager.feedWatchDog(getPackageName(), System.currentTimeMillis());
     }
 
     @Override
@@ -113,6 +90,11 @@ public class ModuleApplication extends BaseApplication {
         list.add(EventAudioVideoCommunication.Code.FLASHLIGHT_REQUEST);
 
         return list;
+    }
+
+    @Override
+    protected long getFeedTimeLong() {
+        return 30 * 1000;
     }
 
     @Override

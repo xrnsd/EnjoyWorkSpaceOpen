@@ -1,8 +1,6 @@
-package com.kuyou.rc.handler;
+package com.kuyou.rc.key;
 
 import android.util.Log;
-
-import com.kuyou.rc.ModuleApplication;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseHandler;

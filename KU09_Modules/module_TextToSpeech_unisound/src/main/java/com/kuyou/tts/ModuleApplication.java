@@ -20,8 +20,8 @@ import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseApplication;
 import kuyou.common.ku09.event.common.EventPowerChange;
-import kuyou.common.ku09.event.tts.EventTtsPlayRequest;
-import kuyou.common.ku09.event.tts.ModuleEventTts;
+import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
+import kuyou.common.ku09.event.tts.EventTextToSpeech;
 
 /**
  * action :语音合成相关实现
@@ -65,7 +65,7 @@ public class ModuleApplication extends BaseApplication {
     protected List<Integer> getEventDispatchList() {
         List<Integer> list = new ArrayList<>();
 
-        list.add(ModuleEventTts.Code.TEXT_PLAY);
+        list.add(EventTextToSpeech.Code.TEXT_PLAY);
 
         return list;
     }
@@ -239,8 +239,8 @@ public class ModuleApplication extends BaseApplication {
     public void onModuleEvent(RemoteEvent event) {
         super.onModuleEvent(event);
         switch (event.getCode()) {
-            case ModuleEventTts.Code.TEXT_PLAY:
-                onRequestTtsPlay(EventTtsPlayRequest.getPlayContent(event));
+            case EventTextToSpeech.Code.TEXT_PLAY:
+                onRequestTtsPlay(EventTextToSpeechPlayRequest.getPlayContent(event));
                 break;
             default:
                 break;

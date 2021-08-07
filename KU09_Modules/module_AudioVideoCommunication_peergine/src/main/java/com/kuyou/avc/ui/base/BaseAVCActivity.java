@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.kuyou.avc.ModuleApplication;
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.PeergineAudioVideoRequestResultHandler;
+import com.kuyou.avc.handler.PeergineAudioVideoHandler;
 import com.kuyou.avc.ui.custom.PeergineConfig;
 
 import kuyou.common.ipc.RemoteEvent;
@@ -44,7 +44,7 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
     }
 
     protected void onResult(int result) {
-        Log.e(TAG, "onResult > result = " + result);
+        Log.w(TAG, "onResult > result = " + result);
         mResult = result;
 
         int recreateCount = getIntent().getIntExtra(KEY_RECREATE_COUNT, 0);
@@ -61,7 +61,7 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
             ModuleApplication.getInstance().reboot(500);
         }
 
-        play(PeergineAudioVideoRequestResultHandler.getInstance(getApplicationContext()).
+        play(PeergineAudioVideoHandler.getInstance(getApplicationContext()).
                 getTitleByMediaType(getTypeCode(),
                         IAudioVideo.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail));
 
@@ -111,7 +111,7 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (IAudioVideo.RESULT_SUCCESS == mResult) {
-            play(PeergineAudioVideoRequestResultHandler.getInstance(getApplicationContext())
+            play(PeergineAudioVideoHandler.getInstance(getApplicationContext())
                     .getTitleByMediaType(getTypeCode(), R.string.media_request_close_success));
         }
         if (IAudioVideo.MEDIA_TYPE_VIDEO == getTypeCode()) {

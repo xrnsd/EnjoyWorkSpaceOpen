@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventResult extends ModuleEventVoiceControl {
+public class EventResult extends EventVoiceControl {
 
     public static final String KEY_RESULT_CODE = "result.code";
 

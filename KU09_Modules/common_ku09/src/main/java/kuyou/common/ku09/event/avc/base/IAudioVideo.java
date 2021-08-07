@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.avc.base;
 
 /**
- * action :
+ * action :协议定义[peergine音视频相关][部分常量]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -22,6 +22,7 @@ public interface IAudioVideo {
     public static final int EVENT_TYPE_REMOTE_PLATFORM_INITIATE = 0;
     public final static int EVENT_TYPE_REMOTE_PLATFORM_REFUSE = 1;
     public final static int EVENT_TYPE_LOCAL_DEVICE_INITIATE = 2;
+    public final static int EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE = 3;
     public static final int EVENT_TYPE_CLOSE = 255;
 
     public static final int STATUS_PARAMETER_DEF = 0;

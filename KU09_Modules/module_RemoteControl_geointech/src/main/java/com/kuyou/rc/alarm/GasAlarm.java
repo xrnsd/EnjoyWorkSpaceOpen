@@ -1,9 +1,7 @@
 package com.kuyou.rc.alarm;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.info.LocationInfo;
 
 /**

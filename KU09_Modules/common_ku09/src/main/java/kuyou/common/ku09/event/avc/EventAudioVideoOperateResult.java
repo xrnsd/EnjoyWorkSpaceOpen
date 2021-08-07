@@ -4,7 +4,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.base.EventResult;
 
 /**
- * action :
+ * action :事件[音视频处理结果]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

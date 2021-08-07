@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :事件[按键][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -8,7 +8,7 @@ import android.util.Log;
 import kuyou.common.bytes.ByteUtils;
 
 /**
- * action :
+ * action :网络相关工具封装
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

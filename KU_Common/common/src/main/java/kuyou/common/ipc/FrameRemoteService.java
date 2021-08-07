@@ -88,7 +88,7 @@ public class FrameRemoteService extends Service {
 
         @Override
         public List<String> getRegisterModules() throws RemoteException {
-            Log.d(TAG, "getRegisterModules >  ");
+            //Log.d(TAG, "getRegisterModules >  ");
             return mRegisterModuleList;
         }
 

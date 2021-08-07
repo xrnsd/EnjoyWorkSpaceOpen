@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.common;
 import kuyou.common.ku09.event.common.base.EventKey;
 
 /**
- * action :
+ * action :事件[按键，长按]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

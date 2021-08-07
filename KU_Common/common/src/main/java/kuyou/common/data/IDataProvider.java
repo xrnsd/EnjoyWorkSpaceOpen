@@ -1,7 +1,7 @@
 package kuyou.common.data;
 
 /**
- * action :
+ * action :解析监听器[抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

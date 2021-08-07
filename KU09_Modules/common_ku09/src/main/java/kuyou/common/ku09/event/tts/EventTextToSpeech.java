@@ -10,7 +10,7 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-29 <br/>
  * </p>
  */
-public abstract class ModuleEventTts extends RemoteEvent {
+public abstract class EventTextToSpeech extends RemoteEvent {
 
     protected final String TAG = "kuyou.common.ku09.event.tts > "+ this.getClass().getSimpleName();
 

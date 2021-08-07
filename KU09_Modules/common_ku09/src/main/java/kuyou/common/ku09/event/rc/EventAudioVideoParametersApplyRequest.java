@@ -4,7 +4,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.base.EventRequest;
 
 /**
- * action :
+ * action :事件[音视频参数申请请求]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

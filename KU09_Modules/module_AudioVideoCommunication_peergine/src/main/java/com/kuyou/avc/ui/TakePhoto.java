@@ -37,6 +37,7 @@ import java.util.Arrays;
 
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
+import kuyou.common.ku09.event.avc.base.IAudioVideo;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
 import kuyou.common.ku09.ui.BaseActivity;
 
@@ -249,20 +250,30 @@ public class TakePhoto extends BaseActivity {
         context.startActivity(intent);
     }
 
+    private boolean isLocalDeviceSendInitiate() {
+        return IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
+    }
+
     protected void onResult(boolean result, String info) {
+        result = false;
         if (result) {
+            Log.d(TAG, "onResult > 拍照成功 > 申请上传");
+            if (isLocalDeviceSendInitiate()) {
+                play("拍照成功");
+            }
             dispatchEvent(new EventPhotoUploadRequest()
                     .setImgFilePath(info)
                     .setEventType(EventPhotoUploadRequest.getEventType(getData()))
                     .setRemote(true));
-            Log.d(TAG, "onSuccess > 拍照成功 > 申请上传");
         } else {
+            Log.d(TAG, "onResult > 拍照失败");
+            if (isLocalDeviceSendInitiate()) {
+                play("拍照失败");
+            }
             dispatchEvent(new EventPhotoTakeResult()
                     .setData(getData())
                     .setRemote(true)
                     .setResult(false));
-            Log.d(TAG, "onFail > 拍照失败");
-            play("拍照失败");
         }
         finish();
     }

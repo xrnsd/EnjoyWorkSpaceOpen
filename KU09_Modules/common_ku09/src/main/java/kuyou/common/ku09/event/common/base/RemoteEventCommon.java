@@ -6,7 +6,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.permission.CommonDialog;
 
 /**
- * action :
+ * action :事件[远程事件扩展，添加事件类型][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -4,7 +4,7 @@ import com.kuyou.vc.protocol.CodecVoice;
 import com.kuyou.vc.protocol.base.IOnParseListener;
 
 /**
- * action :
+ * action :协议编解码项[语音控制][关闭气体探测]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

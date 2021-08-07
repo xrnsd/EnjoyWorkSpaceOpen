@@ -11,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.event.tts.EventTtsPlayRequest;
+import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
 //import org.greenrobot.eventbus.Subscribe;
 //import kuyou.common.ku09.event.common.base.EventKey;
@@ -111,6 +109,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void play(String content) {
         Log.d(TAG, "play > content= " + content);
-        dispatchEvent(new EventTtsPlayRequest(content));
+        dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 }

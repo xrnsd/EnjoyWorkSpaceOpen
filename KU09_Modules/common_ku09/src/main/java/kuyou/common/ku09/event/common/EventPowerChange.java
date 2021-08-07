@@ -4,7 +4,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.base.EventKey;
 
 /**
- * action :
+ * action :事件[电源状态变化]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

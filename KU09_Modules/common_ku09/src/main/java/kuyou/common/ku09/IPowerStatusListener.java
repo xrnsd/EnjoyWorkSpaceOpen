@@ -1,7 +1,7 @@
 package kuyou.common.ku09;
 
 /**
- * action :
+ * action :接口[安全帽电源状态监听器]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

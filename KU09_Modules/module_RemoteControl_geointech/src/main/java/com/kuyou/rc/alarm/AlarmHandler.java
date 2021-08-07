@@ -1,14 +1,12 @@
-package com.kuyou.rc.handler;
+package com.kuyou.rc.alarm;
 
 import android.util.Log;
 
-import com.kuyou.rc.alarm.ALARM;
 import com.kuyou.rc.info.LocationInfo;
 import com.kuyou.rc.location.base.ILocationProvider;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseHandler;
-import kuyou.common.ku09.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
 
@@ -25,7 +23,7 @@ public class AlarmHandler extends BaseHandler implements ALARM {
 
     private static AlarmHandler sMain;
     private ILocationProvider mLocationProvider;
-    
+
     public void setLocationProvider(ILocationProvider locationProvider) {
         mLocationProvider = locationProvider;
     }

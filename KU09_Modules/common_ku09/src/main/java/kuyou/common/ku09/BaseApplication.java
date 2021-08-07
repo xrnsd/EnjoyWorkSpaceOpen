@@ -26,7 +26,7 @@ import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.base.EventKey;
-import kuyou.common.ku09.event.tts.EventTtsPlayRequest;
+import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.key.IKeyEventListener;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.SystemPropertiesUtils;
@@ -364,7 +364,7 @@ public abstract class BaseApplication extends Application implements
             return;
         }
         Log.d(TAG, "play > content= " + content);
-        dispatchEvent(new EventTtsPlayRequest(content));
+        dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 
     @Override

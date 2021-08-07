@@ -1,9 +1,5 @@
 package com.kuyou.rc.alarm;
 
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-
-import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.info.LocationInfo;
 
 /**

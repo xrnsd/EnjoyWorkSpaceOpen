@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc.alarm;
 import kuyou.common.ku09.event.common.base.EventCommon;
 
 /**
- * action :
+ * action :事件[报警相关][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

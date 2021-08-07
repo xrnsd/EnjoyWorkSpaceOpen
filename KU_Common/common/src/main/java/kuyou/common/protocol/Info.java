@@ -3,7 +3,7 @@ package kuyou.common.protocol;
 import androidx.annotation.Nullable;
 
 /**
- * action :
+ * action :协议解码项[抽象]
  * <p>
  * author: wuguoxian <br/>
  * date: 21-1-12 <br/>

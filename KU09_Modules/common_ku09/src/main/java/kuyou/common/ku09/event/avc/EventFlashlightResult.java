@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.avc;
 import kuyou.common.ku09.event.avc.base.EventResult;
 
 /**
- * action :
+ * action :事件[手电筒开关结果]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

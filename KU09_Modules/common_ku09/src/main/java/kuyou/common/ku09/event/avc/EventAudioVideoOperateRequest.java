@@ -9,7 +9,7 @@ import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.avc.base.EventRequest;
 
 /**
- * action :
+ * action :事件[音视频处理请求]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -4,7 +4,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.base.EventRequest;
 
 /**
- * action :
+ * action :事件[激光指示灯开关请求]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

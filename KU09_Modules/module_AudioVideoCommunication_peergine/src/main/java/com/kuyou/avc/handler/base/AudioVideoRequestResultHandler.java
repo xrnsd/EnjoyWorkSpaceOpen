@@ -3,12 +3,11 @@ package com.kuyou.avc.handler.base;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.kuyou.avc.handler.base.IAudioVideoRequestCallback;
 import com.kuyou.avc.ui.base.BaseAVCActivity;
 
 import java.util.HashMap;
@@ -25,11 +24,12 @@ import kuyou.common.ku09.config.DevicesConfig;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class AudioVideoRequestResultHandler extends BaseHandler implements IAudioVideoRequestCallback, Application.ActivityLifecycleCallbacks{
+public abstract class AudioVideoRequestResultHandler extends BaseHandler implements IAudioVideoRequestCallback, Application.ActivityLifecycleCallbacks {
 
     protected Map<Integer, BaseAVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
 
+    private Handler mHandlerKeepAliveClient;
     private DevicesConfig mDevicesConfig;
 
     protected DevicesConfig getDevicesConfig() {
@@ -41,13 +41,13 @@ public abstract class AudioVideoRequestResultHandler extends BaseHandler impleme
     }
 
     @Override
-    public Map<Integer, BaseAVCActivity> getOnlineList(){
+    public Map<Integer, BaseAVCActivity> getOnlineList() {
         return mItemListOnline;
     }
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        
+
     }
 
     @Override
@@ -87,5 +87,19 @@ public abstract class AudioVideoRequestResultHandler extends BaseHandler impleme
 
     public void setHandlerStatus(int handlerStatus) {
         mHandlerStatus = handlerStatus;
+    }
+
+    public boolean isItInHandlerState(int handlerStatus) {
+        return handlerStatus == getHandlerStatus();
+    }
+
+    @Override
+    public AudioVideoRequestResultHandler setHandlerKeepAliveClient(Handler handlerKeepAliveClient) {
+        mHandlerKeepAliveClient = handlerKeepAliveClient;
+        return AudioVideoRequestResultHandler.this;
+    }
+
+    protected Handler getHandlerKeepAliveClient() {
+        return mHandlerKeepAliveClient;
     }
 }

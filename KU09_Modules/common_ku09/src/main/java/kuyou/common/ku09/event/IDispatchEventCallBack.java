@@ -3,7 +3,7 @@ package kuyou.common.ku09.event;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :接口[事件分发器]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

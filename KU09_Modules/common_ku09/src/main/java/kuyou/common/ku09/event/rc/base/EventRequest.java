@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc.base;
 import android.util.Log;
 
 /**
- * action :
+ * action :事件[远程控制相关请求][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -18,7 +18,6 @@ public class EventRequest extends EventRemoteControl {
         public final static int OPEN = 0;
         public final static int CLOSE = 1;
     }
-
 
     @Override
     public int getCode() {

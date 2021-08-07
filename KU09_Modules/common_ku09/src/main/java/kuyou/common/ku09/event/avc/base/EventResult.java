@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.avc.base;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :事件[音视频相关请求处理结果][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
