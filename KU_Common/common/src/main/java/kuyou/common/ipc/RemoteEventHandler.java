@@ -13,7 +13,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.base.IRemoteConfig;
+import kuyou.common.ipc.base.IRemoteEventHandler;
+
 
 /**
  * action :远程事件接收，本地分发器[抽象]
@@ -23,7 +24,7 @@ import kuyou.common.ipc.base.IRemoteConfig;
  * date: 21-3-24 <br/>
  * </p>
  */
-public class RemoteEventHandler implements IRemoteConfig {
+public class RemoteEventHandler implements IRemoteEventHandler {
     protected final static int MSG_RECEIVE_EVENT = 0;
 
     protected String mTagLog = "kuyou.common.ipc > RemoteEventHandler";
@@ -70,6 +71,7 @@ public class RemoteEventHandler implements IRemoteConfig {
         return RemoteEventHandler.this;
     }
 
+    @Override
     public String getLocalModulePackageName() {
         return mLocalModulePackageName;
     }
@@ -99,6 +101,7 @@ public class RemoteEventHandler implements IRemoteConfig {
         return eventCode;
     }
 
+    @Override
     public void remoteEvent2LocalEvent(Bundle data) {
         int eventCode = remoteEventFilterPolicy(data);
         if (-1 == eventCode) {
@@ -110,11 +113,6 @@ public class RemoteEventHandler implements IRemoteConfig {
                 return eventCode;
             }
         }.setData(data));
-
-//        synchronized (mRemoteEventDataCache){
-//            mRemoteEventDataCache.add(data);
-//        }
-        //mHandlerEvent.sendEmptyMessage(MSG_RECEIVE_EVENT);
     }
 
     private void handleMessage(@NonNull Message msg) {

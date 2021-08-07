@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 
 import kuyou.common.ipc.base.IRemoteConfig;
+import kuyou.common.ipc.base.IRemoteEventHandler;
 
 /**
  * action :事件远程分发器
@@ -29,7 +30,7 @@ public class RemoteEventBus implements IRemoteConfig {
 
     private Context mContext;
     private static RemoteEventBus sMain;
-    private RemoteEventHandler mRemoteEventHandler;
+    private IRemoteEventHandler mRemoteEventHandler;
     private FrameEventHandler mFrameEventHandler;
 
     private boolean mIsBound = false;
@@ -58,11 +59,22 @@ public class RemoteEventBus implements IRemoteConfig {
         return sMain;
     }
 
-    public RemoteEventBus register(Object subscribe, RemoteEventHandler handler) {
-        startIPCDaemon(mContext);
+    protected Context getContext() {
+        return mContext;
+    }
 
-        EventBus.getDefault().register(subscribe);
-        mRemoteEventHandler = handler;
+    public IRemoteEventHandler getRemoteEventHandler() {
+        return mRemoteEventHandler;
+    }
+
+    public RemoteEventBus register(IRegisterConfig config) {
+        startIPCDaemon(getContext());
+
+        EventBus.getDefault().register(config.getLocalEventDispatchHandler());
+
+        mRemoteEventHandler = RemoteEventHandler.getInstance()
+                .setLocalModulePackageName(getContext().getPackageName())
+                .setEventDispatchList(config.getEventDispatchList());
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -71,13 +83,16 @@ public class RemoteEventBus implements IRemoteConfig {
             }
         }, 1000);
 
-        if (null != handler.getLocalModulePackageName()) {
+        if (null != mRemoteEventHandler.getLocalModulePackageName()) {
             mTagLog = new StringBuilder(mTagLog).append(" > ").append(
-                    handler.getLocalModulePackageName()).
+                    mRemoteEventHandler.getLocalModulePackageName()).
                     toString();
         }
 
+        setFrameLiveListener(config.getFrameLiveListener());
+
         Log.d(mTagLog, "register > ");
+
         return RemoteEventBus.this;
     }
 
@@ -107,7 +122,6 @@ public class RemoteEventBus implements IRemoteConfig {
                                 @Override
                                 public void onReceiveEvent(Bundle data) {
                                     Log.d(mTagLog, "onReceiveEvent > data = " + data);
-                                    //mFrameEventHandler.remoteEvent2LocalEvent(data);
                                     mRemoteEventHandler.remoteEvent2LocalEvent(data);
                                 }
 
@@ -194,5 +208,22 @@ public class RemoteEventBus implements IRemoteConfig {
         public void onIpcFrameResisterSuccess();
 
         public void onIpcFrameUnResister();
+    }
+
+    public static interface IRegisterConfig {
+        /**
+         * action:指定IPC框架状态监听器
+         */
+        public IFrameLiveListener getFrameLiveListener();
+
+        /**
+         * action:指定想要接收的远程事件ID列表
+         */
+        public List<Integer> getEventDispatchList();
+
+        /**
+         * action:指定远程事件转发到本地后的处理器
+         */
+        public Object getLocalEventDispatchHandler();
     }
 }

@@ -29,6 +29,7 @@ import kuyou.common.ku09.event.common.base.EventKey;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.key.IKeyEventListener;
 import kuyou.common.log.LogcatHelper;
+import kuyou.common.utils.DebugUtil;
 import kuyou.common.utils.SystemPropertiesUtils;
 
 /**
@@ -42,10 +43,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  */
 public abstract class BaseApplication extends Application implements
         IDispatchEventCallBack,
-        IPowerStatusListener,
-        IKeyEventListener,
-        IModuleManager,
-        RemoteEventBus.IFrameLiveListener {
+        IModuleManager {
 
     protected String TAG = "kuyou.common.ku09 > BaseApplication";
 
@@ -57,31 +55,58 @@ public abstract class BaseApplication extends Application implements
         init();
     }
 
-    protected abstract List<Integer> getEventDispatchList();
+    // =========================== 初始化 ==============================
 
     protected void init() {
         TAG = new StringBuilder(getPackageName()).append(" > ModuleApplication").toString();
         TAG_THREAD_WATCH_DOG = getApplicationName() + TAG_THREAD_WATCH_DOG;
 
-        //事件分发相关
-        RemoteEventHandler handler = RemoteEventHandler.getInstance()
-                .setLocalModulePackageName(getPackageName())
-                .setEventDispatchList(getEventDispatchList());
+        //模块间IPC框架初始化
         RemoteEventBus.getInstance(getApplicationContext())
-                .setFrameLiveListener(getIpcFrameLiveListener())
-                .register(this, handler);
+                .register(new RemoteEventBus.IRegisterConfig() {
+                    @Override
+                    public RemoteEventBus.IFrameLiveListener getFrameLiveListener() {
+                        return BaseApplication.this.getIpcFrameLiveListener();
+                    }
+
+                    @Override
+                    public List<Integer> getEventDispatchList() {
+                        return BaseApplication.this.getEventDispatchList();
+                    }
+
+                    @Override
+                    public Object getLocalEventDispatchHandler() {
+                        return BaseApplication.this;
+                    }
+                });
+        //StrictMode相关
+        initStrictModePolicy();
 
         //log相关
         initLogcatLocal();
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-
+        //初始化模块状态控制系统服务
         initHelmetModuleManageServiceManager();
-        initKeepAliveConfig();
-        initKeyHandlers();
-
         initCallBack();
+
+        //初始化模块状态看门狗
+        initKeepAliveConfig();
+
+        //初始化按键协处理器
+        initKeyHandlers();
+    }
+
+    /**
+     * action:初始化严格模式配置
+     */
+    protected void initStrictModePolicy() {
+        final String key = "persist.hm.strict.mode";
+        if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
+            Log.d(TAG, "initLogcatLocal > LogcatHelper is disable");
+            return;
+        }
+        DebugUtil.startStrictModeThreadPolicy();
+        DebugUtil.startStrictModeVmPolicy();
     }
 
     /**
@@ -113,8 +138,6 @@ public abstract class BaseApplication extends Application implements
                 .toString());
     }
 
-    protected abstract String getApplicationName();
-
     protected void initHelmetModuleManageServiceManager() {
         if (null != mHelmetModuleManageServiceManager) {
             return;
@@ -122,18 +145,32 @@ public abstract class BaseApplication extends Application implements
         mHelmetModuleManageServiceManager = (HelmetModuleManageServiceManager) getSystemService("helmet_module_manage_service");
     }
 
-    // =========================== 设备配置 ==============================
+    protected void initKeyHandlers() {
+        mHelmetModuleManageServiceManager.registerHelmetModuleCommonCallback(new IHelmetModuleCommonCallback.Stub() {
 
-    private DevicesConfig mDevicesConfig;
+            @Override
+            public void onPowerStatus(int status) throws RemoteException {
+                BaseApplication.this.dispatchEvent(new EventPowerChange().setPowerStatus(status));
+            }
 
-    public DevicesConfig getDevicesConfig() {
-        if (null == mDevicesConfig) {
-            mDevicesConfig = new DevicesConfig();
-        }
-        return mDevicesConfig;
+            @Override
+            public void onKeyClick(int keyCode) throws RemoteException {
+                BaseApplication.this.dispatchEvent(new EventKeyClick(keyCode));
+            }
+
+            @Override
+            public void onKeyDoubleClick(int keyCode) throws RemoteException {
+                BaseApplication.this.dispatchEvent(new EventKeyDoubleClick(keyCode));
+            }
+
+            @Override
+            public void onKeyLongClick(int keyCode) throws RemoteException {
+                BaseApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
+            }
+        });
     }
 
-    // ============================ 模块活动保持 ============================
+    // ============================ 模块状态看门狗 ============================
 
     protected static final int MSG_WATCHDOG_2_FEED = 1;
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
@@ -170,21 +207,21 @@ public abstract class BaseApplication extends Application implements
     }
 
     /**
-     * action:模块活动保持 > 是否开启
+     * action:模块状态看门狗 > 是否开启
      */
     protected boolean isEnableWatchDog() {
         return IS_ENABLE_KEEP_ALIVE;
     }
 
     /**
-     * action:模块活动保持 > 相关状态检测的流程是否连续进行
+     * action:模块状态看门狗 > 相关状态检测的流程是否连续进行
      */
     protected boolean isAutoFeedWatchDog() {
         return true;
     }
 
     /**
-     * action:模块活动保持 > 相关状态检测的流程的处理
+     * action:模块状态看门狗 > 相关状态检测的流程的处理
      */
     protected void handleMessageAliveClient(@NonNull Message msg) {
         Log.d(TAG, TAG_THREAD_WATCH_DOG + " > MSG_WATCHDOG_2_FEED ");
@@ -200,14 +237,14 @@ public abstract class BaseApplication extends Application implements
     }
 
     /**
-     * action:模块活动保持 > 相关状态检测的流程的周期长度,单位毫秒
+     * action:模块状态看门狗 > 相关状态检测的流程的周期长度,单位毫秒
      */
     protected long getFeedTimeLong() {
         return FLAG_FEED_TIME_LONG;
     }
 
     /**
-     * action:模块活动保持 > 开启相关状态检测的流程
+     * action:模块状态看门狗 > 开启相关状态检测的流程
      */
     public void sendMsgFeedWatchDog() {
         if (mHandlerKeepAliveClient.hasMessages(MSG_WATCHDOG_2_FEED))
@@ -217,7 +254,7 @@ public abstract class BaseApplication extends Application implements
     }
 
     /**
-     * action:模块活动保持 > 模块返回活动状态
+     * action:模块状态看门狗 > 模块返回活动状态
      */
     protected String isReady() {
         boolean isReady = RemoteEventBus.getInstance(getApplicationContext()).isRegister(getPackageName());
@@ -228,7 +265,7 @@ public abstract class BaseApplication extends Application implements
     }
 
     /**
-     * action:模块活动保持 > 模块在偷懒,抓起来打一顿
+     * action:模块状态看门狗 > 模块在偷懒,抓起来打一顿
      *
      * @param flag 重启的等待时间,毫秒
      */
@@ -254,46 +291,25 @@ public abstract class BaseApplication extends Application implements
         return mHandlerKeepAliveClient;
     }
 
-    // ============== 基础事件相关 ============================
-    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
-        return BaseApplication.this;
-    }
-
     @Override
-    public void onIpcFrameResisterSuccess() {
-
+    public void reboot(int delayedMillisecond) {
+        getHelmetModuleManageServiceManager().rebootModule(
+                getPackageName(),
+                android.os.Process.myPid(),
+                delayedMillisecond);
     }
 
-    @Override
-    public void onIpcFrameUnResister() {
-
-    }
+    // ============================ 事件相关 ============================
 
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
+    private IPowerStatusListener mPowerStatusListener;
+    private IKeyEventListener mKeyEventListener;
 
-    protected void initKeyHandlers() {
-        mHelmetModuleManageServiceManager.registerHelmetModuleCommonCallback(new IHelmetModuleCommonCallback.Stub() {
+    protected abstract List<Integer> getEventDispatchList();
 
-            @Override
-            public void onPowerStatus(int status) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventPowerChange().setPowerStatus(status));
-            }
-
-            @Override
-            public void onKeyClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyClick(keyCode));
-            }
-
-            @Override
-            public void onKeyDoubleClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyDoubleClick(keyCode));
-            }
-
-            @Override
-            public void onKeyLongClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
-            }
-        });
+    @Override
+    public void dispatchEvent(RemoteEvent event) {
+        RemoteEventBus.getInstance().dispatch(event);
     }
 
     //本地事件
@@ -321,43 +337,6 @@ public abstract class BaseApplication extends Application implements
         }
     }
 
-    protected IPowerStatusListener getPowerStatusListener() {
-        return BaseApplication.this;
-    }
-
-    @Override
-    public void onPowerStatus(int status) {
-        Log.d(TAG, "onPowerStatus > status = " + status);
-        mPowerStatus = status;
-    }
-
-    protected int getPowerStatus() {
-        return mPowerStatus;
-    }
-
-    protected IKeyEventListener getKeyListener() {
-        return BaseApplication.this;
-    }
-
-    @Override
-    public void onKeyClick(int keyCode) {
-
-    }
-
-    @Override
-    public void onKeyDoubleClick(int keyCode) {
-    }
-
-    @Override
-    public void onKeyLongClick(int keyCode) {
-    }
-
-    //============================ 公开接口 ============================
-
-    public android.app.HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
-        return mHelmetModuleManageServiceManager;
-    }
-
     public void play(String content) {
         if (null == content || content.length() <= 0) {
             Log.e(TAG, "play > process fail : content is invalid");
@@ -367,16 +346,94 @@ public abstract class BaseApplication extends Application implements
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 
-    @Override
-    public void dispatchEvent(RemoteEvent event) {
-        RemoteEventBus.getInstance().dispatch(event);
+    protected IPowerStatusListener getPowerStatusListener() {
+        if (null == mPowerStatusListener) {
+            mPowerStatusListener = new IPowerStatusListener() {
+                @Override
+                public void onPowerStatus(int status) {
+                    BaseApplication.this.onPowerStatus(status);
+                }
+            };
+        }
+        return mPowerStatusListener;
     }
 
-    @Override
-    public void reboot(int delayedMillisecond) {
-        getHelmetModuleManageServiceManager().rebootModule(
-                getPackageName(),
-                android.os.Process.myPid(),
-                delayedMillisecond);
+    protected void onPowerStatus(int status) {
+        Log.d(TAG, "onPowerStatus > status = " + status);
+        mPowerStatus = status;
+    }
+
+    protected int getPowerStatus() {
+        return mPowerStatus;
+    }
+
+    protected IKeyEventListener getKeyListener() {
+        if (null == mKeyEventListener) {
+            mKeyEventListener = new IKeyEventListener() {
+                @Override
+                public void onKeyClick(int keyCode) {
+                    BaseApplication.this.onKeyClick(keyCode);
+                }
+
+                @Override
+                public void onKeyDoubleClick(int keyCode) {
+                    BaseApplication.this.onKeyDoubleClick(keyCode);
+                }
+
+                @Override
+                public void onKeyLongClick(int keyCode) {
+                    BaseApplication.this.onKeyLongClick(keyCode);
+                }
+            };
+        }
+        return mKeyEventListener;
+    }
+
+    protected void onKeyClick(int keyCode) {
+    }
+
+    protected void onKeyDoubleClick(int keyCode) {
+    }
+
+    protected void onKeyLongClick(int keyCode) {
+    }
+
+    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
+        return new RemoteEventBus.IFrameLiveListener() {
+            @Override
+            public void onIpcFrameResisterSuccess() {
+                BaseApplication.this.onIpcFrameResisterSuccess();
+            }
+
+            @Override
+            public void onIpcFrameUnResister() {
+                BaseApplication.this.onIpcFrameUnResister();
+            }
+        };
+    }
+
+    protected void onIpcFrameResisterSuccess() {
+
+    }
+
+    protected void onIpcFrameUnResister() {
+
+    }
+
+    // =========================== 设备配置等==============================
+
+    protected abstract String getApplicationName();
+
+    private DevicesConfig mDevicesConfig;
+
+    protected DevicesConfig getDevicesConfig() {
+        if (null == mDevicesConfig) {
+            mDevicesConfig = new DevicesConfig();
+        }
+        return mDevicesConfig;
+    }
+
+    protected android.app.HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
+        return mHelmetModuleManageServiceManager;
     }
 }
