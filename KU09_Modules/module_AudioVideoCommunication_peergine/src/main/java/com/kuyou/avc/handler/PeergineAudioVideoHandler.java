@@ -362,7 +362,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 Log.d(TAG, "onModuleEvent > 处理拍照申请");
 
                 //存在通话时不允许拍照
-                if (isLiveByTypeCode(-1)) {
+                if (isLiveByTypeCode(-1)
+                        || !isItInHandlerState(HS_NORMAL)) {
                     final int eventType = EventPhotoTakeResult.getEventType(event);
                     dispatchEvent(new EventPhotoTakeResult()
                             .setResult(false)
@@ -370,7 +371,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                             .setRemote(IAudioVideo.EVENT_TYPE_REMOTE_PLATFORM_INITIATE == eventType));//平台发起才回复
 
                     Log.w(TAG, "onModuleEvent > process fail : 拍照失败，请先关闭通话");
-                    //play("拍照失败，请先关闭通话");
+                    if (!isItInHandlerState(HS_OPEN))//没有正在进行的通话提示
+                        play("拍照失败，请先关闭通话");
                     return true;
                 }
                 if (IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE

@@ -19,8 +19,4 @@ public class MainActivity extends BasePermissionsActivity {
     protected int getContentViewResId() {
         return R.layout.activity_main;
     }
-
-    @Override
-    protected void dispatchEvent(RemoteEvent event) {
-    }
 }
