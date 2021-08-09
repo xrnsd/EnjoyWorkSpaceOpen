@@ -262,7 +262,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //终端申请，开启通话
         addRequestAudioVideoParametersFlag();
-        play(getTitleByMediaType(typeCode, R.string.media_request_open_request));
+        //play(getTitleByMediaType(typeCode, R.string.media_request_open_request));
         dispatchEvent(new EventAudioVideoParametersApplyRequest()
                 .setMediaType(typeCode)
                 .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
@@ -390,7 +390,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 //平台拒绝
                 if (IAudioVideo.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType
                         && isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
-                    play("通话被拒，请稍后尝试");
+                    play(getTitleByMediaType(mAudioVideoType,R.string.media_request_open_rejected_title));
                     clearRequestAudioVideoParametersFlag();
                     setHandlerStatus(HS_NORMAL);
                     return true;

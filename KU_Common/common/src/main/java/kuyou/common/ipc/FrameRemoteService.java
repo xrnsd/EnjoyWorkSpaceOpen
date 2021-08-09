@@ -44,13 +44,12 @@ public class FrameRemoteService extends Service {
             int N = beginBroadcastCallback(mCallbackList);
             for (int i = 0; i < N; i++) {
                 try {
-                    IRemoteServiceCallBack callBack = mCallbackList.getBroadcastItem(i);
-                    if (null != callBack)
-                        callBack.onReceiveEvent(data);
-                    else
-                        Log.e(TAG, "sendEvent > process fail : null callBack "+i);
+                    mCallbackList.getBroadcastItem(i).onReceiveEvent(data);
                 } catch (Exception e) {
-                    Log.e(TAG, "sendEvent > process fail : " + Log.getStackTraceString(e));
+                    Log.e(TAG, new StringBuilder("sendEvent > process fail : \n")
+                            .append("event = ").append(data.toString())
+                            .append("\n").append(Log.getStackTraceString(e))
+                            .toString());
                 }
             }
             mCallbackList.finishBroadcast();

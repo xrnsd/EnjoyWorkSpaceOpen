@@ -13,8 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.base.IRemoteEventHandler;
-
+import kuyou.common.ipc.base.IRemoteConfig;
 
 /**
  * action :远程事件接收，本地分发器[抽象]
