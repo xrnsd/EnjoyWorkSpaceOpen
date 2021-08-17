@@ -150,10 +150,10 @@ public abstract class InfoBase extends Info<IOnParseListener> {
     }
 
     public boolean perform(IOnParseListener listener) {
-        if (null == geTitle() || geTitle().length() <= 0) {
+        if (null == getTitle() || getTitle().length() <= 0) {
             return false;
         }
-        getParseFinishListener().onParseFinish(geTitle());
+        getParseFinishListener().onParseFinish(getTitle());
         return false;
     }
 

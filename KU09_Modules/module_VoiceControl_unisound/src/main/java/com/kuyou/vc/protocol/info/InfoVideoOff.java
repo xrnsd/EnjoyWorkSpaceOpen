@@ -28,7 +28,7 @@ public class InfoVideoOff extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         //因为功能项存在提示，所以关闭语言控制的提示
         return "";//"已为您关闭摄录";
     }

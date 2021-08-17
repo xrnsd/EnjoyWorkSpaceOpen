@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.base.IRemoteConfig;
+import kuyou.common.ipc.base.IRemoteEventHandler;
 
 /**
  * action :远程事件接收，本地分发器[抽象]
@@ -54,9 +54,6 @@ public class RemoteEventHandler implements IRemoteEventHandler {
     }
 
     protected List<Integer> getEventDispatchList() {
-        if (null == mEventDispatchList) {
-            throw new NullPointerException("EventDispatchList is null,\nplease perform method \"setEventDispatchList(List<Integer> list)\"");
-        }
         return mEventDispatchList;
     }
 
@@ -86,7 +83,9 @@ public class RemoteEventHandler implements IRemoteEventHandler {
         if (null == mLocalModulePackageName) {
             throw new NullPointerException("LocalModulePackageName is null,\nplease perform method \"setLocalModulePackageName(String val)\"");
         }
-        getEventDispatchList();//mEventDispatchList 判空
+        if (null == mEventDispatchList) {
+            throw new NullPointerException("EventDispatchList is null,\nplease perform method \"setEventDispatchList(List<Integer> list)\"");
+        }
 
         int eventCode = RemoteEvent.getCodeByData(data);
         if (-1 == getEventDispatchList().indexOf(eventCode)) {

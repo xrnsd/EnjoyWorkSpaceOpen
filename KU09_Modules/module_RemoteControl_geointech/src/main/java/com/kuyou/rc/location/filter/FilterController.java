@@ -2,13 +2,13 @@ package com.kuyou.rc.location.filter;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import com.kuyou.rc.location.HMLocationProvider;
 import com.kuyou.rc.location.HMLocationProvider.IOnLocationChangeListener;
 import com.kuyou.rc.location.filter.base.IFilterCallBack;
 import com.kuyou.rc.location.filter.base.TrackPoint;
 import com.kuyou.rc.location.filter.base.TrajectoryFilter;
-import com.kuyou.rc.location.filter.fluctuation.TrajectoryFluctuationFilter;
 import com.kuyou.rc.location.filter.kalman.TrajectoryKalmanFilter;
 
 /**
@@ -19,7 +19,7 @@ import com.kuyou.rc.location.filter.kalman.TrajectoryKalmanFilter;
  * date: 21-7-6 <br/>
  * </p>
  */
-public class FilterController implements IFilterCallBack {
+public abstract class FilterController implements IFilterCallBack {
     protected final String TAG = "com.kuyou.rc.location.filter > " + this.getClass().getSimpleName();
 
     private TrajectoryFilter mTrajectoryFluctuationFilter, mTrajectoryKalmanFilter;
@@ -28,21 +28,11 @@ public class FilterController implements IFilterCallBack {
     private static FilterController sMain;
     private int mFilterPolicy = -1;
 
-    private IFilterCallBack mFilterCallBack;
+    private IFilterPolicyCallBack mFilterPolicyCallBack;
 
-    private FilterController() {
+    protected abstract boolean isValidLocation();
 
-    }
-
-    public static FilterController getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new FilterController();
-            sMain.initFilters(context);
-        }
-        return sMain;
-    }
-
-    private void initFilters(Context context) {
+    public FilterController initFilters(Context context) {
         mTrajectoryKalmanFilter = new TrajectoryKalmanFilter(context.getApplicationContext(), new TrajectoryFilter.OnDataFilterListener() {
             @Override
             public void onDataAfterFilter(TrackPoint point) {
@@ -65,55 +55,61 @@ public class FilterController implements IFilterCallBack {
             public int getDataFilterPolicy() {
                 int policy = 0;
                 policy |= TrajectoryFluctuationFilter.POLICY_FILTER_SPEED;
-                //policy |= TrajectoryFluctuationFilter.POLICY_FILTER_BEARING_SPEED;
-                //policy |= TrajectoryFluctuationFilter.POLICY_FILTER_ALTITUDE;
+                policy |= TrajectoryFluctuationFilter.POLICY_FILTER_BEARING_SPEED;
+                policy |= TrajectoryFluctuationFilter.POLICY_FILTER_ALTITUDE;
                 return policy;
             }
         });
+        return FilterController.this;
     }
 
-    public FilterController setFilterCallBack(IFilterCallBack filterCallBack) {
-        mFilterCallBack = filterCallBack;
+    public FilterController setFilterPolicyCallBack(IFilterPolicyCallBack filterPolicyCallBack) {
+        mFilterPolicyCallBack = filterPolicyCallBack;
         return FilterController.this;
     }
 
     @Override
     public void filter(Location location) {
+        Log.d(TAG, "filter > ");
         if (isEnableFilterByPolicy(POLICY_FILTER_KALMAN)) {
-            //第一次真实定位，跳过过滤
-            if(null!=mFilterCallBack
-                    && !mFilterCallBack.isValidLocation()
-                    && null != mOnLocationChangeListener){
-                mOnLocationChangeListener.onLocationChange(location);
-            }
-            
+            Log.d(TAG, "filter > POLICY_FILTER_KALMAN ");
+//            //第一次真实定位，跳过过滤
+//            if (isValidLocation()
+//                    && null != mOnLocationChangeListener) {
+//                Log.d(TAG, "filter > 第一次跳过");
+//                mOnLocationChangeListener.onLocationChange(location);
+//            }
+
             mTrajectoryKalmanFilter.filter(new TrackPoint(location));
-            
+
         } else if (isEnableFilterByPolicy(POLICY_FILTER_FLUCTUATION)) {
-            //第一次真实定位，跳过过滤
-            if(null!=mFilterCallBack
-                    && !mFilterCallBack.isValidLocation()
-                    && null != mOnLocationChangeListener){
-                mOnLocationChangeListener.onLocationChange(location);
-            }
-            
+            Log.d(TAG, "filter > POLICY_FILTER_FLUCTUATION ");
+//            //第一次真实定位，跳过过滤
+//            if (isValidLocation()
+//                    && null != mOnLocationChangeListener) {
+//                Log.d(TAG, "filter > 第一次跳过");
+//                mOnLocationChangeListener.onLocationChange(location);
+//            }
+
             mTrajectoryFluctuationFilter.filter(new TrackPoint(location));
-            
+
         } else if (null != mOnLocationChangeListener) {
+            Log.d(TAG, "filter > none : cancel filter ");
             mOnLocationChangeListener.onLocationChange(location);
         }
     }
 
     @Override
-    public void setLocationChangeListener(IOnLocationChangeListener listener) {
+    public IFilterCallBack setLocationChangeListener(IOnLocationChangeListener listener) {
         mOnLocationChangeListener = listener;
+        return FilterController.this;
     }
 
     @Override
     public int getFilterPolicy() {
-        if (-1 == mFilterPolicy){
-            if(null != mFilterCallBack){
-                mFilterPolicy = mFilterCallBack.getFilterPolicy();
+        if (-1 == mFilterPolicy) {
+            if (null != mFilterPolicyCallBack) {
+                mFilterPolicy = mFilterPolicyCallBack.getFilterPolicy();
             }
         }
         return mFilterPolicy;
@@ -126,9 +122,7 @@ public class FilterController implements IFilterCallBack {
         return false;
     }
 
-    public static interface IFilterCallBack {
+    public static interface IFilterPolicyCallBack {
         public int getFilterPolicy();
-
-        public boolean isValidLocation();
     }
 }

@@ -80,7 +80,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
 
         @Override
         public void event(String sAct, String sData, String sRenID) {
-            onPeerginEvent(sAct,sData,sRenID);
+            onPeergineEvent(sAct, sData, sRenID);
             Log.d(TAG, new StringBuilder()
                     .append("pgLibLiveMultiCapture.OnEventListener > event >")
                     .append("\nsAct=").append(sAct)
@@ -147,7 +147,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                     onResult(IAudioVideo.RESULT_SUCCESS);
                 } else {
-                    if("8".equals(sData)){
+                    if ("8".equals(sData)) {
                         onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                     }
                     onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
@@ -185,7 +185,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
                 String sInfo = "Forward free relpy: error=" + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("VideoCamera")) {
-                
+                onScreenshot(sData);
                 String sInfo = "The picture is save to: " + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("FilePutRequest")) {
@@ -214,7 +214,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
                     + ", Render=" + sRenID);
         }
     };
-    
+
 
     private void FilePutRequest(String sDate, String sPeer) {
         String file = getcontent(sDate, "peerpath");
@@ -439,7 +439,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
 
         if (getTypeCode() == IAudioVideo.MEDIA_TYPE_VIDEO
                 || getTypeCode() == IAudioVideo.MEDIA_TYPE_GROUP) {
-            final String sVideoParam = "(Code){3}(Mode){3}(Rate){66}(Portrait){1}(BitRate){500}(MaxStream){3}(SendCache){1}";
+            final String sVideoParam = "(Code){3}(Mode){3}(Rate){66}(BitRate){500}(MaxStream){3}(SendCache){1}";
             m_Live.VideoStart(0, sVideoParam, null);
         }
 

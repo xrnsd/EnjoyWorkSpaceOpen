@@ -7,8 +7,9 @@ import android.location.Location;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.kuyou.rc.info.LocationInfo;
+import com.kuyou.rc.ModuleApplication;
 import com.kuyou.rc.location.base.ILocationProvider;
+import com.kuyou.rc.protocol.item.SicLocationAlarm;
 
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 
@@ -21,18 +22,22 @@ import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
  * </p>
  */
 public class HMLocationProvider implements
-        LocationInfo.CONFIG,
+        SicLocationAlarm.CONFIG,
         ILocationProvider {
     protected final String TAG = "com.kuyou.rc.location > " + this.getClass().getSimpleName();
 
     private IOnLocationChangeListener mLocationChangeListener = null;
     private Location mLocationFake = null;
-    private LocationInfo mLocationInfo = null;
+    private SicLocationAlarm mLocationInfo = null;
 
     protected Location mLocation = null;
     protected Context mContext = null;
 
+    private HelmetModuleManageServiceManager mHmmsm;
     private RemoteControlDeviceConfig mRemoteControlDeviceConfig;
+
+    private IHelmetModuleLocationCallback.Stub mHelmetModuleLocationCallback;
+    private boolean isStartPositioning = false;
 
     public HMLocationProvider(Context context) {
         mContext = context.getApplicationContext();
@@ -47,25 +52,64 @@ public class HMLocationProvider implements
 
     }
 
-    public HMLocationProvider enableLocalBasePosition(HelmetModuleManageServiceManager hmmsm) {
-        hmmsm.registerHelmetModuleLocationCallback(new IHelmetModuleLocationCallback.Stub() {
-            @Override
-            public void onLocationChange(Location location) throws RemoteException {
-                HMLocationProvider.this.dispatchLocation(location);
+    public void start() {
+        getHelmetModuleManageServiceManager()
+                .registerHelmetModuleLocationCallback(mHelmetModuleLocationCallback);
+        isStartPositioning = true;
+    }
+
+    public void stop() {
+        getHelmetModuleManageServiceManager()
+                .unregisterHelmetModuleLocationCallback(mHelmetModuleLocationCallback);
+        isStartPositioning = false;
+    }
+
+    protected HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
+        if (null != mHmmsm) {
+            return mHmmsm;
+        }
+        try {
+            mHmmsm = ModuleApplication.getInstance()
+                    .getHelmetModuleManageServiceManager();
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+        if (null == mHmmsm) {
+            mHmmsm = (HelmetModuleManageServiceManager) getContext().getSystemService("helmet_module_manage_service");
+        }
+        return mHmmsm;
+    }
+
+    public boolean isStart() {
+        return isStartPositioning;
+    }
+
+    public IHelmetModuleLocationCallback.Stub getHelmetModuleLocationCallback() {
+        if (null == mHelmetModuleLocationCallback) {
+            try {
+                mHelmetModuleLocationCallback = new IHelmetModuleLocationCallback.Stub() {
+                    @Override
+                    public void onLocationChange(Location location) throws RemoteException {
+                        HMLocationProvider.this.dispatchLocation(location);
+                    }
+                };
+            } catch (Exception e) {
+                Log.e(TAG, Log.getStackTraceString(e));
             }
-        });
-        return HMLocationProvider.this;
+        }
+        return mHelmetModuleLocationCallback;
     }
 
     public void setLocationChangeListener(IOnLocationChangeListener listener) {
         mLocationChangeListener = listener;
     }
 
+    @Override
     public void dispatchLocation(Location location) {
         mLocation = location;
         getLocationInfo().setLocation(location);
         if (null == mLocationChangeListener) {
-            Log.w(TAG, "dispatchEventLocationChange > process fail : mLocationChangeListener is null");
+            Log.d(TAG, "dispatchEventLocationChange > process fail : mLocationChangeListener is null");
             return;
         }
         mLocationChangeListener.onLocationChange(location);
@@ -88,17 +132,18 @@ public class HMLocationProvider implements
         return mRemoteControlDeviceConfig;
     }
 
-    public void setRemoteControlDeviceConfig(RemoteControlDeviceConfig config) {
+    public HMLocationProvider setRemoteControlDeviceConfig(RemoteControlDeviceConfig config) {
         mRemoteControlDeviceConfig = config;
+        return HMLocationProvider.this;
     }
 
     @Override
-    public LocationInfo getLocationInfo() {
+    public SicLocationAlarm getLocationInfo() {
         if (null == mRemoteControlDeviceConfig) {
             throw new NullPointerException("RemoteControlDeviceConfig is null ,please perform method : setRemoteControlDeviceConfig");
         }
         if (null == mLocationInfo) {
-            mLocationInfo = new LocationInfo();
+            mLocationInfo = new SicLocationAlarm();
             mLocationInfo.setConfig(mRemoteControlDeviceConfig);
         }
         mLocationInfo.setLocation(getLocation());

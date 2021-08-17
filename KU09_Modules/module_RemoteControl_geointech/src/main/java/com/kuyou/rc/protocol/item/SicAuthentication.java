@@ -1,42 +1,52 @@
-package com.kuyou.rc.info;
+package com.kuyou.rc.protocol.item;
 
-import android.os.Process;
 import android.util.Log;
 
+import com.kuyou.rc.protocol.InstructionParserListener;
+import com.kuyou.rc.protocol.base.SicBasic;
+
 import kuyou.common.bytes.ByteUtils;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.sdk.jt808.utils.Base64Util;
 
 /**
- * action :鉴权消息
+ * action :
  * <p>
+ * remarks:  <br/>
  * author: wuguoxian <br/>
- * date: 20-10-29 <br/>
- * <p>
+ * date: 21-8-9 <br/>
+ * </p>
  */
-public class AuthenticationInfo extends MsgInfo {
-    protected final String TAG = "com.kuyou.rc.info > AuthenticationInfo";
+public class SicAuthentication extends SicBasic {
+    protected final String TAG = "com.kuyou.rc.protocol > SICAuthentication";
 
-    private static AuthenticationInfo sMain;
-
-    private AuthenticationInfo() {
-        super();
+    @Override
+    public String getTitle() {
+        return "设备鉴权_设备软硬件配置上报";
     }
 
-    public static AuthenticationInfo getInstance() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-        if (null == sMain) {
-            sMain = new AuthenticationInfo();
-        }
-        return sMain;
+    @Override
+    public int getFlag() {
+        return -1;//JT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY;
     }
 
-    public byte[] getAuthenticationMsgBytes() {
+    @Override
+    public int getMatchEventCode() {
+        return EventRemoteControl.Code.AUTHENTICATION_REQUEST;
+    }
+
+    @Override
+    public void parse(byte[] data, InstructionParserListener listener) {
+        super.parse(data,listener);
+    }
+
+    @Override
+    public byte[] getBody(int config) {
         byte[] authCode = Base64Util.encrypt(getConfig().getDevId());
         byte[] authCodeMsg = ByteUtils.byteMergerAll(
                 new byte[]{ByteUtils.int2Byte(authCode.length)}, authCode, getItemAddition());
         Log.d(TAG, toString());
-        return JTT808Coding.generate808(0x0102, getConfig(), authCodeMsg);
+        return getPackToJt808(0x0102, authCodeMsg);
     }
 
     protected byte[] getItemAddition() {
@@ -55,7 +65,7 @@ public class AuthenticationInfo extends MsgInfo {
             pceiType[0] = (byte) (0xE2);
             pceiType[1] = ByteUtils.int2Byte(pceiBytes.length);
         } else {
-            Log.e(TAG, "getItemAddition > process fail : peergine多端视频服务SDK的采集端ID为空");
+            Log.e(TAG, "getItemAddition > process fail : peergine 多端视频服务SDK的采集端ID为空");
         }
 
         return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes);
@@ -72,7 +82,9 @@ public class AuthenticationInfo extends MsgInfo {
         sb.append("\nAuthenticationInfo: ");
         sb.append("\ndevId = ").append(getConfig().getDevId());
         sb.append("\nuwbId = ").append(getConfig().getUwbId());
-        sb.append("\npeergine多端视频服务SDK的采集端ID = ").append(getConfig().getCollectingEndId());
+        sb.append("\npeergine 多端视频服务SDK的采集端ID = ").append(getConfig().getCollectingEndId());
         return sb.toString();
     }
+    
+    
 }

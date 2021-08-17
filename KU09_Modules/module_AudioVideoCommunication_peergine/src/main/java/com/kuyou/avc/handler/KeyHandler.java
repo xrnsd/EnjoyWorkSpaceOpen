@@ -45,8 +45,6 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
     private Context mContext;
     private IAudioVideoRequestCallback mAudioVideoHandler;
 
-    private int mAudioVideoType = MEDIA_TYPE_DEFAULT;
-
     public KeyHandler setAudioVideoRequestResult(IAudioVideoRequestCallback mAudioVideoRequestResult) {
         this.mAudioVideoHandler = mAudioVideoRequestResult;
         return KeyHandler.this;
@@ -54,15 +52,6 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
 
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
-        switch (event.getCode()) {
-            case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST:
-                if (EVENT_TYPE_CLOSE != EventAudioVideoOperateRequest.getEventType(event)) {
-                    mAudioVideoType = EventAudioVideoOperateRequest.getMediaType(event);
-                }
-                break;
-            default:
-                break;
-        }
         return false;
     }
 
@@ -71,7 +60,7 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
         Log.i(TAG, "onKeyClick > keyCode =" + keyCode);
         switch (keyCode) {
             case KeyConfig.CALL:
-                mAudioVideoHandler.performOperate(mAudioVideoType);
+                mAudioVideoHandler.performOperate();
                 break;
             case KeyConfig.FLASHLIGHT:
                 dispatchEvent(new EventFlashlightRequest()
@@ -92,16 +81,7 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
     public void onKeyDoubleClick(int keyCode) {
         switch (keyCode) {
             case KeyConfig.VOICE_CONTROL:
-                String content = null;
-                if (mAudioVideoHandler.getHandlerStatus() == IAudioVideoRequestCallback.HS_NORMAL) {
-                    mAudioVideoType = mAudioVideoType >= MEDIA_TYPE_GROUP
-                            ? mAudioVideoType = MEDIA_TYPE_AUDIO
-                            : mAudioVideoType + 1;
-                    content = mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_success_title);
-                } else {
-                    content = mAudioVideoHandler.getTitleByMediaType(mAudioVideoType, R.string.key_switch_mode_cancel_title);
-                }
-                play(null != content ? content : "模式切换失败，请重新尝试");
+                mAudioVideoHandler.switchMediaType();
                 break;
             default:
                 break;

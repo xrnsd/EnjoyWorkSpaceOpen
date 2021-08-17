@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BaseApplication;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.base.EventCommon;
@@ -73,6 +74,11 @@ public class ModuleApplication extends BaseApplication {
                 .setModuleManager(ModuleApplication.this);
 
         mFlashlightHandler = FlashlightHandler.getInstance(getApplicationContext());
+    }
+
+    @Override
+    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
+        return PeergineAudioVideoHandler.getInstance(getApplicationContext());
     }
 
     @Override

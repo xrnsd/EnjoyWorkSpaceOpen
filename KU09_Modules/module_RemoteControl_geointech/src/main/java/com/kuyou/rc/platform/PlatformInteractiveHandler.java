@@ -5,11 +5,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.kuyou.rc.info.AudioVideoInfo;
-import com.kuyou.rc.info.AuthenticationInfo;
-import com.kuyou.rc.info.ImageInfo;
-import com.kuyou.rc.info.MsgInfo;
-import com.kuyou.rc.info.TextInfo;
+import com.kuyou.rc.protocol.ExtendInteractiveCodec;
+import com.kuyou.rc.protocol.InstructionParserListener;
+import com.kuyou.rc.protocol.base.JT808ExtensionProtocol;
+import com.kuyou.rc.protocol.base.SicBasic;
+import com.kuyou.rc.protocol.item.SicAudioVideo;
+import com.kuyou.rc.protocol.item.SicAuthentication;
+import com.kuyou.rc.protocol.item.SicPhotoTake;
+import com.kuyou.rc.protocol.item.SicPhotoUploadReply;
+import com.kuyou.rc.protocol.item.SicTextMessage;
 import com.kuyou.rc.utils.UploadUtil;
 
 import java.io.File;
@@ -39,14 +43,14 @@ import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.common.ku09.event.rc.base.EventResult;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.utils.NetworkUtils;
-import kuyou.sdk.jt808.base.JT808ExtensionProtocol;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;
+import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
 
 /**
  * <p>
- * action :平台交互处理
+ * action :[协处理器]远程控制平台交互
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-3-29 <br/>
@@ -58,9 +62,11 @@ public class PlatformInteractiveHandler {
 
     protected boolean isNetworkAvailable = false;
 
-    protected TextInfo mTextInfo;
-    protected AudioVideoInfo mAudioVideoInfo;
-    protected ImageInfo mImageInfo;
+    protected ExtendInteractiveCodec mExtendInteractiveCodec;
+
+    private IControlHandlerCallback mControlHandlerCallback;
+
+    private IDispatchEventCallBack mEventCallBack;
 
     public static interface IControlHandlerCallback {
         public Context getContext();
@@ -71,13 +77,7 @@ public class PlatformInteractiveHandler {
     public PlatformInteractiveHandler(IControlHandlerCallback callback) {
         super();
         mControlHandlerCallback = callback;
-
-        initParsers(getConfig());
     }
-
-    private IControlHandlerCallback mControlHandlerCallback;
-
-    private IDispatchEventCallBack mEventCallBack;
 
     public PlatformInteractiveHandler setEventCallBack(IDispatchEventCallBack callBack) {
         mEventCallBack = callBack;
@@ -96,62 +96,77 @@ public class PlatformInteractiveHandler {
         return mControlHandlerCallback;
     }
 
-    protected void initParsers(RemoteControlDeviceConfig config) {
-        if (null != mTextInfo) {
-            return;
+    public ExtendInteractiveCodec getExtendInteractiveCodec() {
+        if (null == mExtendInteractiveCodec) {
+            mExtendInteractiveCodec = ExtendInteractiveCodec.getInstance(getContext());
+            mExtendInteractiveCodec.setInstructionParserListener(new InstructionParserListener() {
+                @Override
+                public void onRemote2LocalBasic(JTT808Bean bean, byte[] data) {
+                    switch (bean.getMsgId()) {
+                        case JT808ExtensionProtocol.S2C_RESULT_CONNECT_REPLY:
+                            if (0 != bean.getReplyFlowNumber()) {
+                                Log.i(TAG, new StringBuilder(256)
+                                        .append("<<<<<<<<<<  流水号：").append(bean.getReplyFlowNumber())
+                                        .append(",服务器回复:").append(0 == bean.getReplyResult() ? "成功" : "失败")
+                                        .append("  <<<<<<<<<<\n\n")
+                                        .toString());
+                                break;
+                            }
+                        case JT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
+                            boolean isAuthenticationSuccess = (0 == bean.getReplyResult());
+                            Log.i(TAG, new StringBuilder(128)
+                                    .append("\n<<<<<<<<<<  服务器鉴权:").append(isAuthenticationSuccess ? "成功" : "失败")
+                                    .append("  <<<<<<<<<<")
+                                    .toString());
+                            dispatchEvent(new EventAuthenticationResult().setResult(isAuthenticationSuccess));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                @Override
+                public void onRemote2LocalExpandFail(Exception e) {
+                    Log.e(TAG, Log.getStackTraceString(e));
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicTextMessage instruction) {
+                    PlatformInteractiveHandler.this.play(instruction.getText());
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicAudioVideo instruction) {
+                    Log.d(TAG, "onParse > SICAudioVideo");
+
+                    EventAudioVideoOperateRequest event = null;
+                    event = new EventAudioVideoOperateRequest()
+                            .setFlowId(instruction.getFlowId())
+                            .setMediaType(instruction.getMediaType())
+                            .setToken(instruction.getToken())
+                            .setChannelId(String.valueOf(instruction.getChannelId()))
+                            .setEventType(instruction.getEventType());
+                    event.setRemote(true);
+                    dispatchEvent(event);
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicPhotoTake instruction) {
+                    instruction.setMediaId(System.currentTimeMillis());
+                    dispatchEvent(new EventPhotoTakeRequest()
+                            .setFileName(instruction.getFileName())
+                            .setUpload(true)
+                            .setRemote(true));
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicPhotoUploadReply instruction) {
+                    dispatchEvent(new EventPhotoUploadResult()
+                            .setResult(instruction.isResultSuccess()));
+                }
+            }).load();
         }
-
-        mTextInfo = new TextInfo(config);
-        mTextInfo.setMsgHandler(JT808ExtensionProtocol.SERVER_CMD.TEXT_DELIVERY, new MsgInfo.onMsgHandlerTts() {
-            @Override
-            public void onHandlerTts(String text) {
-                play(text);
-            }
-        });
-        mAudioVideoInfo = new AudioVideoInfo();
-        mAudioVideoInfo.setConfig(config);
-        mAudioVideoInfo.setRequestOpenLiveListener(new AudioVideoInfo.IRequestOpenLiveListener() {
-            @Override
-            public void onAudioVideoOperateRequest(AudioVideoInfo info) {
-                Log.d(TAG, "requestOpenLive > requestLiveHandle ");
-                EventAudioVideoOperateRequest event = null;
-                event = new EventAudioVideoOperateRequest()
-                        .setFlowId(info.getMsgFlowNumber())
-                        .setMediaType(info.getMediaType())
-                        .setToken(info.getToken())
-                        .setChannelId(String.valueOf(info.getChannelId()))
-                        .setEventType(info.getEventType());
-                event.setRemote(true);
-                dispatchEvent(event);
-            }
-        });
-        mImageInfo = new ImageInfo(config);
-        //解析成功开始执行
-        mImageInfo.setMsgHandler(JT808ExtensionProtocol.SERVER_CMD.TAKE_PHOTO_UPLOAD, new MsgInfo.onMsgHandlerTts() {
-            @Override
-            public void onHandlerTts(String text) {
-                Log.d(TAG, "onHandlerTts > 申请拍照");
-                play(text);
-                mImageInfo.setMediaId(System.currentTimeMillis());
-                dispatchEvent(new EventPhotoTakeRequest()
-                        .setFileName(mImageInfo.getFileName())
-                        .setUpload(true)
-                        .setRemote(true));
-            }
-        });
-        //执行成功发送回复
-        mImageInfo.setMsgHandler(JT808ExtensionProtocol.SERVER_CMD.TAKE_PHOTO_UPLOAD, new MsgInfo.onMsgHandler() {
-            @Override
-            public void onHandler(int resultCode) {
-
-            }
-        });
-        mImageInfo.setMsgHandler(JT808ExtensionProtocol.SERVER_ANSWER.PHOTO_UPLOAD_FINISH, new MsgInfo.onMsgHandlerTts() {
-            @Override
-            public void onHandlerTts(String text) {
-                dispatchEvent(new EventTextToSpeechPlayRequest(text));
-            }
-        });
+        return mExtendInteractiveCodec;
     }
 
     private void play(String text) {
@@ -182,8 +197,6 @@ public class PlatformInteractiveHandler {
             return null;
         }
 
-        initParsers(getConfig());
-
         return null;
     }
 
@@ -199,8 +212,8 @@ public class PlatformInteractiveHandler {
         try {
             getPlatformConnectManager().connect(getConfig(), new RemoteCommandCallback() {
                 @Override
-                public void onRemote2LocalMessage(JTT808Bean bean, byte[] data) {
-                    PlatformInteractiveHandler.this.onRemote2LocalMessage(bean, data);
+                public void onRemote2LocalMessage(OriginalData data) {
+                    PlatformInteractiveHandler.this.getExtendInteractiveCodec().handler(data);
                 }
 
                 @Override
@@ -238,68 +251,27 @@ public class PlatformInteractiveHandler {
         return getControlHandlerCallback().getConfig();
     }
 
-    public TextInfo getTextInfo() {
-        return mTextInfo;
-    }
-
-    public AudioVideoInfo getAudioVideoInfo() {
-        return mAudioVideoInfo;
-    }
-
-    public ImageInfo getImageInfo() {
-        return mImageInfo;
-    }
-
-    public void onRemote2LocalMessage(JTT808Bean bean, byte[] data) {
-        switch (bean.getMsgId()) {
-            case JT808ExtensionProtocol.SERVER_ANSWER.AUTHENTICATION_REPLY:
-                boolean isAuthenticationSuccess = (0 == bean.getReplyResult());
-                Log.i(TAG, new StringBuilder(128)
-                        .append("\n<<<<<<<<<<  服务器鉴权:").append(isAuthenticationSuccess ? "成功" : "失败")
-                        .append("  <<<<<<<<<<")
-                        .toString());
-                dispatchEvent(new EventAuthenticationResult().setResult(isAuthenticationSuccess));
-                break;
-
-            case JT808ExtensionProtocol.SERVER_ANSWER.CONNECT_REPLY:
-                Log.i(TAG, new StringBuilder(256)
-                        .append("<<<<<<<<<<  流水号：").append(bean.getReplyFlowNumber())
-                        .append(",服务器回复:").append(0 == bean.getReplyResult() ? "成功" : "失败")
-                        .append("  <<<<<<<<<<\n")
-                        .toString());
-                if (0 != bean.getReplyFlowNumber()) {
-                    break;
-                }
-
-            case JT808ExtensionProtocol.SERVER_ANSWER.PHOTO_UPLOAD_FINISH:
-                Log.d(TAG, "----------平台应答：接收照片----------");
-                mImageInfo.parse(data);
-                break;
-
-            case JT808ExtensionProtocol.SERVER_CMD.TEXT_DELIVERY:
-                Log.d(TAG, "----------平台指令：文本信息----------");
-                mTextInfo.parse(data);
-                play(mTextInfo.getText());
-                break;
-            case JT808ExtensionProtocol.SERVER_CMD.AUDIO_VIDEO_PARAMETERS_DELIVERY://平台下发音视频参数
-                Log.d(TAG, "----------平台指令：音视频----------");
-                mAudioVideoInfo.parse(data);
-                break;
-            case JT808ExtensionProtocol.SERVER_CMD.TAKE_PHOTO_UPLOAD:
-                Log.d(TAG, "----------平台指令：拍照----------");
-                mImageInfo.parse(data);
-            default:
-                break;
-        }
-    }
-
     // =====================  本地事件处理 =============================
 
     boolean isRemoteControlPlatformConnected = false;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
-        Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
+        if (null == msg || msg.length <= 0) {
+            Log.e(TAG, "sendToRemoteControlPlatform > process fail : msg is none");
+            return;
+        }
+        //Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
         getPlatformConnectManager().send(msg);
+    }
+
+    protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
+        SicBasic SingleInstructionParser = null;
+        if (null != event)
+            SingleInstructionParser = getExtendInteractiveCodec().getResultBodyList().get(event.getCode());
+        if (null == SingleInstructionParser) {
+            Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + event.getCode());
+        }
+        return SingleInstructionParser;
     }
 
     public boolean onModuleEvent(RemoteEvent event) {
@@ -326,20 +298,26 @@ public class PlatformInteractiveHandler {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        AuthenticationInfo.getInstance().setConfig(getConfig());
-                        sendToRemoteControlPlatform(AuthenticationInfo.getInstance().getAuthenticationMsgBytes());
+                        SicBasic singleInstructionParser = PlatformInteractiveHandler.this.getSingleInstructionParserByEventCode(event);
+                        if (null == singleInstructionParser) {
+                            return;
+                        }
+                        SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
+                        authentication.setConfig(PlatformInteractiveHandler.this.getConfig());
+                        authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
+                        sendToRemoteControlPlatform(authentication.getBody());
                     }
-                }, 2000);
+                }, 500);
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_RESULT:
                 if (EventAuthenticationResult.isResultSuccess(event)) {
-                    Log.d(TAG, "onModuleEvent > 鉴权成功 ");
+                    //Log.d(TAG, "onModuleEvent > 鉴权成功 ");
                     dispatchEvent(new EventLocationReportStartRequest()
                             .setRemote(false));
                     return true;
                 }
-                Log.w(TAG, "onModuleEvent > 鉴权失败 ");
+                //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 break;
 
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
@@ -350,10 +328,14 @@ public class PlatformInteractiveHandler {
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT:
                 Log.d(TAG, "onModuleEvent > 拍照状态上传");
                 if (!EventPhotoTakeResult.isResultSuccess(event)) {
-                    byte[] msg = getImageInfo()
+                    SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
+                    if (null == singleInstructionParser) {
+                        break;
+                    }
+                    byte[] msg = ((SicPhotoTake) singleInstructionParser)
                             .setEventType(EventPhotoTakeResult.getEventType(event))
-                            .setResult(ImageInfo.ResultCode.LOCAL_DEVICE_SHOOT_FAIL)
-                            .getResultMsgBytes();
+                            .setResult(SicPhotoTake.ResultCode.LOCAL_DEVICE_SHOOT_FAIL)
+                            .getBody(SicBasic.BodyConfig.RESULT);
                     sendToRemoteControlPlatform(msg);
                 }
                 break;
@@ -400,11 +382,18 @@ public class PlatformInteractiveHandler {
                 } else {
                     Log.w(TAG, "onModuleEvent > 照片上传失败");
                 }
-                byte[] PhotoUploadResultMsg = getImageInfo()
+
+                SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
+                if (null == singleInstructionParser) {
+                    break;
+                }
+                byte[] msg = ((SicPhotoUploadReply) singleInstructionParser)
                         .setEventType(EventPhotoUploadRequest.getEventType(event))
-                        .setResult(isUploadSuccess ? ImageInfo.ResultCode.SUCCESS : ImageInfo.ResultCode.LOCAL_DEVICE_UPLOAD_FAIL)
-                        .getResultMsgBytes();
-                sendToRemoteControlPlatform(PhotoUploadResultMsg);
+                        .setResult(isUploadSuccess ? SicPhotoUploadReply.ResultCode.SUCCESS :
+                                SicPhotoUploadReply.ResultCode.LOCAL_DEVICE_UPLOAD_FAIL)
+                        .getBody(SicBasic.BodyConfig.RESULT);
+                sendToRemoteControlPlatform(msg);
+
                 break;
 
             case EventRemoteControl.Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_REQUEST:
@@ -427,18 +416,30 @@ public class PlatformInteractiveHandler {
                 int mediaTypeCode = EventAudioVideoParametersApplyRequest.getMediaType(event);
 
                 //处理：通知平台
-                byte[] PlatformDirectiveAVCMsg = getAudioVideoInfo()
+                SicBasic singleInstructionParserAVOAR = getSingleInstructionParserByEventCode(event);
+                if (null == singleInstructionParserAVOAR) {
+                    break;
+                }
+                byte[] PlatformDirectiveAVCMsg = ((SicAudioVideo) singleInstructionParserAVOAR)
+                        .setPlatformType(platformType)
+                        .setMediaType(mediaTypeCode)
                         .setEventType(eventType)
-                        .getApplyAudioVideoParametersMsgByMediaTypeCode(platformType, mediaTypeCode, isClose);
+                        .getBody(SicBasic.BodyConfig.REQUEST);
                 sendToRemoteControlPlatform(PlatformDirectiveAVCMsg);
                 break;
 
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT:
                 Log.w(TAG, "onModuleEvent > 返回平台音视频参数下发的请求处理结果");
-                byte[] LocalDeviceHandleAVCResultMsg = getAudioVideoInfo().getResultMsgBytes(
-                        EventAudioVideoOperateResult.getToken(event),
-                        EventAudioVideoOperateResult.getFlowId(event),
-                        EventAudioVideoOperateResult.getResult(event));
+
+                SicBasic singleInstructionParserAVOR = getSingleInstructionParserByEventCode(event);
+                if (null == singleInstructionParserAVOR) {
+                    break;
+                }
+                byte[] LocalDeviceHandleAVCResultMsg = ((SicAudioVideo) singleInstructionParserAVOR)
+                        .setToken(EventAudioVideoOperateResult.getToken(event))
+                        .setResult(EventAudioVideoOperateResult.getResult(event))
+                        .setFlowId(EventAudioVideoOperateResult.getFlowId(event))
+                        .getBody();
                 sendToRemoteControlPlatform(LocalDeviceHandleAVCResultMsg);
                 break;
             default:

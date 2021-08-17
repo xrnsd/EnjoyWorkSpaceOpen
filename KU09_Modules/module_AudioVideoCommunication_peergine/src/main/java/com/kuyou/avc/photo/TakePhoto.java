@@ -1,4 +1,4 @@
-package com.kuyou.avc.ui;
+package com.kuyou.avc.photo;
 
 import android.Manifest;
 import android.content.Context;
@@ -52,6 +52,19 @@ import kuyou.common.ku09.ui.BaseActivity;
 public class TakePhoto extends BaseActivity {
 
     private static final String TAG = "com.kuyou.avc > TakePhoto >";
+
+    private static ITakePhotoResultListener sTakePhotoResultListener;
+
+    public static void perform(Context context, Bundle data, ITakePhotoResultListener listener) {
+        Log.d(TAG, "perform > ");
+        sTakePhotoResultListener = listener;
+
+        Intent intent = new Intent();
+        intent.setClass(context, TakePhoto.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtras(data);
+        context.startActivity(intent);
+    }
 
     protected Bundle mData;
 
@@ -241,40 +254,17 @@ public class TakePhoto extends BaseActivity {
         }
     }
 
-    public static void open(Context context, Bundle data) {
-        Log.d(TAG, "open > ");
-        Intent intent = new Intent();
-        intent.setClass(context, TakePhoto.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtras(data);
-        context.startActivity(intent);
-    }
-
     private boolean isLocalDeviceSendInitiate() {
         return IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
     }
 
     protected void onResult(boolean result, String info) {
-        result = false;
-        if (result) {
-            Log.d(TAG, "onResult > 拍照成功 > 申请上传");
-            if (isLocalDeviceSendInitiate()) {
-                play("拍照成功");
-            }
-            dispatchEvent(new EventPhotoUploadRequest()
-                    .setImgFilePath(info)
-                    .setEventType(EventPhotoUploadRequest.getEventType(getData()))
-                    .setRemote(true));
-        } else {
-            Log.d(TAG, "onResult > 拍照失败");
-            if (isLocalDeviceSendInitiate()) {
-                play("拍照失败");
-            }
-            dispatchEvent(new EventPhotoTakeResult()
-                    .setData(getData())
-                    .setRemote(true)
-                    .setResult(false));
+        if (null == sTakePhotoResultListener) {
+            Log.e(TAG, "onResult > process fail : sTakePhotoResultListener is null");
+            finish();
+            return;
         }
+        sTakePhotoResultListener.onTakePhotoResult(result, info, getData());
         finish();
     }
 

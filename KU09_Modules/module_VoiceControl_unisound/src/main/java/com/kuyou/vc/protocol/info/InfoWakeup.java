@@ -28,7 +28,7 @@ public class InfoWakeup extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "在呢";
     }
 

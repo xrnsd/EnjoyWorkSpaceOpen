@@ -28,7 +28,7 @@ public class InfoShoot extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "正在为您拍照";
     }
 

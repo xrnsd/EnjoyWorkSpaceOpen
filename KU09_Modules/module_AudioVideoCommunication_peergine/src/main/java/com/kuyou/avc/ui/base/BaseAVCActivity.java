@@ -30,8 +30,26 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
 
     private PeergineConfig mConfig = null;
     private int mResult = -1;
+    private IVideoCameraResultListener mVideoCameraResultListener;
+
+    public static interface IVideoCameraResultListener {
+        public void onScreenshot(String result);
+    }
+
+    protected void onScreenshot(String result) {
+        if (null == mVideoCameraResultListener) {
+            Log.e(TAG, "onScreenshot > process fail : mVideoCameraResultListener is null");
+            return;
+        }
+        mVideoCameraResultListener.onScreenshot(result);
+    }
 
     public abstract int getTypeCode();
+
+    public int takePhoto(RemoteEvent event, IVideoCameraResultListener listener) {
+        mVideoCameraResultListener = listener;
+        return -1024;
+    }
 
     @Override
     protected void dispatchEvent(RemoteEvent event) {
@@ -79,7 +97,8 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
 
             if (null == token) {
                 Log.w(TAG, "getConfig > token is null");
-                onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                //onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                token = ModuleApplication.getInstance().getDevicesConfig().getCollectingEndId();
                 exit();
                 return null;
             }
@@ -100,11 +119,15 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
     }
 
     public void exit() {
-        finish();
+        try {
+            finish();
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
     }
-    
-    protected void onPeerginEvent(String sAct, String sData, String sRenID){
-        
+
+    protected void onPeergineEvent(String sAct, String sData, String sRenID) {
+
     }
 
     @Override

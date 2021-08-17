@@ -2,6 +2,8 @@ package com.kuyou.rc.location.filter.kalman;
 
 import android.util.Log;
 
+import com.kuyou.rc.location.filter.KalmanFilter;
+
 public class GPSAccKalmanFilter {
     public static final String TAG = "GPSAccKalmanFilter";
 

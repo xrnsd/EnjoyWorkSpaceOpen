@@ -42,7 +42,7 @@ public class Step {
     public void setParamByInfo(Info info) {
         if (null == info)
             return;
-        setTitle(info.geTitle());
+        setTitle(info.getTitle());
         setCmdBytes(info.getBody());
         setCmdCode(info.getCmdCode());
     }

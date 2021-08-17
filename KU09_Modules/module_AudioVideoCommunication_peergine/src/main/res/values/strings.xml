@@ -23,6 +23,7 @@
     <string name="media_request_open_request">正在为您打开<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
     <string name="media_request_close_request">正在为您关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
     <string name="media_request_cancel_request">已为您取消<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="media_request_timeout_request">您所拨打的<xliff:g id="query" example="device_id">%1$s</xliff:g>暂时无人接听</string>
     <string name="media_request_open_handle_fail">无法打开<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
     <string name="media_request_open_rejected_title"><xliff:g id="query" example="device_id">%1$s</xliff:g>被拒，请稍后尝试</string>
     <string name="media_request_open_handle_parameter_fail">打开失败请重新尝试</string>

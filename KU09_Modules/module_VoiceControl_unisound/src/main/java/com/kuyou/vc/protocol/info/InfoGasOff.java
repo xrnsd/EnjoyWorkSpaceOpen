@@ -28,7 +28,7 @@ public class InfoGasOff extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您关掉气体探测";
     }
 

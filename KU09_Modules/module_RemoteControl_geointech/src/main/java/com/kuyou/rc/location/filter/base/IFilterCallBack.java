@@ -24,7 +24,7 @@ public interface IFilterCallBack  {
 
     public void filter(Location location);
 
-    public void setLocationChangeListener(HMLocationProvider.IOnLocationChangeListener listener);
+    public IFilterCallBack setLocationChangeListener(HMLocationProvider.IOnLocationChangeListener listener);
 
     /**
      * action:需要启用的滤波器配置

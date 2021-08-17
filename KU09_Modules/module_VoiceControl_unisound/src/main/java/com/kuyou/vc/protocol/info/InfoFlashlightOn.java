@@ -28,7 +28,7 @@ public class InfoFlashlightOn extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您打开手电筒";
     }
 

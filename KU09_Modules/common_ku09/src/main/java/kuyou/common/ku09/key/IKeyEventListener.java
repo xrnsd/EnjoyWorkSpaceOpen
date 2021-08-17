@@ -1,7 +1,7 @@
 package kuyou.common.ku09.key;
 
 /**
- * action :
+ * action :终端自定义按键事件监听器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

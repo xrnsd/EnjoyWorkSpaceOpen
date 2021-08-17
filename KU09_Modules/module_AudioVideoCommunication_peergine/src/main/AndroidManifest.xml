@@ -11,7 +11,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -40,16 +42,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.TakePhoto"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="TakePhoto"
-            android:noHistory="true"
-            android:screenOrientation="nosensor">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
@@ -92,6 +84,13 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+
+
+        <service
+            android:name=".photo.TakePhotoBackground"
+            android:enabled="true"
+            android:exported="true">
+        </service>
 
     </application>
 

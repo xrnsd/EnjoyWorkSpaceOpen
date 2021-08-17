@@ -28,7 +28,7 @@ public class InfoCallEnd extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您结束通话";
     }
 

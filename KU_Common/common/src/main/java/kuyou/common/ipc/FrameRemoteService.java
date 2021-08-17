@@ -48,7 +48,7 @@ public class FrameRemoteService extends Service {
                 } catch (Exception e) {
                     Log.e(TAG, new StringBuilder("sendEvent > process fail : \n")
                             .append("event = ").append(data.toString())
-                            .append("\n").append(Log.getStackTraceString(e))
+                            //.append("\n").append(Log.getStackTraceString(e))
                             .toString());
                 }
             }

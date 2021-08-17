@@ -12,67 +12,44 @@ import kuyou.common.ipc.RemoteEvent;
 
 public interface IAudioVideoRequestCallback {
 
-
     /**
      * action:通话状态：待机
      * */
     public final static int HS_NORMAL = 0;
     
     /**
-     * action:通话状态：申请打开中
+     * action:通话状态：请求打开，正在处理
      * */
     public final static int HS_OPEN_REQUEST_BE_EXECUTING = 1;
 
     /**
-     * action:通话状态：申请成功打开中
+     * action:通话状态：请求打开 > 请求成功，正在打开
      * */
     public final static int HS_OPEN_HANDLE_BE_EXECUTING = 2;
     
     /**
-     * action:通话状态：开启中
+     * action:通话状态：打开成功，开启中
      * */
-    public final static int HS_OPEN = 2;
+    public final static int HS_OPEN = 3;
 
     /**
-     * action:通话状态：关闭中
+     * action:通话状态：请求关闭，正在处理
      * */
-    public final static int HS_CLOSE_BE_EXECUTING = 3;
-
-    public IAudioVideoRequestCallback setHandlerKeepAliveClient(Handler handlerKeepAliveClient);
+    public final static int HS_CLOSE_BE_EXECUTING = 4;
 
     /**
-     * action:开启的模式列表
+     * action:[开/关/取消]音视频
      */
-    public Map<Integer, BaseAVCActivity> getOnlineList();
+    public void performOperate();
 
     /**
-     * action:对应模式的通信是否开启
+     * action:切换音视频模式
      */
-    public abstract boolean isLiveByTypeCode(final int typeCode);
-
-    /**
-     * action:获取处理器状态
-     */
-    public abstract int getHandlerStatus();
-
-    /**
-     * action:解析事件项，打开对应模式的通信
-     */
-    public abstract String openItem(Context context, RemoteEvent event);
-
-    /**
-     * action:关闭所有模式当前打开的通信
-     */
-    public abstract void exitAllLiveActivity();
-
-    /**
-     * action:执行多媒体操作[向平台申请]
-     */
-    public abstract void performOperate(final int typeCode);
+    public void switchMediaType();
 
     /**
      * action:根据模式code返回模式名称
      */
-    public abstract String getTitleByMediaType(final int typeCode, int combinationStrResId);
+    public String getTitleByMediaType(final int typeCode, int combinationStrResId);
 
 }

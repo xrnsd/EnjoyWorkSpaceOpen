@@ -2,8 +2,8 @@ package com.kuyou.rc.alarm;
 
 import android.util.Log;
 
-import com.kuyou.rc.info.LocationInfo;
 import com.kuyou.rc.location.base.ILocationProvider;
+import com.kuyou.rc.protocol.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseHandler;
@@ -50,7 +50,7 @@ public class AlarmHandler extends BaseHandler implements ALARM {
 
             case EventAlarm.Code.ALARM_SOS:
                 Log.d(TAG, "onModuleEvent > SOS报警");
-                LocationInfo info = mLocationProvider.getLocationInfo();
+                SicLocationAlarm info = mLocationProvider.getLocationInfo();
 
                 if (info.isAutoAddSosFlag()) {
                     info.setAutoAddSosFlag(false, ALARM.FLAG_SOS);

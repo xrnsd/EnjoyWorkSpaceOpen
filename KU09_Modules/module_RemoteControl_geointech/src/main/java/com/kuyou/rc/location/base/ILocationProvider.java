@@ -2,7 +2,7 @@ package com.kuyou.rc.location.base;
 
 import android.location.Location;
 
-import com.kuyou.rc.info.LocationInfo;
+import com.kuyou.rc.protocol.item.SicLocationAlarm;
 
 /**
  * action :
@@ -18,5 +18,7 @@ public interface ILocationProvider {
 
     public Location getLocation();
 
-    public LocationInfo getLocationInfo();
+    public SicLocationAlarm getLocationInfo();
+
+    public void dispatchLocation(Location location);
 }

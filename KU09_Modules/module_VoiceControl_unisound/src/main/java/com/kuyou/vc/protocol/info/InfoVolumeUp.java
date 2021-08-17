@@ -28,7 +28,7 @@ public class InfoVolumeUp extends InfoVolume {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您升高音量";
     }
 

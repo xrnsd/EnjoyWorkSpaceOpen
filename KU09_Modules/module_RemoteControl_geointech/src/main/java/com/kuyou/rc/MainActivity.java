@@ -2,10 +2,8 @@ package com.kuyou.rc;
 
 import android.os.Bundle;
 
-import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.ui.BasePermissionsActivity;
 
-//public class MainActivity extends LocationActivity {
 public class MainActivity extends BasePermissionsActivity {
 
     @Override

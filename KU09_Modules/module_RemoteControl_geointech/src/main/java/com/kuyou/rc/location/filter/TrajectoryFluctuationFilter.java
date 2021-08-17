@@ -1,4 +1,4 @@
-package com.kuyou.rc.location.filter.fluctuation;
+package com.kuyou.rc.location.filter;
 
 import android.util.Log;
 
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class TrajectoryFluctuationFilter extends TrajectoryFilter {
 
-    private static final String TAG = "TrajectoryFluctuationFilter";
+    protected final String TAG = "com.kuyou.rc.location.filter > TrajectoryFluctuationFilter";
 
     /**
      * action:过滤速度<br/>

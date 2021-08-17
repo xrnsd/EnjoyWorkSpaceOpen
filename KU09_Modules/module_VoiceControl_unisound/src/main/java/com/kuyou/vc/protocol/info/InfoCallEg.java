@@ -28,7 +28,7 @@ public class InfoCallEg extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "开始紧急呼叫";
     }
 

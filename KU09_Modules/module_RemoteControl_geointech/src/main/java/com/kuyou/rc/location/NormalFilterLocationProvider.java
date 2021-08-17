@@ -36,14 +36,22 @@ public class NormalFilterLocationProvider extends HMLocationProvider {
         return mFilterCallBack;
     }
 
-    public void setFilter(IFilterCallBack filterCallBack) {
-        mFilterCallBack = filterCallBack;
-        mFilterCallBack.setLocationChangeListener(new IOnLocationChangeListener() {
+    public NormalFilterLocationProvider setFilter(FilterController.IFilterPolicyCallBack filterCallBack) {
+        mFilterCallBack = new FilterController() {
             @Override
-            public void onLocationChange(Location location) {
-               NormalFilterLocationProvider.this.dispatchLocationSuper(location);
+            protected boolean isValidLocation() {
+                return NormalFilterLocationProvider.this.isValidLocation();
             }
-        });
+        }
+                .initFilters(getContext())
+                .setFilterPolicyCallBack(filterCallBack)
+                .setLocationChangeListener(new IOnLocationChangeListener() {
+                    @Override
+                    public void onLocationChange(Location location) {
+                        NormalFilterLocationProvider.this.dispatchLocationSuper(location);
+                    }
+                });
+        return NormalFilterLocationProvider.this;
     }
 
     @Override
@@ -54,28 +62,13 @@ public class NormalFilterLocationProvider extends HMLocationProvider {
         }
         super.dispatchLocation(location);
     }
-    
+
     private void dispatchLocationSuper(Location location) {
         super.dispatchLocation(location);
     }
 
     @Override
     protected void init() {
-        setFilter(FilterController
-                .getInstance(mContext)
-                .setFilterCallBack(new FilterController.IFilterCallBack() {
-                    @Override
-                    public int getFilterPolicy() {
-                        int policy = 0;
-                        //policy |= IFilterCallBack.POLICY_FILTER_FLUCTUATION;
-                        //policy |= IFilterCallBack.POLICY_FILTER_KALMAN;
-                        return policy;
-                    }
 
-                    @Override
-                    public boolean isValidLocation() {
-                        return NormalFilterLocationProvider.this.isValidLocation();
-                    }
-                }));
     }
 }

@@ -1,15 +1,17 @@
 package com.kuyou.avc.ui;
 
+import android.util.Log;
+
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.custom.MultiCapture;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 /**
  * action :
@@ -20,12 +22,6 @@ import org.greenrobot.eventbus.Subscribe;
  * </p>
  */
 public class MultiCaptureVideo extends MultiCapture {
-
-    @Override
-    protected void initViews() {
-        EventBus.getDefault().register(MultiCaptureVideo.this);
-        super.initViews();
-    }
 
     @Override
     protected int getContentViewResId() {
@@ -42,10 +38,6 @@ public class MultiCaptureVideo extends MultiCapture {
     public void onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
-                String storageDirPath = EventPhotoTakeRequest.getImgStorageDir(event.getData());
-                String fileName = EventPhotoTakeRequest.getFileName(event.getData());
-                String imageSaveFilePath= new StringBuilder(storageDirPath).append("/").append(fileName).toString();
-                m_Live.VideoCamera(0,imageSaveFilePath);
                 break;
             default:
                 break;
@@ -53,16 +45,17 @@ public class MultiCaptureVideo extends MultiCapture {
     }
 
     @Override
-    protected void onPeerginEvent(String sAct, String sData, String sRenID) {
-        super.onPeerginEvent(sAct, sData, sRenID);
-//        if (sAct.equals("VideoCamera"){
-//            send
-//        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(MultiCaptureVideo.this);
+    }
+
+    @Override
+    public int takePhoto(RemoteEvent event, IVideoCameraResultListener listener) {
+        super.takePhoto(event, listener);
+        String storageDirPath = EventPhotoTakeRequest.getImgStorageDir(event.getData());
+        String fileName = EventPhotoTakeRequest.getFileName(event.getData());
+        String imageSaveFilePath = new StringBuilder(storageDirPath).append("/").append(fileName).toString();
+        return m_Live.VideoCamera(0, imageSaveFilePath);
     }
 }

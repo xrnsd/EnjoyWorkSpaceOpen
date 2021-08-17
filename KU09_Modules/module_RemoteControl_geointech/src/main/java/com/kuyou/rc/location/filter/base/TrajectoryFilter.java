@@ -20,7 +20,7 @@ import android.util.Log;
  */
 public abstract class TrajectoryFilter {
 
-    protected final String TAG = this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.rc.location.filter.base > TrajectoryFilter";
     protected OnDataFilterListener mOnDataFilterListener;
     protected boolean isStopFilter = false;
 
@@ -29,13 +29,15 @@ public abstract class TrajectoryFilter {
     }
 
     public void filter(TrackPoint point) {
-        if (null == point)
+        if (null == point) {
+            Log.d(TAG, "filter > point is null");
             return;
-        if (null != mHandlerFilter && null == mTrackPoint) {
-            //Log.d(TAG, "开启原始轨迹数据更新循环－－－－－－－－－－－－－");
-            mHandlerFilter.post(mRunnableFilter);
         }
         mTrackPoint = point;
+        if (null != mHandlerFilter && !mHandlerFilter.hasCallbacks(mRunnableFilter)) {
+            Log.d(TAG, "filter > 开启原始轨迹数据更新循环－－－－－－－－－－－－－");
+            mHandlerFilter.post(mRunnableFilter);
+        }
     }
 
     public void stop() {
@@ -96,11 +98,11 @@ public abstract class TrajectoryFilter {
                     while (point2.isEqualsLocation(mTrackPoint)) {
                         try {
                             //Log.d(TAG, "等待原始轨迹数据更新中");
-                            Thread.sleep(1500);
+                            Thread.sleep(3000);
                         } catch (Exception e) {
                         }
                     }
-                    //Log.d(TAG, "原始轨迹数据已更新＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
+                    Log.d(TAG, "原始轨迹数据已更新＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                     point = new TrackPoint(mTrackPoint);
                     point2 = new TrackPoint(mTrackPoint);
                 }

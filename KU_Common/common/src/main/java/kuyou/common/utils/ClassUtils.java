@@ -68,7 +68,7 @@ public class ClassUtils {
                     || !parentClass.isAssignableFrom(next)) { // 不是子类
                 iterator.remove();
             } else {
-                Log.d(TAG, "getSubClassList > next = " + next.getName());
+                //Log.d(TAG, "getSubClassList > next = " + next.getName());
             }
         }
         return classList;

@@ -34,7 +34,6 @@ public class PlatformConnectManager {
                 if (INSTANCE == null) {
                     INSTANCE = new PlatformConnectManager();
                     INSTANCE.mDeviceConfig = config;
-                    INSTANCE.init();
                 }
             }
         }
@@ -42,6 +41,9 @@ public class PlatformConnectManager {
     }
 
     public void initManager(String ip, int prot) {
+        if (null != info) {
+            return;
+        }
         info = new ConnectionInfo(ip, prot);
         final Handler handler = new Handler(Looper.getMainLooper());
         OkSocketOptions.Builder builder = new OkSocketOptions.Builder();
@@ -59,13 +61,6 @@ public class PlatformConnectManager {
                 .setReadPackageBytes(70)
                 .setPulseFeedLoseTimes(7);
         mManager = OkSocket.open(info).option(builder.build());
-    }
-
-    /**
-     * 初始化
-     */
-    public void init() {
-        initManager("", 0);
     }
 
     public IConnectionManager getManager() {
@@ -95,6 +90,8 @@ public class PlatformConnectManager {
      * @throws
      */
     public void connect(String ip, int port, SocketActionAdapter adapter) throws Exception {
+        //调用通道进行连接
+        initManager(ip, port);
         try {
             if (isConnect())
                 disconnect();
@@ -107,15 +104,11 @@ public class PlatformConnectManager {
                     .append("\nserverUrl = ").append(ip)
                     .append("\nserverPort = ").append(port).toString());
             if (!mManager.isConnect()) {
-                //调用通道进行连接
-                initManager(ip, port);
                 if (mSocketActionAdapter != null)
                     mManager.unRegisterReceiver(mSocketActionAdapter);
                 mSocketActionAdapter = adapter;
                 mManager.registerReceiver(adapter);
                 mManager.connect();
-            } else {
-                mManager.disconnect();
             }
         } else {
             throw new SocketManagerException("请先初始化");

@@ -26,20 +26,21 @@ public abstract class RemoteCommandCallback extends SocketActionAdapter {
 
     @Override
     public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
-        byte[] bytes;
-        try {
-            bytes = JTT808Coding.check808DataThrows(data.getBodyBytes());
-        } catch (SocketManagerException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-            return;
-        }
-        if (null == bytes) {
-            Log.w(TAG, "onSocketReadResponse > bytes is null");
-            return;
-        }
-        onRemote2LocalMessage(JTT808Coding.resolve808(bytes), bytes);
+//        byte[] bytes;
+//        try {
+//            bytes = JTT808Coding.check808DataThrows(data.getBodyBytes());
+//        } catch (SocketManagerException e) {
+//            Log.e(TAG, Log.getStackTraceString(e));
+//            return;
+//        }
+//        if (null == bytes) {
+//            Log.w(TAG, "onSocketReadResponse > bytes is null");
+//            return;
+//        }
+//        onRemote2LocalMessage(JTT808Coding.resolve808(bytes), bytes);
+        onRemote2LocalMessage(data);
     }
 
-    public abstract void onRemote2LocalMessage(JTT808Bean bean, byte[] data);
+    public abstract void onRemote2LocalMessage(OriginalData data);
 
 }

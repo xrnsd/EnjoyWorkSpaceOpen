@@ -2,6 +2,7 @@ package com.kuyou.avc.handler.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -13,6 +14,8 @@ import com.kuyou.avc.ui.base.BaseAVCActivity;
 import java.util.HashMap;
 import java.util.Map;
 
+import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BaseHandler;
 import kuyou.common.ku09.config.DevicesConfig;
 
@@ -24,7 +27,9 @@ import kuyou.common.ku09.config.DevicesConfig;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class AudioVideoRequestResultHandler extends BaseHandler implements IAudioVideoRequestCallback, Application.ActivityLifecycleCallbacks {
+public abstract class AudioVideoRequestResultHandler extends BaseHandler implements IAudioVideoRequestCallback,
+        Application.ActivityLifecycleCallbacks,
+        RemoteEventBus.IFrameLiveListener {
 
     protected Map<Integer, BaseAVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
@@ -40,9 +45,54 @@ public abstract class AudioVideoRequestResultHandler extends BaseHandler impleme
         mDevicesConfig = devicesConfig;
     }
 
-    @Override
-    public Map<Integer, BaseAVCActivity> getOnlineList() {
+    protected Map<Integer, BaseAVCActivity> getOnlineList() {
         return mItemListOnline;
+    }
+
+    /**
+     * action:解析事件项，打开对应模式的通信
+     */
+    protected abstract String openItem(Context context, RemoteEvent event);
+
+    /**
+     * action:解析事件项，打开对应模式的通信
+     */
+    protected abstract void exitAllLiveItem();
+
+    /**
+     * action:对应模式的通信是否开启
+     */
+    protected abstract boolean isLiveOnlineByType(final int typeCode);
+
+    protected int getHandlerStatus() {
+        return mHandlerStatus;
+    }
+
+    public void setHandleStatus(int handlerStatus) {
+        mHandlerStatus = handlerStatus;
+    }
+
+    public boolean isItInHandlerState(int handlerStatus) {
+        return handlerStatus == getHandlerStatus();
+    }
+
+    public AudioVideoRequestResultHandler setHandlerKeepAliveClient(Handler handlerKeepAliveClient) {
+        mHandlerKeepAliveClient = handlerKeepAliveClient;
+        return AudioVideoRequestResultHandler.this;
+    }
+
+    @Override
+    public void onIpcFrameResisterSuccess() {
+
+    }
+
+    @Override
+    public void onIpcFrameUnResister() {
+
+    }
+
+    protected Handler getHandlerKeepAliveClient() {
+        return mHandlerKeepAliveClient;
     }
 
     @Override
@@ -78,28 +128,5 @@ public abstract class AudioVideoRequestResultHandler extends BaseHandler impleme
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
 
-    }
-
-    @Override
-    public int getHandlerStatus() {
-        return mHandlerStatus;
-    }
-
-    public void setHandlerStatus(int handlerStatus) {
-        mHandlerStatus = handlerStatus;
-    }
-
-    public boolean isItInHandlerState(int handlerStatus) {
-        return handlerStatus == getHandlerStatus();
-    }
-
-    @Override
-    public AudioVideoRequestResultHandler setHandlerKeepAliveClient(Handler handlerKeepAliveClient) {
-        mHandlerKeepAliveClient = handlerKeepAliveClient;
-        return AudioVideoRequestResultHandler.this;
-    }
-
-    protected Handler getHandlerKeepAliveClient() {
-        return mHandlerKeepAliveClient;
     }
 }

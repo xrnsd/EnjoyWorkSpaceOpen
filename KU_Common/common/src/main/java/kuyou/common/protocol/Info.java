@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 public abstract class Info<T>  {
     protected final String TAG = this.getClass().getSimpleName() + "_123456";
 
-    public abstract String geTitle();
+    public abstract String getTitle();
 
     public abstract int getFlag();
 

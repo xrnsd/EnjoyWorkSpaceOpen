@@ -28,7 +28,7 @@ public class InfoVolumeDownload extends InfoVolume {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您降低音量";
     }
 

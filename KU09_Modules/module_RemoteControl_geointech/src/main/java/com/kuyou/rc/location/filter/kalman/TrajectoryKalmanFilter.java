@@ -13,7 +13,7 @@ import android.util.Log;
 import com.kuyou.rc.location.filter.base.TrackPoint;
 import com.kuyou.rc.location.filter.base.TrajectoryFilter;
 import com.kuyou.rc.location.filter.geohash.GeoPoint;
-import com.kuyou.rc.location.filter.geohash.GeohashRTFilter;
+import com.kuyou.rc.location.filter.GeoHashRTFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
 
 
     protected TrackPoint m_lastLocation;
-    private GeohashRTFilter m_geoHashRTFilter = null;
+    private GeoHashRTFilter mM_geoHashRTFilter = null;
     private Settings m_settings;
     private GPSAccKalmanFilter m_kalmanFilter;
     private SensorDataEventLoopTask m_eventLoopTask;
@@ -132,7 +132,7 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
             loc.setElapsedRealtimeNanos(System.nanoTime());
             loc.setAccuracy((float) sdi.getPosErr());
 
-            if (m_geoHashRTFilter != null) {
+            if (mM_geoHashRTFilter != null) {
                 //m_geoHashRTFilter.filter(loc);
             }
 
@@ -254,11 +254,11 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
 
         if (m_settings.geoHashPrecision != 0 &&
                 m_settings.geoHashMinPointCount != 0) {
-            m_geoHashRTFilter = new GeohashRTFilter(m_settings.geoHashPrecision,
+            mM_geoHashRTFilter = new GeoHashRTFilter(m_settings.geoHashPrecision,
                     m_settings.geoHashMinPointCount);
         }
-        if (m_geoHashRTFilter != null) {
-            m_geoHashRTFilter.stop();
+        if (mM_geoHashRTFilter != null) {
+            mM_geoHashRTFilter.stop();
         }
 
         m_eventLoopTask = new SensorDataEventLoopTask(m_settings.positionMinTime, this);

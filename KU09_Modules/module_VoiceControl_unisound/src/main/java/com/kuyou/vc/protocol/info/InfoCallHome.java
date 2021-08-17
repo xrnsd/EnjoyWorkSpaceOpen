@@ -28,7 +28,7 @@ public class InfoCallHome extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "开始呼叫总部";
     }
 

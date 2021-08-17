@@ -1,11 +1,14 @@
 package com.kuyou.rc.location;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Looper;
 import android.util.Log;
 
-import com.kuyou.rc.info.LocationInfo;
 import com.kuyou.rc.location.base.ILocationProvider;
+import com.kuyou.rc.location.filter.FilterController;
+import com.kuyou.rc.location.filter.base.IFilterCallBack;
+import com.kuyou.rc.protocol.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseHandler;
@@ -39,7 +42,7 @@ public class LocationHandler extends BaseHandler {
     }
 
     private LocationReportHandler mLocationReportHandler;
-    private HMLocationProvider mLocationProvider;
+    private HMLocationProvider mLocationProvider, mLocationProviderFilter;
 
     public LocationHandler init(Context context, Looper looper, RemoteControlDeviceConfig config) {
 
@@ -53,18 +56,40 @@ public class LocationHandler extends BaseHandler {
         mLocationReportHandler.setLocationReportCallBack(new LocationReportHandler.IOnLocationReportCallBack() {
             @Override
             public void onLocationReport() {
-                //dispatchEvent(new EventLocationReportRequest());
-                dispatchEvent(new EventSendToRemoteControlPlatformRequest()
-                        .setMsg(getLocationInfo().getReportLocationMsgBody()));
+                LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
+                        .setMsg(LocationHandler.this.getLocationInfo().getBody()));
             }
         });
 
         //位置提供器
-        //mLocationProvider = NormalFilterLocationProvider.getInstance(getApplicationContext());
-        mLocationProvider = AMapLocationProvider.getInstance(context);
-        //mLocationProvider = new HMLocationProvider(context).enableLocalBasePosition(mHelmetModuleManageServiceManager);
+        //mLocationProvider = new HMLocationProvider(context);
+        mLocationProvider = new AMapLocationProvider(context);
         mLocationProvider.setRemoteControlDeviceConfig(config);
+        mLocationProvider.setLocationChangeListener(new HMLocationProvider.IOnLocationChangeListener() {
+            @Override
+            public void onLocationChange(Location location) {
+                //LocationHandler.this.mLocationProviderFilter.dispatchLocation(location);
+            }
+        });
 
+        mLocationProviderFilter = NormalFilterLocationProvider.getInstance(context)
+                .setFilter(new FilterController.IFilterPolicyCallBack() {
+                    @Override
+                    public int getFilterPolicy() {
+                        int policy = 0;
+                        policy |= IFilterCallBack.POLICY_FILTER_FLUCTUATION;
+                        //policy |= IFilterCallBack.POLICY_FILTER_KALMAN;
+                        return policy;
+                    }
+                }).setRemoteControlDeviceConfig(config);
+        mLocationProviderFilter.setLocationChangeListener(new HMLocationProvider.IOnLocationChangeListener() {
+            @Override
+            public void onLocationChange(Location location) {
+                Log.d(TAG, "过滤后:\n" + LocationHandler.this.mLocationProviderFilter.getLocationInfo().toString());
+            }
+        });
+
+        mLocationProvider.start();
         return LocationHandler.this;
     }
 
@@ -74,9 +99,10 @@ public class LocationHandler extends BaseHandler {
 
     public ILocationProvider getLocationProvider() {
         return mLocationProvider;
+        //return mLocationProviderFilter;
     }
 
-    public LocationInfo getLocationInfo() {
+    public SicLocationAlarm getLocationInfo() {
         return getLocationProvider().getLocationInfo();
     }
 
@@ -91,10 +117,6 @@ public class LocationHandler extends BaseHandler {
                 Log.d(TAG, "onModuleEvent > 停止上报位置 ");
                 mLocationReportHandler.stop();
                 return true;
-//            case EventRemoteControl.Code.LOCATION_REPORT_REQUEST:
-//                dispatchEvent(new EventSendToRemoteControlPlatformRequest()
-//                        .setMsg(getLocationInfo().getReportLocationMsgBody()));
-//                break;
             default:
                 break;
         }

@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc;
 import kuyou.common.ku09.event.rc.base.EventResult;
 
 /**
- * action :事件[音视频参数申请]
+ * action :事件[向平台发出音视频请求处理结果]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

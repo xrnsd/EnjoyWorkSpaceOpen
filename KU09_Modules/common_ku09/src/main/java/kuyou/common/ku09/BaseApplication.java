@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.RemoteException;
-import android.os.StrictMode;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ipc.RemoteEventHandler;
 import kuyou.common.ku09.config.DevicesConfig;
 import kuyou.common.ku09.event.IDispatchEventCallBack;
 import kuyou.common.ku09.event.common.EventKeyClick;
@@ -173,6 +171,9 @@ public abstract class BaseApplication extends Application implements
     // ============================ 模块状态看门狗 ============================
 
     protected static final int MSG_WATCHDOG_2_FEED = 1;
+    //public static final int MSG_REPORT_LOCATION = 2;
+    public static final int MSG_IPC_FRAME_INIT_FINISH = 3;
+
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
 
     private static final boolean IS_ENABLE_KEEP_ALIVE = true;
@@ -195,10 +196,19 @@ public abstract class BaseApplication extends Application implements
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
-                mHandlerKeepAliveClient.removeMessages(MSG_WATCHDOG_2_FEED);
-                handleMessageAliveClient(msg);
-                if (isAutoFeedWatchDog())
-                    mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, getFeedTimeLong());
+                mHandlerKeepAliveClient.removeMessages(msg.what);
+                switch (msg.what) {
+                    case MSG_WATCHDOG_2_FEED:
+                        handleMessageAliveClient();
+                        if (isAutoFeedWatchDog())
+                            mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, getFeedTimeLong());
+                        break;
+                    case MSG_IPC_FRAME_INIT_FINISH:
+                        Log.d(TAG, "handleMessage > MSG_IPC_FRAME_INIT_FINISH");
+                        break;
+                    default:
+                        break;
+                }
             }
         };
         mHelmetModuleManageServiceManager.feedWatchDog(getPackageName(), System.currentTimeMillis());
@@ -223,7 +233,7 @@ public abstract class BaseApplication extends Application implements
     /**
      * action:模块状态看门狗 > 相关状态检测的流程的处理
      */
-    protected void handleMessageAliveClient(@NonNull Message msg) {
+    protected void handleMessageAliveClient() {
         Log.d(TAG, TAG_THREAD_WATCH_DOG + " > MSG_WATCHDOG_2_FEED ");
 
         String status = isReady();
@@ -402,6 +412,11 @@ public abstract class BaseApplication extends Application implements
         return new RemoteEventBus.IFrameLiveListener() {
             @Override
             public void onIpcFrameResisterSuccess() {
+//                if (null != getHandlerKeepAliveClient()) {
+//                    getHandlerKeepAliveClient().sendEmptyMessage(MSG_IPC_FRAME_INIT_FINISH);
+//                } else {
+//                    Log.e(TAG, "onIpcFrameResisterSuccess > process fail : HandlerKeepAliveClient is null");
+//                }
                 BaseApplication.this.onIpcFrameResisterSuccess();
             }
 
@@ -413,7 +428,6 @@ public abstract class BaseApplication extends Application implements
     }
 
     protected void onIpcFrameResisterSuccess() {
-
     }
 
     protected void onIpcFrameUnResister() {
@@ -426,14 +440,14 @@ public abstract class BaseApplication extends Application implements
 
     private DevicesConfig mDevicesConfig;
 
-    protected DevicesConfig getDevicesConfig() {
+    public DevicesConfig getDevicesConfig() {
         if (null == mDevicesConfig) {
             mDevicesConfig = new DevicesConfig();
         }
         return mDevicesConfig;
     }
 
-    protected android.app.HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
+    public HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
         return mHelmetModuleManageServiceManager;
     }
 }

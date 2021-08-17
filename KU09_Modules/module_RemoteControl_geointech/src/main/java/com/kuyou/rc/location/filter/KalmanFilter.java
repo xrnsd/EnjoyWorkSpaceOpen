@@ -1,6 +1,10 @@
-package com.kuyou.rc.location.filter.kalman;
+package com.kuyou.rc.location.filter;
+
+import com.kuyou.rc.location.filter.kalman.Matrix;
 
 public class KalmanFilter {
+    protected final String TAG = "com.kuyou.rc.location.filter > KalmanFilter" ;
+    
     /*these matrices should be provided by user*/
     public Matrix F; //state transition model
     public Matrix H; //observation model

@@ -28,7 +28,7 @@ public class InfoVolumeMax extends InfoVolume {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您打开户外模式";
     }
 

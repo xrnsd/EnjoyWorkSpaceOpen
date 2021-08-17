@@ -28,7 +28,7 @@ public class InfoVolumeMini extends InfoVolume {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "已为您打开静音模式";
     }
 

@@ -1,10 +1,11 @@
-package com.kuyou.rc.info;
+package com.kuyou.rc.protocol.item;
 
 import android.location.Location;
 import android.util.Log;
 
-import com.kuyou.rc.alarm.ALARM;
 import com.kuyou.rc.BuildConfig;
+import com.kuyou.rc.alarm.ALARM;
+import com.kuyou.rc.protocol.base.SicBasic;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,21 +15,27 @@ import java.util.TimeZone;
 
 import kuyou.common.bytes.BitOperator;
 import kuyou.common.bytes.ByteUtils;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import com.kuyou.rc.protocol.base.JT808ExtensionProtocol;
 
 /**
  * action :
  * <p>
+ * remarks:  <br/>
  * author: wuguoxian <br/>
- * date: 20-10-24 <br/>
- * <p>
+ * date: 21-8-9 <br/>
+ * </p>
  */
-public class LocationInfo extends MsgInfo {
+public class SicLocationAlarm extends SicBasic {
+    protected final String TAG = "com.kuyou.rc.protocol > SicLocationAlarm";
 
     private final int LOCATION_BATCH_SIZE = 3;
 
     public static interface CONFIG {
         public static final String FAKE_PROVIDER = "fake";
+    }
+
+    public static interface BodyConfig extends SicBasic.BodyConfig {
+        public final static int BATCH = 2;
     }
 
     private final int[] mAlarmFlags = {
@@ -45,8 +52,68 @@ public class LocationInfo extends MsgInfo {
     private int mSosFlag = -1;
 
     @Override
-    public boolean parse(byte[] bytes) {
-        return super.parse(bytes);
+    public String getTitle() {
+        return "位置上报[心跳]_报警信息";
+    }
+
+    @Override
+    public byte[] getBody(final int config) {
+        if (null == getLocation()) {
+            Log.e(TAG, "getBody > process fail : Location is null");
+            return null;
+        }
+
+        byte[] alarm = getLocation808ItemAlarmFlag();
+        byte[] state = getLocation808ItemState(getLatitude(), getLongitude());
+
+        //DWORD经纬度
+        double pow106 = Math.pow(10, 6);
+        double lat106 = getLatitude() * pow106;
+        double lng106 = getLongitude() * pow106;
+        byte[] latb = ByteUtils.longToDword(Math.round(lat106));
+        byte[] lngb = ByteUtils.longToDword(Math.round(lng106));
+
+        // WORD 高度 速度 方向
+        byte[] gaoChen = BitOperator.numToByteArray((int) getAltitude(), 2);
+        byte[] speedb = BitOperator.numToByteArray((int) (getSpeed() * 3.6), 2);
+        byte[] orientation = BitOperator.numToByteArray((int) getBearing(), 2);
+
+        //bcd时间
+        byte[] bcdTime = ByteUtils.str2Bcd(getTime("yyMMddHHmmss"));
+
+        //位置信息附加项
+        byte[] additionLocation = getLocation808ItemAddition(getConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy()));
+
+        Log.d(TAG, toString());
+
+        byte[] body = ByteUtils.byteMergerAll(alarm, state, latb, lngb, gaoChen, speedb, orientation, bcdTime, additionLocation);
+
+        resetAlarmFlags();
+
+        if (BodyConfig.BATCH != config) {
+            return getPackToJt808(JT808ExtensionProtocol.C2S_REQUEST_LOCATION_REPORT, body);
+        }
+        //批量上报
+
+        if (LOCATION_BATCH_SIZE > mBatchLocationByteList.size()) {
+            mBatchLocationByteList.add(body);
+            return null;
+        }
+        byte[] counts = ByteUtils.int2Word(LOCATION_BATCH_SIZE); //数据项个数
+        byte[] batchType = {0}; //位置数据类型 0：正常位置批量汇报，1：盲区补报
+
+        List<byte[]> formatLocations = new ArrayList<>();
+        for (int i = 0; i < mBatchLocationByteList.size(); i++) {
+            byte[] cLocation = mBatchLocationByteList.get(i);
+            byte[] clocationLength = ByteUtils.int2Word(cLocation.length); //位置汇报数据体长度
+            formatLocations.add(ByteUtils.byteMergerAll(clocationLength, cLocation));
+        }
+
+        byte[] batchLocations = ByteUtils.byteMergerAll(formatLocations); //位置汇报数据体
+        mBatchLocationByteList.clear();
+        body = ByteUtils.byteMergerAll(counts, batchType, batchLocations);
+
+        return getPackToJt808(JT808ExtensionProtocol.C2S_REQUEST_LOCATION_BATCH_REPORT, body);
     }
 
     public String getTime(String pattern) {
@@ -86,73 +153,9 @@ public class LocationInfo extends MsgInfo {
         return mLocation;
     }
 
-    public LocationInfo setLocation(Location location) {
+    public SicLocationAlarm setLocation(Location location) {
         mLocation = location;
-        return LocationInfo.this;
-    }
-
-    public byte[] getReportLocationMsgBody() {
-        return getReportLocationMsgBody(false);
-    }
-
-    public byte[] getReportLocationMsgBody(boolean isBatch) {
-        if (null == getLocation()) {
-            Log.e(TAG, "reportLocation > process fail : Location is null");
-            return null;
-        }
-        Log.d(TAG, "reportLocation > ");
-
-        byte[] alarm = getLocation808ItemAlarmFlag();
-        byte[] state = getLocation808ItemState(getLatitude(), getLongitude());
-
-        //DWORD经纬度
-        double pow106 = Math.pow(10, 6);
-        double lat106 = getLatitude() * pow106;
-        double lng106 = getLongitude() * pow106;
-        byte[] latb = ByteUtils.longToDword(Math.round(lat106));
-        byte[] lngb = ByteUtils.longToDword(Math.round(lng106));
-
-        // WORD 高度 速度 方向
-        byte[] gaoChen = BitOperator.numToByteArray((int) getAltitude(), 2);
-        byte[] speedb = BitOperator.numToByteArray((int) (getSpeed() * 3.6), 2);
-        byte[] orientation = BitOperator.numToByteArray((int) getBearing(), 2);
-
-        //bcd时间
-        byte[] bcdTime = ByteUtils.str2Bcd(getTime("yyMMddHHmmss"));
-
-        //位置信息附加项
-        byte[] additionLocation = getLocation808ItemAddition(getConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy()));
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, toString());
-        } else {
-            Log.i(TAG, toStringMini());
-        }
-        byte[] body = ByteUtils.byteMergerAll(alarm, state, latb, lngb, gaoChen, speedb, orientation, bcdTime, additionLocation);
-
-        resetAlarmFlags();
-        //非批量
-        if (!isBatch) {
-            return JTT808Coding.generate808(0x0200, getConfig(), body);
-        }
-
-        if (LOCATION_BATCH_SIZE > mBatchLocationByteList.size()) {
-            mBatchLocationByteList.add(body);
-            return null;
-        }
-        byte[] counts = ByteUtils.int2Word(LOCATION_BATCH_SIZE); //数据项个数
-        byte[] batchType = {0}; //位置数据类型 0：正常位置批量汇报，1：盲区补报
-
-        List<byte[]> formatLocations = new ArrayList<>();
-        for (int i = 0; i < mBatchLocationByteList.size(); i++) {
-            byte[] cLocation = mBatchLocationByteList.get(i);
-            byte[] clocationLength = ByteUtils.int2Word(cLocation.length); //位置汇报数据体长度
-            formatLocations.add(ByteUtils.byteMergerAll(clocationLength, cLocation));
-        }
-
-        byte[] batchLocations = ByteUtils.byteMergerAll(formatLocations); //位置汇报数据体
-        mBatchLocationByteList.clear();
-        return JTT808Coding.generate808(0x0704, getConfig(), ByteUtils.byteMergerAll(counts, batchType, batchLocations));
+        return SicLocationAlarm.this;
     }
 
     /**
@@ -161,7 +164,7 @@ public class LocationInfo extends MsgInfo {
      * @param
      * @return
      */
-    private static byte[] getLocation808ItemState(double lat, double lng) {
+    private byte[] getLocation808ItemState(double lat, double lng) {
         String state = "00";
         state = state + (lat < 0 ? "1" : "0");
         state = state + (lng < 0 ? "1" : "0");
@@ -221,7 +224,7 @@ public class LocationInfo extends MsgInfo {
     private String getAlarmInfo() {
         String def = "报警列表： ";
         StringBuilder info = new StringBuilder(def);
-        for(int index = 0,count = mAlarmFlags.length;index<count;index++){
+        for (int index = 0, count = mAlarmFlags.length; index < count; index++) {
             if (0 == mAlarmFlags[index])
                 continue;
             switch (index) {
@@ -261,7 +264,7 @@ public class LocationInfo extends MsgInfo {
     }
 
     public boolean isFakeLocation() {
-        return null == getLocation() || getLocation().getProvider().equals(CONFIG.FAKE_PROVIDER);
+        return null == getLocation() || getLocation().getProvider().equals(SicLocationAlarm.CONFIG.FAKE_PROVIDER);
     }
 
     public boolean isAutoAddSosFlag() {
@@ -276,31 +279,32 @@ public class LocationInfo extends MsgInfo {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(1024);
-        sb.append(isFakeLocation() ? "模拟位置" : "真实位置 ");
-        sb.append("\ndevId = ").append(getConfig().getDevId());
-        String alarmInfo = getAlarmInfo();
-        if (alarmInfo.length()>0)
-            sb.append("\n").append(alarmInfo);
-        sb.append("\ngetLongitude = ").append(getLongitude());
-        sb.append("\ngetLatitude = ").append(getLatitude());
-        //sb.append("\ngetTime = ").append(getTime(null));
-        //sb.append("\ngetAltitude = ").append(getAltitude());
-        //sb.append("\ngetSpeed = ").append(getSpeed());
-        sb.append("\ngetLocation808ItemAlarmFlag = ").append(ByteUtils.bytes2Heb(getLocation808ItemAlarmFlag()));
-        //sb.append("\ngetLocation808ItemState = ").append(getLocation808ItemState(getLatitude(), getLongitude()));
-        //sb.append("\ngetLocation808ItemAddition = ").append(getLocation808ItemAddition(getConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy())));
-        return sb.toString();
-    }
+        if (BuildConfig.DEBUG) {
+            sb.append(isFakeLocation() ? "模拟位置" : "真实位置 ");
+            sb.append("\ndevId = ").append(getConfig().getDevId());
+            String alarmInfo = getAlarmInfo();
+            if (alarmInfo.length() > 0)
+                sb.append("\n").append(alarmInfo);
+            sb.append("\ngetLongitude = ").append(getLongitude());
+            sb.append("\ngetLatitude = ").append(getLatitude());
+            sb.append("\ndevId = ").append(getConfig().getDevId());
+            //sb.append("\ngetTime = ").append(getTime(null));
+            //sb.append("\ngetAltitude = ").append(getAltitude());
+            //sb.append("\ngetSpeed = ").append(getSpeed());
+            sb.append("\ngetLocation808ItemAlarmFlag = ").append(ByteUtils.bytes2Heb(getLocation808ItemAlarmFlag()));
+            //sb.append("\ngetLocation808ItemState = ").append(getLocation808ItemState(getLatitude(), getLongitude()));
+            //sb.append("\ngetLocation808ItemAddition = ").append(getLocation808ItemAddition(getConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy())));
+        } else {
+            sb = new StringBuilder(1024);
+            sb.append(isFakeLocation() ? "模拟位置" : "真实位置 ");
+            sb.append("\ngetLongitude = ").append(getLongitude());
+            sb.append("\ngetLatitude = ").append(getLatitude());
+            sb.append("\ndevId = ").append(getConfig().getDevId());
+            String alarmInfo = getAlarmInfo();
+            if (alarmInfo.length() > 0)
+                sb.append("\n").append(alarmInfo);
+        }
 
-    protected String toStringMini() {
-        StringBuilder sb = new StringBuilder(1024);
-        sb.append(isFakeLocation() ? "模拟位置" : "真实位置 ");
-        sb.append("\ngetLongitude = ").append(getLongitude());
-        sb.append("\ngetLatitude = ").append(getLatitude());
-        sb.append("\ndevId = ").append(getConfig().getDevId());
-        String alarmInfo = getAlarmInfo();
-        if (alarmInfo.length()>0)
-            sb.append("\n").append(alarmInfo);
         return sb.toString();
     }
 }

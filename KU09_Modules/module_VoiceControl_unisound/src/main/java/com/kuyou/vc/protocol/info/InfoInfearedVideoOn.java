@@ -27,7 +27,7 @@ public class InfoInfearedVideoOn extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "正在为您打开红外视频";
     }
 

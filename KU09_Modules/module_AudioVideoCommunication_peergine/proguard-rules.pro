@@ -20,6 +20,9 @@
 ##    public static *** d(...);
 #    public static *** v(...);
 #}
+#-assumenosideeffects class java.lang.System {
+##    public static *** out(...);
+#}
 
 #eventBus
 -keepattributes *Annotation*

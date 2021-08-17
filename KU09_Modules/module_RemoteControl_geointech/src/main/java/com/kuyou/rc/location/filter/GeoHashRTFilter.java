@@ -1,11 +1,17 @@
-package com.kuyou.rc.location.filter.geohash;
+package com.kuyou.rc.location.filter;
 
 import android.location.Location;
+
+import com.kuyou.rc.location.filter.geohash.Coordinates;
+import com.kuyou.rc.location.filter.geohash.GeoHash;
+import com.kuyou.rc.location.filter.geohash.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeohashRTFilter {
+public class GeoHashRTFilter {
+    
+    protected final String TAG = "com.kuyou.rc.location.filter > GeohashRTFilter";
 
     public static String PROVIDER_NAME = "GeoHashFiltered";
 
@@ -35,7 +41,7 @@ public class GeohashRTFilter {
     private int m_geohashPrecision;
     private int m_geohashMinPointCount;
 
-    public GeohashRTFilter(int geohashPrecision,
+    public GeoHashRTFilter(int geohashPrecision,
                            int geohashMinPointCount) {
         m_geohashPrecision = geohashPrecision;
         m_geohashMinPointCount = geohashMinPointCount;

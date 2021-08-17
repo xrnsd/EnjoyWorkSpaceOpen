@@ -89,6 +89,9 @@ public class CameraLightControl {
                 CameraCharacteristics c = mCameraManager.getCameraCharacteristics(id);
                 //查询该摄像头组件是否包含闪光灯
                 Boolean flashAvailable = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                if (null == flashAvailable || !flashAvailable) {
+                    continue;
+                }
                 /*
                  * 获取相机面对的方向
                  * CameraCharacteristics.LENS_FACING_FRONT 前置摄像头
@@ -96,25 +99,53 @@ public class CameraLightControl {
                  * CameraCharacteristics.LENS_FACING_EXTERNAL 外部的摄像头
                  */
                 Integer lensFacing = c.get(CameraCharacteristics.LENS_FACING);
-                if (flashAvailable != null && flashAvailable
-                        && lensFacing != null && lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
-                    //打开或关闭手电筒
-                    mCameraManager.setTorchMode(id, val);
-                    break;
-                }
+
+                if (null == lensFacing
+                        || CameraCharacteristics.LENS_FACING_BACK != lensFacing)
+                    continue;
+
+                //打开或关闭手电筒
+                mCameraManager.setTorchMode(id, val);
+                onSwitch(true);
+                return true;
             }
-            return true;
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
             mCameraManager.unregisterTorchCallback(mTorchCallback);
             mTorchCallback = null;
         }
+        onSwitch(false);
         return false;
     }
 
     public boolean switchLaserLight(boolean val) {
         Log.d(TAG, "open");
         final String devPath = "/sys/kernel/lactl/attr/camera";
-        return FileUtils.writeInternalAntennaDevice(devPath, val ? "camera_pwr_on" : "camera_pwr_off");
+        boolean result = FileUtils.writeInternalAntennaDevice(devPath, val ? "camera_pwr_on" : "camera_pwr_off");
+        onSwitch(result);
+        return result;
+    }
+
+    private IOnSwitchListener mOnSwitchListener;
+
+    protected IOnSwitchListener getOnSwitchListener() {
+        return mOnSwitchListener;
+    }
+
+    protected void onSwitch(boolean isSuccess) {
+        if (null == mOnSwitchListener) {
+            Log.e(TAG, "onSwitch > process fail : mOnSwitchListener is null");
+            return;
+        }
+        mOnSwitchListener.onSwitch(isSuccess);
+    }
+
+    public CameraLightControl setOnSwitchListener(IOnSwitchListener onSwitchListener) {
+        mOnSwitchListener = onSwitchListener;
+        return CameraLightControl.this;
+    }
+
+    public static interface IOnSwitchListener {
+        public void onSwitch(boolean isSuccess);
     }
 }

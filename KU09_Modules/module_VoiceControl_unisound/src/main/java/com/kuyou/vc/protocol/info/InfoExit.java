@@ -28,7 +28,7 @@ public class InfoExit extends InfoBase {
     }
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "有需要再叫我";
     }
 

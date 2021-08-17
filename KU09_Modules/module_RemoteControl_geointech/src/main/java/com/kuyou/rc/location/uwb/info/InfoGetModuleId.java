@@ -19,7 +19,7 @@ public class InfoGetModuleId extends InfoUwb {
     private int mDevId = -1;
 
     @Override
-    public String geTitle() {
+    public String getTitle() {
         return "读取设备ID";
     }
 
