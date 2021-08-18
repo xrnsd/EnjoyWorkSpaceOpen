@@ -57,7 +57,7 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IAudio
 
     @Override
     public void onKeyClick(int keyCode) {
-        Log.i(TAG, "onKeyClick > keyCode =" + keyCode);
+        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.CALL:
                 mAudioVideoHandler.performOperate();

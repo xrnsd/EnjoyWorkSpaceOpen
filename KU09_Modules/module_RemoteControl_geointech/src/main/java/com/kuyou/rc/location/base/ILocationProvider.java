@@ -14,7 +14,7 @@ import com.kuyou.rc.protocol.item.SicLocationAlarm;
  */
 public interface ILocationProvider {
     
-    public boolean isValidLocation();
+    public boolean isEffectivePositioning();
 
     public Location getLocation();
 

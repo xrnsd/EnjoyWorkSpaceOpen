@@ -1,10 +1,8 @@
 package com.kuyou.avc.ui;
 
-import android.os.Handler;
-
 import com.kuyou.avc.R;
+import com.kuyou.avc.handler.PeergineAudioVideoHandler;
 import com.kuyou.avc.ui.base.MultiRender;
-import com.kuyou.avc.ui.custom.MultiCapture;
 
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
 
@@ -37,7 +35,6 @@ public class MultiRenderGroup extends MultiRender {
 
     @Override
     public void onDestroy() {
-        exitLive();
         super.onDestroy();
     }
 
@@ -49,5 +46,12 @@ public class MultiRenderGroup extends MultiRender {
 
     private void exitLive(){
         LiveDisconnect();
+    }
+
+    @Override
+    protected void playExit(){
+        if (IAudioVideo.RESULT_SUCCESS == getResult()) {
+            play(getString(R.string.media_request_exit_group_success));
+        }
     }
 }

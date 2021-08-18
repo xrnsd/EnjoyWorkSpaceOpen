@@ -112,6 +112,7 @@ public abstract class MultiRender extends BaseAVCActivity implements ActivityCom
             } else if (sAct.equals("Login")) {
                 // Login reply
                 if (sData.equals("0")) {
+                    onResult(IAudioVideo.RESULT_SUCCESS);
                     String sInfo = "Login success";
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 } else {

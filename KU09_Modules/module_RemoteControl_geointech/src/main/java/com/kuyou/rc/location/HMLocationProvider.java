@@ -117,7 +117,7 @@ public class HMLocationProvider implements
 
     @Override
     public Location getLocation() {
-        if (!isValidLocation()) {
+        if (!isEffectivePositioning()) {
             if (null == mLocationFake) {
                 mLocationFake = new Location(FAKE_PROVIDER);
                 mLocationFake.setLongitude(113.908685D);
@@ -151,7 +151,7 @@ public class HMLocationProvider implements
     }
 
     @Override
-    public boolean isValidLocation() {
+    public boolean isEffectivePositioning() {
         return null != mLocation;
     }
 

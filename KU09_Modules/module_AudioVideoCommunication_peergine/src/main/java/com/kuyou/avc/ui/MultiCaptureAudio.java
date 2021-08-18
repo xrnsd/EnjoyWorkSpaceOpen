@@ -1,7 +1,7 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.custom.MultiCapture;
+import com.kuyou.avc.ui.base.MultiCapture;
 
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
 

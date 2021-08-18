@@ -14,7 +14,7 @@ public class EventAudioVideoParametersApplyResult extends EventResult {
 
     @Override
     public int getCode() {
-        return Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_RESULT;
+        return Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT;
     }
 
 }

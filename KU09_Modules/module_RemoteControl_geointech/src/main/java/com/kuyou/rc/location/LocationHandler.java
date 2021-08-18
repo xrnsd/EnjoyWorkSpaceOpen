@@ -28,6 +28,8 @@ public class LocationHandler extends BaseHandler {
 
     protected final String TAG = "com.kuyou.rc.handler > LocationHandler";
 
+    public static final boolean IS_ENABLE_FAKE_LOCATION = true;
+
     private static LocationHandler sMain;
 
     private LocationHandler() {
@@ -93,8 +95,11 @@ public class LocationHandler extends BaseHandler {
         return LocationHandler.this;
     }
 
-    public boolean isValidLocation() {
-        return getLocationProvider().isValidLocation();
+    public boolean isEffectivePositioning() {
+        if (IS_ENABLE_FAKE_LOCATION) {
+            return true;
+        }
+        return getLocationProvider().isEffectivePositioning();
     }
 
     public ILocationProvider getLocationProvider() {

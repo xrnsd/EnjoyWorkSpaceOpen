@@ -93,8 +93,7 @@ public class PlatformConnectManager {
         //调用通道进行连接
         initManager(ip, port);
         try {
-            if (isConnect())
-                disconnect();
+            disconnect();
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
             return;
@@ -163,8 +162,8 @@ public class PlatformConnectManager {
     }
 
     public void disconnect() {
-        mManager.disconnect();
         mManager.unRegisterReceiver(mSocketActionAdapter);
+        mManager.disconnect();
     }
 
 }

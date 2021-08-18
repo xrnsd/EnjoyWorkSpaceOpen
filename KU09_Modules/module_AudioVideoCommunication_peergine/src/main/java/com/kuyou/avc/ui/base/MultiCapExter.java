@@ -1,16 +1,13 @@
-package com.kuyou.avc.ui.custom;
+package com.kuyou.avc.ui.base;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.hardware.Camera.CameraInfo;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,7 +17,6 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.base.BaseAVCActivity;
 import com.kuyou.avc.ui.infeare.AudioOutput;
 import com.kuyou.avc.ui.infeare.CameraView;
 import com.kuyou.avc.util.MyPermission;

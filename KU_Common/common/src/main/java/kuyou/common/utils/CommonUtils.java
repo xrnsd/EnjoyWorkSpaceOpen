@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -84,6 +85,7 @@ public class CommonUtils {
 
     /**
      * action: 时间戳转UTC时间 <br/>
+     * System.currentTimeMillis()获取的为UTC时间戳
      */
     public static String formatUTCTimeByMilSecond(long milSecond, String pattern) {
         Date date = new Date(milSecond);
@@ -93,11 +95,23 @@ public class CommonUtils {
 
     /**
      * action: 时间戳转设备本地时间 <br/>
+     * System.currentTimeMillis()获取的为UTC时间戳
      */
     public static String formatLocalTimeByMilSecond(long timeInMillis, String pattern) {
         if (0 < timeInMillis)
             Calendar.getInstance().setTimeInMillis(timeInMillis);
         return new SimpleDateFormat(pattern).format(Calendar.getInstance().getTime());
+    }
+
+    /**
+     * action: 将时间转换为时间戳 <br/>
+     * System.currentTimeMillis()获取的为UTC时间戳
+     */
+    public static long formatDate2Stamp(String s, String pattern) throws ParseException {
+        String res;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        Date date = simpleDateFormat.parse(s);
+        return date.getTime();
     }
 
     public static boolean isContextExisted(Context context) {

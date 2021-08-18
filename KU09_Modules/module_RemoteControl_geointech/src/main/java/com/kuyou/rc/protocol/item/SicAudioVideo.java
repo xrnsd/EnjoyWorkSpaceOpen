@@ -8,8 +8,8 @@ import com.kuyou.rc.protocol.base.SicBasic;
 import java.util.Arrays;
 
 import kuyou.common.bytes.ByteUtils;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
 
 /**
@@ -44,12 +44,13 @@ public class SicAudioVideo extends SicBasic implements IAudioVideo {
 
     @Override
     public int getMatchEventCode() {
-        return EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT;
+        return EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST;
     }
 
     @Override
     public void parse(byte[] data, InstructionParserListener listener) {
         super.parse(data, listener);
+        Log.d(TAG, "parse > ");
         byte[] bytes = getMsgContentAndParseMsgHeader(data);
         try {
             setChannelId(ByteUtils.fourBytes2Int(Arrays.copyOfRange(bytes, 0, 4)));
@@ -60,15 +61,14 @@ public class SicAudioVideo extends SicBasic implements IAudioVideo {
 
             setToken(new String(Arrays.copyOfRange(bytes, 6, bytes.length)));
 
+            Log.d(TAG, toString());
             //打开音频模块
             if (null != listener)
                 listener.onRemote2LocalExpand(SicAudioVideo.this);
-            //requestOpenLive();
         } catch (Exception e) {
             if (null != listener)
                 listener.onRemote2LocalExpandFail(e);
         }
-        Log.d(TAG, toString());
     }
 
     @Override

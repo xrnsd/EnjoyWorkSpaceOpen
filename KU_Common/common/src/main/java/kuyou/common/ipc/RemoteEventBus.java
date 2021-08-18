@@ -121,7 +121,7 @@ public class RemoteEventBus implements IRemoteConfig {
                             new IRemoteServiceCallBack.Stub() {
                                 @Override
                                 public void onReceiveEvent(Bundle data) {
-                                    Log.d(mTagLog, "onReceiveEvent > data = " + data);
+                                    //Log.d(mTagLog, "onReceiveEvent > event = " + RemoteEvent.getCodeByData(data));
                                     mRemoteEventHandler.remoteEvent2LocalEvent(data);
                                 }
 
@@ -177,7 +177,8 @@ public class RemoteEventBus implements IRemoteConfig {
             //Log.d(mTagLog, "dispatch > event " + event.getCode());
             mService.sendEvent(event.getData());
         } catch (Exception e) {
-            Log.e(mTagLog, Log.getStackTraceString(e));
+            //Log.e(mTagLog, Log.getStackTraceString(e));
+            Log.e(mTagLog, "dispatch > process fail : event = " + event.getCode());
         }
     }
 

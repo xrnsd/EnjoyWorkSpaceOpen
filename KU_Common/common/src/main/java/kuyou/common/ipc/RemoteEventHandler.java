@@ -89,11 +89,11 @@ public class RemoteEventHandler implements IRemoteEventHandler {
 
         int eventCode = RemoteEvent.getCodeByData(data);
         if (-1 == getEventDispatchList().indexOf(eventCode)) {
-            Log.d(mTagLog, "remoteEventFilterPolicy > give up event = " + eventCode);
+            //Log.d(mTagLog, "remoteEventFilterPolicy > give up event = " + eventCode);
             return -1;
         }
         if (mLocalModulePackageName.equals(RemoteEvent.getStartPackageNameByData(data))) {
-            Log.d(mTagLog, "remoteEventFilterPolicy > give up event start package name = " + mLocalModulePackageName);
+            //Log.d(mTagLog, "remoteEventFilterPolicy > give up event start package name = " + mLocalModulePackageName);
             return -1;
         }
         return eventCode;

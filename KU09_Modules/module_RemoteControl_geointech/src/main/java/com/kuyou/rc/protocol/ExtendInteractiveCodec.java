@@ -8,8 +8,10 @@ import com.kuyou.rc.protocol.base.SicBasic;
 import java.util.HashMap;
 import java.util.Map;
 
+import kuyou.common.bytes.ByteUtils;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
+import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.base.exceptions.SocketManagerException;
 import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
@@ -82,6 +84,7 @@ public class ExtendInteractiveCodec {
             Log.e(TAG, "handler > process fail : check fail");
             return;
         }
+        Log.d(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
 
         SicBasic instruction = null;
         JTT808Bean bean = JTT808Coding.resolve808(bytes);
@@ -116,12 +119,13 @@ public class ExtendInteractiveCodec {
         return mAutoLoadAllInfoCallBack;
     }
 
-    public boolean load() {
+    public boolean load(RemoteControlDeviceConfig config) {
         try {
             SicBasic instruction;
             for (Class item : ClassUtils.getAllClasses(getAutoLoadAllInfoCallBack().getApplicationContext(),
                     getAutoLoadAllInfoCallBack().getInfoClass())) {
                 instruction = (SicBasic) item.newInstance();
+                instruction.setConfig(config);
                 if (instruction.getMatchEventCode() > 0) {
                     mResultBodyList.put(instruction.getMatchEventCode(), instruction);
                 } else {

@@ -33,7 +33,8 @@ ext {
     projectHardwareName = "KU09"
 
     //多模块统一日期版本
-    versionDate = new Date().format('yyyyMMdd_HHmm')
+    versionDatePattern = "yyyyMMdd_HHmm"
+    versionDate = new Date().format("${versionDatePattern}")
 
     //密钥相关
     KeyStoreFllePath = System.getenv("ANDROID_KEY_STORE_FLLE_PATH")

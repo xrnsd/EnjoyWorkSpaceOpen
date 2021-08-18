@@ -40,7 +40,7 @@ public class NormalFilterLocationProvider extends HMLocationProvider {
         mFilterCallBack = new FilterController() {
             @Override
             protected boolean isValidLocation() {
-                return NormalFilterLocationProvider.this.isValidLocation();
+                return NormalFilterLocationProvider.this.isEffectivePositioning();
             }
         }
                 .initFilters(getContext())

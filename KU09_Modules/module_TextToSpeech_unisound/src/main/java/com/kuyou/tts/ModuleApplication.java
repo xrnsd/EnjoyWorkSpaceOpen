@@ -188,7 +188,6 @@ public class ModuleApplication extends BaseApplication {
             Log.d(TAG, " onRequestTtsPlay > 重复 tts 已取消 > text=" + text);
             return;
         }
-        //@{ added by wgx Usefulness: 
         if (getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
             mHandlerPlay.removeMessages(MSG_PLAY);
             synchronized (mPendingPlaylist) {
@@ -197,7 +196,6 @@ public class ModuleApplication extends BaseApplication {
             Log.w(TAG, "onRequestTtsPlay > system is shutting down > cancel play text = " + text);
             return;
         }
-        //}@ end wgx
         if (!mPendingPlaylist.offer(text)) {
             Log.e(TAG, " onRequestTtsPlay > mPendingPlaylist add item fail ======================== ");
         } else {
@@ -209,10 +207,6 @@ public class ModuleApplication extends BaseApplication {
                     .append(" \n mPendingPlaylist.size()= ").append(mPendingPlaylist.size())
                     .append(" \n isInitFinish = ").append(isInitFinish)
                     .append(" \n isPlaying = ").append(isPlaying)
-                    .toString());
-        } else {
-            Log.i(TAG, new StringBuilder()
-                    .append("handle text= ").append(text)
                     .toString());
         }
         if (isInitFinish

@@ -17,6 +17,9 @@ android {
         versionName "${versionNumberCustom()}"
 
         consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField "String", "BUILD_DATE", "\"${rootProject.ext.versionDate}\""
+        buildConfigField "String", "BUILD_DATE_PATTERN", "\"${rootProject.ext.versionDatePattern}\""
     }
 
     buildTypes {
@@ -54,7 +57,7 @@ def versionNumberCustom() {
     if (isReleaseBuildType()) {
         buildType = "release"
     }
-    return "${rootProject.ext.projectAuthorName}_${rootProject.ext.projectHardwareName}_${project.moduleName}_" + "${buildType}_" + new Date().format('yyyyMMdd_HHmm');
+    return "${project.moduleName}_" + "${buildType}_" + rootProject.ext.versionDate;
 }
 
 boolean isReleaseBuildType(){

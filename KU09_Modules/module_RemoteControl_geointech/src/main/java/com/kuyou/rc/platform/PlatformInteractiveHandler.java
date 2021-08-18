@@ -164,7 +164,7 @@ public class PlatformInteractiveHandler {
                     dispatchEvent(new EventPhotoUploadResult()
                             .setResult(instruction.isResultSuccess()));
                 }
-            }).load();
+            }).load(PlatformInteractiveHandler.this.getConfig());
         }
         return mExtendInteractiveCodec;
     }
@@ -251,7 +251,7 @@ public class PlatformInteractiveHandler {
         return getControlHandlerCallback().getConfig();
     }
 
-    // =====================  本地事件处理 =============================
+    // =====================  事件处理 =============================
 
     boolean isRemoteControlPlatformConnected = false;
 
@@ -260,7 +260,7 @@ public class PlatformInteractiveHandler {
             Log.e(TAG, "sendToRemoteControlPlatform > process fail : msg is none");
             return;
         }
-        //Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
+        Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
         getPlatformConnectManager().send(msg);
     }
 
@@ -396,7 +396,7 @@ public class PlatformInteractiveHandler {
 
                 break;
 
-            case EventRemoteControl.Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_REQUEST:
+            case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:
                 Log.i(TAG, "onModuleEvent > 申请音视频参数和操作");
                 final int eventType = EventAudioVideoParametersApplyRequest.getEventType(event);
                 boolean isClose = IAudioVideo.EVENT_TYPE_CLOSE == eventType;

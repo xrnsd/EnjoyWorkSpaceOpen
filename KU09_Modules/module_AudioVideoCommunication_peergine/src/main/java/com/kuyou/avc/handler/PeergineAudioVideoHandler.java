@@ -55,20 +55,8 @@ import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_VIDEO;
  * </p>
  */
 public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler implements ITakePhotoResultListener {
-    protected final String TAG = "com.kuyou.avc.handle > " + this.getClass().getSimpleName();
 
     private static PeergineAudioVideoHandler sMain;
-    //用于群组通话，区分设备是否为采集端,相同才是，不同不是
-    private String mCollectingEndIdLocal = null, mCollectingEndIdRemote = null;
-    private RingtoneHandler mRingtoneHandler;
-
-    private final String KEY_HANDLER_STATUS = "HandlerStatus";
-    private final String KEY_MEDIA_TYPE = "MediaType";
-    private final String KEY_GROUP_OWNER = "GroupOwner";
-    private SharedPreferences mSPHandleStatus;
-
-    private int mMediaType = IAudioVideo.MEDIA_TYPE_DEFAULT;
-    private OperateAndTimeoutCallback mOperateAndTimeoutCallback;
 
     private PeergineAudioVideoHandler() {
     }
@@ -77,10 +65,26 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         if (null == sMain) {
             sMain = new PeergineAudioVideoHandler();
             sMain.setContext(context.getApplicationContext());
-            sMain.mRingtoneHandler = RingtoneHandler.getInstance(context.getApplicationContext());
         }
         return sMain;
     }
+
+    protected final String TAG = "com.kuyou.avc.handle > " + this.getClass().getSimpleName();
+
+    private final String KEY_HANDLER_STATUS = "HandlerStatus";
+    private final String KEY_MEDIA_TYPE = "MediaType";
+    private final String KEY_GROUP_OWNER = "GroupOwner";
+
+    //用于群组通话，区分设备是否为采集端,本地和远程分配的相同就是，不同不是
+    private String mCollectingEndIdLocal = null,//本地采集端ID
+            mCollectingEndIdRemote = null;//远程分配的采集端ID
+
+    private RingtoneHandler mRingtoneHandler;
+
+    private SharedPreferences mSPHandleStatus;
+
+    private int mMediaType = IAudioVideo.MEDIA_TYPE_DEFAULT;
+    private OperateAndTimeoutCallback mOperateAndTimeoutCallback;
 
     @Override
     public void onIpcFrameResisterSuccess() {
@@ -381,9 +385,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
         String resultStr = null;
-        Log.d(TAG, "onModuleEvent > event = " + event.getCode());
         switch (event.getCode()) {
-            case EventRemoteControl.Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_RESULT:
+            case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
                 //申请参数失败
                 if (!EventAudioVideoParametersApplyResult.isResultSuccess(event)) {
                     setHandleStatus(HS_NORMAL);
@@ -443,6 +446,9 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
 
                 //关闭通话
                 if (IAudioVideo.EVENT_TYPE_CLOSE == eventType) {
+                    if (HS_NORMAL == getHandlerStatus()) {
+                        return true;
+                    }
                     if (HS_CLOSE_BE_EXECUTING == getHandlerStatus()
                             || HS_CLOSE_BE_EXECUTING == getHandleStatusCache(getContext())) {
                         getOperateAndTimeoutCallback().stop(HS_CLOSE_BE_EXECUTING);
@@ -450,7 +456,6 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                         exitAllLiveItem();
                     }
                     setHandleStatus(HS_NORMAL);
-                    //onResult(event, IAudioVideo.RESULT_SUCCESS);
                     return true;
                 }
 
@@ -544,9 +549,9 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         super.setHandleStatus(handlerStatus);
         Log.d(TAG, "setHandleStatus > " + getHandleStatusContent());
         if (HS_OPEN_REQUEST_BE_EXECUTING == handlerStatus) {
-            mRingtoneHandler.play();
+            getRingtoneHandler().play();
         } else {
-            mRingtoneHandler.stop();
+            getRingtoneHandler().stop();
         }
         saveStatus2Cache(getContext());
     }
@@ -617,5 +622,12 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     private boolean getCacheVal(Context context, String key, boolean defVal) {
         initHandleStatusDataBase(context);
         return mSPHandleStatus.getBoolean(key, defVal);
+    }
+
+    public RingtoneHandler getRingtoneHandler() {
+        if (null == mRingtoneHandler) {
+            mRingtoneHandler = new LocalRingtoneHandler(getContext());
+        }
+        return mRingtoneHandler;
     }
 }

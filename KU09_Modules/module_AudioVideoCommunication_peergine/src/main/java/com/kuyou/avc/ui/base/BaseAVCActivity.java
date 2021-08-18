@@ -5,7 +5,6 @@ import android.util.Log;
 import com.kuyou.avc.ModuleApplication;
 import com.kuyou.avc.R;
 import com.kuyou.avc.handler.PeergineAudioVideoHandler;
-import com.kuyou.avc.ui.custom.PeergineConfig;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
@@ -130,13 +129,21 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (IAudioVideo.RESULT_SUCCESS == mResult) {
+    protected int getResult() {
+        return mResult;
+    }
+
+    protected void playExit(){
+        if (IAudioVideo.RESULT_SUCCESS == getResult()) {
             play(PeergineAudioVideoHandler.getInstance(getApplicationContext())
                     .getTitleByMediaType(getTypeCode(), R.string.media_request_close_success));
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        playExit();
         if (IAudioVideo.MEDIA_TYPE_VIDEO == getTypeCode()) {
             //ModuleApplication.getInstance().reboot(200);
         }

@@ -1,5 +1,7 @@
 package kuyou.sdk.jt808.oksocket.core.iocore;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -12,7 +14,6 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
 /**
  * Created by xuhao on 2017/5/31.
  */
-
 public class ReaderImpl extends AbsReader {
     /*
     * CCB改： 必须有消息头的接收方式 ， 不符合JT808协议；
@@ -155,7 +156,6 @@ public class ReaderImpl extends AbsReader {
             DataInputStream input = new DataInputStream(is);
             byte[] b = new byte[1024 * 1024];
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
             int len = 0;
             while (true) {
                 len = input.read(b);
@@ -163,6 +163,7 @@ public class ReaderImpl extends AbsReader {
                 if (len <= 0) {
                     continue;
                 }
+                Log.d("kuyou", "read > 000000000000000000000");
                 //}@ end wgx
                 bos.write(b, 0, len);
                 originalData.setBodyBytes(bos.toByteArray());

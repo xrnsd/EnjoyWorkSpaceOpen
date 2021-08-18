@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 //配套配置信息
 ext {
     //APP名
-    applicationName = "TextToSpeech_unisound"
+    moduleName = "TextToSpeech_unisound"
 }
 
 android {
@@ -75,7 +75,7 @@ def versionNumberCustom() {
     if (isReleaseBuildType()) {
         buildType = "release"
     }
-    return "${project.applicationName}_" + "${buildType}_" + rootProject.ext.versionDate;
+    return "${project.moduleName}_" + "${buildType}_" + rootProject.ext.versionDate;
 }
 
 boolean isReleaseBuildType(){

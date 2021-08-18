@@ -1,10 +1,7 @@
 package com.kuyou.avc.ui;
 
-import android.os.Handler;
-
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.custom.MultiCapExter;
-import com.kuyou.avc.ui.custom.MultiCapture;
+import com.kuyou.avc.ui.base.MultiCapExter;
 
 import kuyou.common.ku09.event.avc.base.IAudioVideo;
 

@@ -14,25 +14,15 @@ import android.net.Uri;
  * </p>
  */
 public class RingtoneHandler {
-
-    private static RingtoneHandler sMain;
-
-    private RingtoneHandler() {
-
-    }
-
-    public static RingtoneHandler getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new RingtoneHandler();
-            sMain.mContext = context.getApplicationContext();
-            sMain.init();
-        }
-        return sMain;
-    }
-
+    
     private Context mContext;
     private Uri mUriDefaultRingtone;
     private Ringtone mRingtone;
+    
+    public RingtoneHandler(Context context){
+        mContext = context.getApplicationContext();
+        init();
+    }
 
     protected Context getContext() {
         return mContext;
@@ -42,7 +32,7 @@ public class RingtoneHandler {
         if (null != mUriDefaultRingtone) {
             return;
         }
-        mUriDefaultRingtone = RingtoneManager.getActualDefaultRingtoneUri(getContext(), RingtoneManager.TYPE_RINGTONE);
+        mUriDefaultRingtone = RingtoneManager.getActualDefaultRingtoneUri(getContext(), RingtoneManager.TYPE_ALARM);
         mRingtone = RingtoneManager.getRingtone(getContext(), mUriDefaultRingtone);
     }
     
@@ -52,6 +42,9 @@ public class RingtoneHandler {
     
     public void stop(){
         mRingtone.stop();
+    }
+    
+    public void exit(){
     }
 
 }

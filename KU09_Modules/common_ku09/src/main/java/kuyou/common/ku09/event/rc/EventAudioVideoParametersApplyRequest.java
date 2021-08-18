@@ -1,6 +1,5 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.base.EventRequest;
 
 /**
@@ -15,6 +14,6 @@ public class EventAudioVideoParametersApplyRequest extends EventRequest {
 
     @Override
     public int getCode() {
-        return Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_REQUEST;
+        return Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST;
     }
 }

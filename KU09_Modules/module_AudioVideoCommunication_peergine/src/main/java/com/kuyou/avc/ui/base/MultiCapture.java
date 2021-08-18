@@ -1,19 +1,19 @@
 package com.kuyou.avc.ui.base;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.hardware.Camera.CameraInfo;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -24,23 +24,26 @@ import com.peergine.android.livemulti.pgLibLiveMultiCapture;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.plugin.lib.pgLibJNINode;
 
+import kuyou.common.ku09.event.avc.base.IAudioVideo;
 
-public class MultiCaptureBackup extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private android.widget.EditText m_editServer;
-    private android.widget.EditText m_editDevID;
-    private android.widget.Button m_btnStart;
-    private android.widget.Button m_btnStop;
+public abstract class MultiCapture extends BaseAVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+    protected final String TAG = "com.kuyou.avc.ui.custom >" + this.getClass().getSimpleName();
 
-    private android.widget.EditText m_editMsg;
-    private android.widget.Button m_btnSend;
+    private EditText m_editServer;
+    private EditText m_editDevID;
+    private Button m_btnStart;
+    private Button m_btnStop;
 
-    private android.widget.Button m_btnAccept;
-    private android.widget.Button m_btnRefuse;
+    private EditText m_editMsg;
+    private Button m_btnSend;
 
-    public static android.widget.TextView m_sTransferInfo;
-    public static android.widget.TextView m_sStatusInfo;
-    public static android.widget.TextView m_sDebug;
+    private Button m_btnAccept;
+    private Button m_btnRefuse;
+
+    public static TextView m_sTransferInfo;
+    public static TextView m_sStatusInfo;
+    public static TextView m_sDebug;
 
     private String m_sReplyPeer = "";
     private String m_sReplyFile = "";
@@ -51,7 +54,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
     String m_sServerAddr = "connect.peergine.com:7781";
     String m_sDevID = "";
 
-    pgLibLiveMultiCapture m_Live = new pgLibLiveMultiCapture();
+    protected pgLibLiveMultiCapture m_Live = new pgLibLiveMultiCapture();
     LinearLayout m_View = null;
     SurfaceView m_Wnd = null;
 
@@ -76,20 +79,27 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
 
         @Override
         public void event(String sAct, String sData, String sRenID) {
+            onPeergineEvent(sAct, sData, sRenID);
+            Log.d(TAG, new StringBuilder()
+                    .append("pgLibLiveMultiCapture.OnEventListener > event >")
+                    .append("\nsAct=").append(sAct)
+                    .append("\nsData=").append(sData)
+                    .append("\nsRenID=").append(sRenID)
+                    .toString());
             // TODO Auto-generated method stub
             if (sAct.equals("VideoStatus")) {
                 // Video status report
             } else if (sAct.equals("Notify")) {
                 // Receive the notify from capture side
                 String sInfo = "Receive notify: data=" + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("RenderJoin")) {
                 // Disable video and audio access for this Render id.
                 //m_Live.RenderAccess(sRenID, false, false);
 
                 // A render join
                 String sInfo = "Render join: render=" + sRenID;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
 
                 int i = 0;
                 while (true) {
@@ -97,7 +107,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
                     if (sRenID1.equals("")) {
                         break;
                     }
-                    Log.d("pgLiveCapture", "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
+                    Log.d(TAG, "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
                     i++;
                 }
             } else if (sAct.equals("RenderLeave")) {
@@ -106,7 +116,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
 
                 // A render leave
                 String sInfo = "Render leave: render=" + sRenID;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
 
                 int i = 0;
                 while (true) {
@@ -114,26 +124,18 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
                     if (sRenID1.equals("")) {
                         break;
                     }
-                    Log.d("pgLiveCapture", "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
+                    Log.d(TAG, "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
                     i++;
                 }
             } else if (sAct.equals("Message")) {
                 // Receive the message from render or capture
                 String sInfo = "Receive msg: data=" + sData + ", render=" + sRenID;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
 
                 // Test message transfer delay stamp.
                 if (sData.indexOf("stamp:") == 0) {
                     m_Live.MessageSend(sRenID, sData);
                 }
-
-				/*
-				// Receive play request, enable video and audio access for this Render id.
-				if (sData.equals("PlayRequest")) {
-					m_Live.RenderAccess(sRenID, true, true);
-					m_Live.MessageSend(sRenID, "PlayReply");
-				}
-				*/
 
                 // Video and audio start and stop control.
                 //LiveControl(sData);
@@ -141,51 +143,57 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
                 // Login reply
                 if (sData.equals("0")) {
                     String sInfo = "Login success";
-                    Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
+                    onResult(IAudioVideo.RESULT_SUCCESS);
                 } else {
+                    if ("8".equals(sData)) {
+                        onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                    }
+                    onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     String sInfo = "Login failed, error=" + sData;
-                    Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 }
             } else if (sAct.equals("Logout")) {
                 // Logout
                 String sInfo = "Logout";
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("Connect")) {
                 // Connect to capture
                 String sInfo = "Connect to capture";
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("Disconnect")) {
                 // Disconnect from capture
                 String sInfo = "Diconnect from capture";
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("Offline")) {
                 // The capture is offline.
                 String sInfo = "Capture offline";
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("RecordStopVideo")) {
                 // Record stop video.
                 String sInfo = "Record stop video: " + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("RecordStopAudio")) {
                 // Record stop video.
                 String sInfo = "Record stop audio: " + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("ForwardAllocReply")) {
                 String sInfo = "Forward alloc relpy: error=" + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("ForwardFreeReply")) {
                 String sInfo = "Forward free relpy: error=" + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("VideoCamera")) {
+                onScreenshot(sData);
                 String sInfo = "The picture is save to: " + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("FilePutRequest")) {
                 FilePutRequest(sData, sRenID);
             } else if (sAct.equals("FileGetRequest")) {
                 FileGetRequest(sData, sRenID);
             } else if (sAct.equals("FileAccept")) {
                 String sInfo = "File accept: " + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("FileReject")) {
                 FileReject();
             } else if (sAct.equals("FileAbort")) {
@@ -198,13 +206,14 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
                 FileProgress(sData);
             } else if (sAct.equals("SvrNotify")) {
                 String sInfo = "Receive server notify: " + sData;
-                Toast.makeText(MultiCaptureBackup.this, sInfo, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             }
 
-            Log.d("pgLiveMultiCapture", "OnEvent: Act=" + sAct + ", Data=" + sData
+            Log.d(TAG, "OnEvent: Act=" + sAct + ", Data=" + sData
                     + ", Render=" + sRenID);
         }
     };
+
 
     private void FilePutRequest(String sDate, String sPeer) {
         String file = getcontent(sDate, "peerpath");
@@ -262,11 +271,11 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
     }
 
     public static void outString(String str) {
-        if (MultiCaptureBackup.m_sDebug.getText().length() > 600) {
-            MultiCaptureBackup.m_sDebug.setText("");
+        if (MultiCapture.m_sDebug.getText().length() > 600) {
+            MultiCapture.m_sDebug.setText("");
         }
 
-        MultiCaptureBackup.m_sDebug.setText(MultiCaptureBackup.m_sDebug.getText() + "  " + str);
+        MultiCapture.m_sDebug.setText(MultiCapture.m_sDebug.getText() + "  " + str);
     }
 
     private boolean CheckPlugin() {
@@ -274,43 +283,37 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
             pgLibJNINode.Clean();
             return true;
         } else {
-            Alert("Error", "Please import 'pgPluginLib' peergine middle ware!");
+            //Alert("Error", "Please import 'pgPluginLib' peergine middle ware!");
             return false;
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_capture);
+    protected void initViews() {
+        super.initViews();
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        m_editServer = (EditText) findViewById(R.id.editServer);
+        m_editDevID = (EditText) findViewById(R.id.editDevID);
 
-        // LinearLayout layoutinfo = (LinearLayout)
-        // findViewById(R.id.layoutTransferInfo);
-        m_editServer = (android.widget.EditText) findViewById(R.id.editServer);
-        m_editDevID = (android.widget.EditText) findViewById(R.id.editDevID);
-
-        m_sTransferInfo = (android.widget.TextView) findViewById(R.id.TransferInfo);
-        m_sStatusInfo = (android.widget.TextView) findViewById(R.id.StatusInfo);
+        m_sTransferInfo = (TextView) findViewById(R.id.TransferInfo);
+        m_sStatusInfo = (TextView) findViewById(R.id.StatusInfo);
         m_sTransferInfo.setText("您未进行任何操作!");
         m_sStatusInfo.setText("没有文件传输");
-        m_sDebug = (android.widget.TextView) findViewById(R.id.debug);
+        m_sDebug = (TextView) findViewById(R.id.debug);
 
-        m_btnStart = (android.widget.Button) findViewById(R.id.btnStart);
+        m_btnStart = (Button) findViewById(R.id.btnStart);
         m_btnStart.setOnClickListener(m_OnClink);
-        m_btnStop = (android.widget.Button) findViewById(R.id.btnStop);
+        m_btnStop = (Button) findViewById(R.id.btnStop);
         m_btnStop.setOnClickListener(m_OnClink);
 
-        m_editMsg = (android.widget.EditText) findViewById(R.id.editMsg);
-        m_btnSend = (android.widget.Button) findViewById(R.id.btnSend);
+        m_editMsg = (EditText) findViewById(R.id.editMsg);
+        m_btnSend = (Button) findViewById(R.id.btnSend);
         m_btnSend.setOnClickListener(m_OnClink);
 
         LinearLayout layoutGet = (LinearLayout) findViewById(R.id.layoutSelectBtn);
-        m_btnAccept = (android.widget.Button) layoutGet.findViewById(R.id.btnAccept);
+        m_btnAccept = (Button) layoutGet.findViewById(R.id.btnAccept);
         m_btnAccept.setOnClickListener(m_OnClink);
-        m_btnRefuse = (android.widget.Button) layoutGet.findViewById(R.id.btnRefuse);
+        m_btnRefuse = (Button) layoutGet.findViewById(R.id.btnRefuse);
         m_btnRefuse.setOnClickListener(m_OnClink);
         m_btnAccept.setEnabled(false);
         m_btnRefuse.setEnabled(false);
@@ -329,16 +332,11 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         m_myPerm.Request(this, sPermList, sTextList);
     }
 
-    public void onDestroy() {
-        LiveStop();
-        super.onDestroy();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         m_Live.LoginNow(0);
-        Toast.makeText(MultiCaptureBackup.this, "Enter foreground, login now", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MultiCapture.this, "Enter foreground, login now", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -383,7 +381,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Log.d("pgLiveCapture", "onKeyDown, KEYCODE_BACK");
+            Log.d(TAG, "onKeyDown, KEYCODE_BACK");
             ExitDialog();
             return true;
         }
@@ -400,40 +398,36 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
     };
 
     public void ExitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure to exit?");
-        builder.setPositiveButton("YES", m_DlgClick);
-        builder.setNegativeButton("NO", m_DlgClick);
-        builder.show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Confirm");
+//        builder.setMessage("Are you sure to exit?");
+//        builder.setPositiveButton("YES", m_DlgClick);
+//        builder.setNegativeButton("NO", m_DlgClick);
+//        builder.show();
     }
 
     public void Alert(String sTitle, String sMsg) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(sTitle);
-        builder.setMessage(sMsg);
-        builder.setPositiveButton("OK", null);
-        builder.show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle(sTitle);
+//        builder.setMessage(sMsg);
+//        builder.setPositiveButton("OK", null);
+//        builder.show();
     }
 
-    private void LiveStart() {
+    protected void liveStart() {
         if (m_Wnd != null) {
+            Log.d(TAG, "liveStart > m_Wnd is not null");
             return;
         }
-
-        String sServerAddr = m_editServer.getText().toString();
-        if (sServerAddr.equals("")) {
-            Alert("Error", "LiveStart: The server address is empty!");
-            return;
-        }
+        Log.d(TAG, "liveStart > ");
 
         String sInitParam = "(Debug){1}";
 
-        m_sDevID = m_editDevID.getText().toString();
-        int iErr = m_Live.Initialize(m_sDevID, "", sServerAddr, "", 3, sInitParam, this);
+        m_sDevID = getConfig().getDevCollectingEndId();
+        int iErr = m_Live.Initialize(m_sDevID, "", getConfig().getServerAddress(), "", 3, sInitParam, this);
         if (iErr != 0) {
-            Log.d("pgLiveMultiCapture", "LiveStart: Live.Initialize failed! iErr=" + iErr);
-            Alert("Error", "LiveStart: Live.Initialize failed! iErr=" + iErr);
+            Log.d(TAG, "LiveStart: Live.Initialize failed! iErr=" + iErr);
+            onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
             return;
         }
 
@@ -442,23 +436,36 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         m_View.addView(m_Wnd);
         m_Wnd.setVisibility(View.GONE);
 
-        //SetVolumeGate(1);
-        //SetMobileAec(0);
+        if (getTypeCode() == IAudioVideo.MEDIA_TYPE_VIDEO
+                || getTypeCode() == IAudioVideo.MEDIA_TYPE_GROUP) {
+            final String sVideoParam = "(Code){3}(Mode){3}(Rate){66}(BitRate){500}(MaxStream){3}(SendCache){1}";
+            m_Live.VideoStart(0, sVideoParam, null);
+        }
 
-        String sVideoParam = "(Code){3}(Mode){3}(Rate){66}(Portrait){1}(BitRate){500}(MaxStream){3}(SendCache){1}";
-        m_Live.VideoStart(0, sVideoParam, null);
-
-		/* Playback media file.
-		String sVideoParam = "(Playback){1}(Path){/sdcard/Download/capture.mp4}(SendCache){1}";
-		m_Live.VideoStart(0, sVideoParam, null);
-		*/
-
-        String sAudioParam = "";
-        // String sAudioParam = "(AecConfig){1,-1,-1,-1,-1}"; // Low level aec.
-        m_Live.AudioStart(0, sAudioParam);
+        if (getTypeCode() == IAudioVideo.MEDIA_TYPE_VIDEO
+                || getTypeCode() == IAudioVideo.MEDIA_TYPE_AUDIO
+                || getTypeCode() == IAudioVideo.MEDIA_TYPE_GROUP) {
+            String sAudioParam = "";
+            // String sAudioParam = "(AecConfig){1,-1,-1,-1,-1}"; // Low level aec.
+            m_Live.AudioStart(0, sAudioParam);
+        }
     }
 
-    private void LiveStop() {
+    protected void LiveStop() {
+        Log.d(TAG, "LiveStop > ");
+//        m_Live.AudioStop(0);
+//        m_Live.VideoStop(0);
+//
+//        if (m_Wnd != null) {
+//            m_View.removeView(m_Wnd);
+//            m_Live.CameraViewRelease();
+//            m_View = null;
+//            m_Wnd = null;
+//            m_Live.Clean();
+//        }
+        if (m_Live == null) {
+            return;
+        }
         m_Live.AudioStop(0);
         m_Live.VideoStop(0);
 
@@ -467,8 +474,8 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
             m_Live.CameraViewRelease();
             m_View = null;
             m_Wnd = null;
-            m_Live.Clean();
         }
+        m_Live.Clean();
     }
 
     private void LiveControl(String sData) {
@@ -494,7 +501,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         public void onClick(View args0) {
             switch (args0.getId()) {
                 case R.id.btnStart:
-                    LiveStart();
+                    liveStart();
 
                     // For test ...
                     //RecordAudioBothStart("/sdcard/Download/capture.avi", 0);
@@ -560,7 +567,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
             String sPath = "/sdcard/Download/pgtest";
             int iErr = m_Live.FileAccept(m_sReplyPeer, sPath);
             if (iErr != 0) {
-                Log.d("pgLiveMultiCapture", "btnAccept: iErr = " + iErr);
+                Log.d(TAG, "btnAccept: iErr = " + iErr);
             } else {
                 m_bIsReplying = false;
                 m_sTransferPeer = m_sReplyPeer;
@@ -569,7 +576,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         }
     }
 
-    private void btnRefuse() {
+    protected void btnRefuse() {
         int iErr = 0;
         if (m_bIsReplying) {
             iErr = m_Live.FileReject(m_sReplyPeer, pgLibLiveMultiError.PG_ERR_Reject);
@@ -578,7 +585,7 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         }
 
         if (iErr != 0) {
-            Log.d("pgLiveMultiCapture", "btnRefuse: iErr = " + iErr);
+            Log.d(TAG, "btnRefuse: iErr = " + iErr);
         } else {
             m_bIsReplying = false;
             FileReplyStatus(m_sReplyPeer, m_sReplyFile, 1);
@@ -664,54 +671,32 @@ public class MultiCaptureBackup extends Activity implements ActivityCompat.OnReq
         return false;
     }
 
-	/* for test.
-	public boolean RecordAudioBothStart(String sAviPath, int iVideoID) {
-		pgLibJNINode Node = m_Live.GetNode();
-		if (Node != null) {
-			if (Node.ObjectAdd("_aTemp", "PG_CLASS_Audio", "", 0)) {
-				int iHasVideo = (iVideoID < 0) ? 0 : 1;
-				String sData = "(Path){" + Node.omlEncode(sAviPath) + "}(Action){1}(MicNo){65535}(SpeakerNo){65535}(HasVideo){" + iHasVideo + "}";
-				int iErr = Node.ObjectRequest("_aTemp", 38, sData, "");
-				if (iErr > pgLibLiveMultiError.PG_ERR_Normal) {
-					Log.d("pgLiveCapture", "RecordBothStart, iErr=" + iErr);
-				}
-				Node.ObjectDelete("_aTemp");
-			}
+    //@{ added by wgx Usefulness:
+    @Override
+    protected void onResume() {
+        super.onResume();
+        liveStart();
+    }
 
-			if (iVideoID >= 0) {
-				String sData = "(Path){" + Node.omlEncode(sAviPath) + "}(HasAudio){1}";
-				String sObjLive = "Live_" + m_Live.GetSelfPeer().substring(5) + "_" + iVideoID;
-				int iErr = Node.ObjectRequest(sObjLive,
-					36, sData, "pgLibLiveMultiCapture.RecordStartVideo");
-				if (iErr > pgLibLiveMultiError.PG_ERR_Normal) {
-					Log.d("pgLiveCapture", "RecordStartVideo: iErr=" + iErr);
-				}
-			}
-		}
-		return false;		
-	}
-	
-	public void RecordAudioBothStop(String sAviPath, int iVideoID) {
-		pgLibJNINode Node = m_Live.GetNode();
-		if (Node != null) {
-			if (iVideoID >= 0) {
-				String sObjLive = "Live_" + m_Live.GetSelfPeer().substring(5) + "_" + iVideoID;
-				int iErr = Node.ObjectRequest(sObjLive,
-					36, "(Path){}", "pgLibLiveMultiCapture.RecordStopVideo");
-				if (iErr > pgLibLiveMultiError.PG_ERR_Normal) {
-					Log.d("pgLiveCapture", "RecordStopVideo: iErr=" + iErr);
-				}
-			}
+    @Override
+    public void onDestroy() {
+        LiveStop();
+        super.onDestroy();
+    }
 
-			if (Node.ObjectAdd("_aTemp", "PG_CLASS_Audio", "", 0)) {
-				String sData = "(Path){" + Node.omlEncode(sAviPath) + "}(Action){0}";
-				int iErr = Node.ObjectRequest("_aTemp", 38, sData, "");
-				if (iErr > pgLibLiveMultiError.PG_ERR_Normal) {
-					Log.d("pgLiveCapture", "RecordBothStop, iErr=" + iErr);
-				}
-				Node.ObjectDelete("_aTemp");
-			}
-		}
-	}
-	*/
+    @Override
+    public void exit() {
+        outString(getTransfering() + "" + m_bIsReplying + "");
+        if (getTransfering()) {
+            btnRefuse();
+            setTransfering(false);
+        }
+
+        // For test ...
+        //RecordAudioBothStop("/sdcard/Download/capture.avi", 0);
+        LiveStop();
+        super.exit();
+    }
+
+    //}@ end wgx
 }

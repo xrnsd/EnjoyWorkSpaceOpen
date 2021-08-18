@@ -89,7 +89,7 @@ public class ModuleApplication extends BaseApplication {
         list.add(EventCommon.Code.NETWORK_DISCONNECT);
 
         list.add(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT);
-        list.add(EventRemoteControl.Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_RESULT);
+        list.add(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT);
 
         list.add(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST);
         list.add(EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST);
@@ -111,7 +111,6 @@ public class ModuleApplication extends BaseApplication {
     @Override
     public void onModuleEvent(RemoteEvent event) {
         super.onModuleEvent(event);
-        Log.d(TAG, "onModuleEvent > event = " + event.getCode());
         initHandlers();
         mKeyHandler.onModuleEvent(event);
         if (mAudioVideoRequestHandler.onModuleEvent(event))

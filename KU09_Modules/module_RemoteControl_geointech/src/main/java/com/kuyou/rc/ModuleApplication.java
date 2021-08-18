@@ -1,7 +1,6 @@
 package com.kuyou.rc;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.kuyou.rc.alarm.AlarmHandler;
 import com.kuyou.rc.key.KeyHandler;
@@ -20,7 +19,7 @@ import kuyou.common.ku09.key.IKeyEventListener;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 
 /**
- * action :远程模块
+ * action :远程控制模块
  * <p>
  * author: wuguoxian <br/>
  * date: 20-10-24 <br/>
@@ -33,8 +32,6 @@ public class ModuleApplication extends BaseApplication {
     public static ModuleApplication getInstance() {
         return sApplication;
     }
-
-    public static boolean IS_ENABLE_FAKE_LOCATION = true;
 
     protected RemoteControlDeviceConfig mConfig;
 
@@ -53,7 +50,7 @@ public class ModuleApplication extends BaseApplication {
         List<Integer> list = new ArrayList<>();
 
         list.add(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT);
-        list.add(EventRemoteControl.Code.AUDIO_AND_VIDEO_PARAMETERS_APPLY_REQUEST);
+        list.add(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST);
         list.add(EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST);
 
         return list;
@@ -80,11 +77,8 @@ public class ModuleApplication extends BaseApplication {
         }
 
         //设备定位是否正常
-        if (!getLocationHandler().isValidLocation()) {
-            if (!IS_ENABLE_FAKE_LOCATION) {
-                Log.w(TAG, "isReady >  ");
-                return "未正常定位,尝试复位";
-            }
+        if (!getLocationHandler().isEffectivePositioning()) {
+            return "未正常定位,尝试复位";
         }
         return null;
     }

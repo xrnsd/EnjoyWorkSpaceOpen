@@ -17,6 +17,7 @@ import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
+import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.config.DevicesConfig;
 import kuyou.common.ku09.event.IDispatchEventCallBack;
 import kuyou.common.ku09.event.common.EventKeyClick;
@@ -27,6 +28,7 @@ import kuyou.common.ku09.event.common.base.EventKey;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.key.IKeyEventListener;
 import kuyou.common.log.LogcatHelper;
+import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
 import kuyou.common.utils.SystemPropertiesUtils;
 
@@ -127,12 +129,27 @@ public abstract class BaseApplication extends Application implements
      */
     protected void initCallBack() {
 
-        Log.i(TAG, new StringBuilder()
-                .append("======================================================\n    ")
-                .append("\n模块：").append(getApplicationName())
-                .append("\n状态：").append("模块启动")
-                .append("\n操作：").append("注册回调")
-                .append("    \n\n======================================================")
+        StringBuilder statusInfo = new StringBuilder().append("======================================================\n    ");
+
+        statusInfo.append("\n模块：").append(getApplicationName());
+        statusInfo.append("\n版本：").append(BuildConfig.BUILD_DATE);
+
+        long timeNow = System.currentTimeMillis() + 8 * 3600 * 1000;
+        long time = timeNow;
+        try {
+            time = CommonUtils.formatDate2Stamp(BuildConfig.BUILD_DATE, BuildConfig.BUILD_DATE_PATTERN);
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+        if (timeNow > time && timeNow - time < 600000) {
+            statusInfo.append("\n版本状态：").append("新鲜");
+        } else {
+            statusInfo.append("\n版本状态：").append("原始");
+        }
+        statusInfo.append("\n状态：").append("模块启动");
+        statusInfo.append("\n操作：").append("注册回调");
+
+        Log.i(TAG, statusInfo.append("    \n\n======================================================")
                 .toString());
     }
 
@@ -234,7 +251,7 @@ public abstract class BaseApplication extends Application implements
      * action:模块状态看门狗 > 相关状态检测的流程的处理
      */
     protected void handleMessageAliveClient() {
-        Log.d(TAG, TAG_THREAD_WATCH_DOG + " > MSG_WATCHDOG_2_FEED ");
+        Log.d(TAG, "handleMessageAliveClient > MSG_WATCHDOG_2_FEED ");
 
         String status = isReady();
 

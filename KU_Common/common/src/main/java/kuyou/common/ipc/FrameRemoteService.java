@@ -47,7 +47,7 @@ public class FrameRemoteService extends Service {
                     mCallbackList.getBroadcastItem(i).onReceiveEvent(data);
                 } catch (Exception e) {
                     Log.e(TAG, new StringBuilder("sendEvent > process fail : \n")
-                            .append("event = ").append(data.toString())
+                            .append("event = ").append(RemoteEvent.getCodeByData(data))
                             //.append("\n").append(Log.getStackTraceString(e))
                             .toString());
                 }
