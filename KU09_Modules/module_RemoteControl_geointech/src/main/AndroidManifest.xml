@@ -60,7 +60,7 @@
         </activity>
         
         <activity
-            android:name=".handler.location.amap.LocationActivity"
+            android:name=".handler.location.amap.AmapLocationActivity"
             android:label="RC_LocationActivity"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"

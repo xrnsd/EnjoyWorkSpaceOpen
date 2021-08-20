@@ -12,13 +12,13 @@ import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
  * date: 21-7-8 <br/>
  * </p>
  */
-public interface ILocationProvider {
-    
+public interface ILocationProvider extends ILocationDispatcherCallback, ILocationProviderPolicy {
+    public static final String FAKE_PROVIDER = "fake";
+    public static final String CACHE_PROVIDER = "cache";
+
     public boolean isEffectivePositioning();
 
     public Location getLocation();
 
     public SicLocationAlarm getLocationInfo();
-
-    public void dispatchLocation(Location location);
 }

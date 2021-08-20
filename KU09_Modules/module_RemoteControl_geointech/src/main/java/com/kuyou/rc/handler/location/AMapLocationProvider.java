@@ -10,7 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.kuyou.rc.handler.location.amap.LocationActivity;
+import com.kuyou.rc.handler.location.amap.AmapLocationActivity;
 
 /**
  * action :位置提供器[高德]
@@ -24,9 +24,7 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
 
     protected final String TAG = "com.kuyou.rc.location > AMapLocationProvider";
 
-    boolean isPositioningStart = false;
-
-    Activity mLocationProviderReal;
+    private AmapLocationActivity mLocationProviderReal;
 
     public AMapLocationProvider(Context context) {
         super(context);
@@ -41,7 +39,7 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
         Log.d(TAG, "start > ");
         try {
             Intent intent = new Intent();
-            intent.setClass(getContext(), LocationActivity.class);
+            intent.setClass(getContext(), AmapLocationActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getContext().startActivity(intent);
         } catch (Exception e) {
@@ -50,25 +48,32 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
     }
 
     @Override
-    public boolean isStart() {
-        return null != mLocationProviderReal && !mLocationProviderReal.isDestroyed();
-    }
-
-    @Override
     public void stop() {
         if (null != mLocationProviderReal && !mLocationProviderReal.isDestroyed()) {
             mLocationProviderReal.finish();
             mLocationProviderReal = null;
         }
-
     }
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        if (!(activity instanceof LocationActivity)) {
+        if (!(activity instanceof AmapLocationActivity)) {
             return;
         }
-        mLocationProviderReal = activity;
+        mLocationProviderReal = (AmapLocationActivity) activity;
+        mLocationProviderReal.setLocationDispatcherCallback(AMapLocationProvider.this);
+    }
+
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {
+        if (!(activity instanceof AmapLocationActivity)) {
+            return;
+        }
+        if (null == mLocationProviderReal) {
+            return;
+        }
+        mLocationProviderReal.setLocationDispatcherCallback(null);
+        mLocationProviderReal = null;
     }
 
     @Override
@@ -96,11 +101,4 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
 
     }
 
-    @Override
-    public void onActivityDestroyed(@NonNull Activity activity) {
-        if (!(activity instanceof LocationActivity)) {
-            return;
-        }
-        mLocationProviderReal = null;
-    }
 }

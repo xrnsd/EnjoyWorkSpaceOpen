@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.kuyou.rc.BuildConfig;
 import com.kuyou.rc.handler.alarm.ALARM;
+import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
@@ -30,10 +31,6 @@ public class SicLocationAlarm extends SicBasic {
     protected final String TAG = "com.kuyou.rc.protocol > SicLocationAlarm";
 
     private final int LOCATION_BATCH_SIZE = 3;
-
-    public static interface CONFIG {
-        public static final String FAKE_PROVIDER = "fake";
-    }
 
     public static interface BodyConfig extends SicBasic.BodyConfig {
         public final static int BATCH = 2;
@@ -263,8 +260,18 @@ public class SicLocationAlarm extends SicBasic {
         return infoResult.equals(def) ? "" : infoResult;
     }
 
-    public boolean isFakeLocation() {
-        return null == getLocation() || getLocation().getProvider().equals(SicLocationAlarm.CONFIG.FAKE_PROVIDER);
+    public String getLocationType() {
+        if (null == getLocation()) {
+            return "位置类型：无";
+        }
+        switch (getLocation().getProvider()) {
+            case ILocationProvider.FAKE_PROVIDER:
+                return "位置类型：模拟";
+            case ILocationProvider.CACHE_PROVIDER:
+                return "位置类型：缓存";
+            default:
+                return "位置类型：真实";
+        }
     }
 
     public boolean isAutoAddSosFlag() {
@@ -279,7 +286,7 @@ public class SicLocationAlarm extends SicBasic {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(1024);
-        sb.append("位置类型：").append(isFakeLocation() ? "模拟" : "真实");
+        sb.append(getLocationType());
         String alarmInfo = getAlarmInfo();
         if (alarmInfo.length() > 0)
             sb.append("\n").append(alarmInfo);

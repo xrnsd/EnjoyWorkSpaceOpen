@@ -20,6 +20,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.AMapLocationQualityReport;
 import com.kuyou.rc.ModuleApplication;
 import com.kuyou.rc.R;
+import com.kuyou.rc.handler.location.basic.ILocationDispatcherCallback;
 
 import kuyou.common.ku09.ui.BasePermissionsActivity;
 import kuyou.common.utils.CommonUtils;
@@ -31,7 +32,7 @@ import kuyou.common.utils.CommonUtils;
  * date: 20-11-25 <br/>
  * <p>
  */
-public class LocationActivity extends BasePermissionsActivity
+public class AmapLocationActivity extends BasePermissionsActivity
         implements AMapLocationListener {
 
     protected final String TAG = "com.kuyou.jt808.location > " + this.getClass().getSimpleName();
@@ -45,6 +46,8 @@ public class LocationActivity extends BasePermissionsActivity
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationOption = null;
     private NotificationManager notificationManager = null;
+
+    protected ILocationDispatcherCallback mLocationDispatcherCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +99,7 @@ public class LocationActivity extends BasePermissionsActivity
             return;
         }
         if (location.getErrorCode() == 0) { //定位成功,进行处理
-            ModuleApplication.getInstance().getLocationHandler()
-                    .getLocationProvider().dispatchLocation(location);
+            dispatchLocation(location);
         }
         printfAMapLocationInfo(location);
     }
@@ -135,6 +137,22 @@ public class LocationActivity extends BasePermissionsActivity
 //        }
     }
 
+    public void dispatchLocation(Location location) {
+        if (null == getLocationDispatcherCallback()) {
+            Log.d(TAG, "dispatchEventLocationChange > process fail : getLocationDispatcherCallback() is null");
+            return;
+        }
+        getLocationDispatcherCallback().dispatchLocation(location);
+    }
+
+    public ILocationDispatcherCallback getLocationDispatcherCallback() {
+        return mLocationDispatcherCallback;
+    }
+
+    public void setLocationDispatcherCallback(ILocationDispatcherCallback callback) {
+        mLocationDispatcherCallback = callback;
+    }
+
     private void printfAMapLocationInfo(AMapLocation location) {
         StringBuffer sb = new StringBuffer("AMapLocationListener > onLocationChanged > printfAMapLocationInfo :");
 
@@ -154,12 +172,12 @@ public class LocationActivity extends BasePermissionsActivity
             sb.append("\n省        : ").append(location.getProvince());
             sb.append("\n市        : ").append(location.getCity());
             //sb.append("\n城市编码   : ").append(location.getCityCode());
-            sb.append("\n区        : ").append(location.getDistrict());
+            //sb.append("\n区        : ").append(location.getDistrict());
             //sb.append("\n区域 码   : ").append(location.getAdCode());
             sb.append("\n地    址  : ").append(location.getAddress());
             //sb.append("\n地    址  : ").append(location.getDescription());
             //sb.append("\n兴趣点    : ").append(location.getPoiName());
-            sb.append("\n定位时间: " + CommonUtils.formatLocalTimeByMilSecond(location.getTime(), "yyyy-MM-dd HH:mm:ss"));
+            //sb.append("\n定位时间: " + CommonUtils.formatLocalTimeByMilSecond(location.getTime(), "yyyy-MM-dd HH:mm:ss"));
 
         } else { //定位失败
             sb.append("\n定位失败");
