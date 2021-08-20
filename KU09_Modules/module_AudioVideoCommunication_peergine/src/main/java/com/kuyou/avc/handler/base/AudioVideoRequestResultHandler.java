@@ -20,7 +20,7 @@ import kuyou.common.ku09.BaseHandler;
 import kuyou.common.ku09.config.DevicesConfig;
 
 /**
- * action :
+ * action :协处理器[音视频][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

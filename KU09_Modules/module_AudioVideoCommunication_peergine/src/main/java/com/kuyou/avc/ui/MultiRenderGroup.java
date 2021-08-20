@@ -1,10 +1,9 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.PeergineAudioVideoHandler;
 import com.kuyou.avc.ui.base.MultiRender;
 
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
  * action :
@@ -23,7 +22,7 @@ public class MultiRenderGroup extends MultiRender {
 
     @Override
     public int getTypeCode() {
-        return IAudioVideo.MEDIA_TYPE_GROUP;
+        return IJT808ExtensionProtocol.MEDIA_TYPE_GROUP;
     }
 
     @Override
@@ -50,7 +49,7 @@ public class MultiRenderGroup extends MultiRender {
 
     @Override
     protected void playExit(){
-        if (IAudioVideo.RESULT_SUCCESS == getResult()) {
+        if (IJT808ExtensionProtocol.RESULT_SUCCESS == getResult()) {
             play(getString(R.string.media_request_exit_group_success));
         }
     }

@@ -1,7 +1,5 @@
 package com.kuyou.avc;
 
-import android.util.Log;
-
 import com.kuyou.avc.handler.FlashlightHandler;
 import com.kuyou.avc.handler.KeyHandler;
 import com.kuyou.avc.handler.PeergineAudioVideoHandler;
@@ -20,7 +18,7 @@ import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.common.ku09.key.IKeyEventListener;
 
 /**
- * action :
+ * action :音视频服务模块
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -50,35 +48,41 @@ public class ModuleApplication extends BaseApplication {
     protected void init() {
         super.init();
         sMain = ModuleApplication.this;
-
-        initHandlers();
-
         InfearedCameraControl.close();
     }
 
-    private void initHandlers() {
-        if (null != mAudioVideoRequestHandler)
-            return;
+    public AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
+        if (null == mAudioVideoRequestHandler) {
+            mAudioVideoRequestHandler = new PeergineAudioVideoHandler(getApplicationContext());
+            mAudioVideoRequestHandler.setDispatchEventCallBack(ModuleApplication.this)
+                    .setModuleManager(ModuleApplication.this);
+            mAudioVideoRequestHandler.setHandlerKeepAliveClient(getHandlerKeepAliveClient())
+                    .setDevicesConfig(getDevicesConfig());
+            registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
+        }
+        return mAudioVideoRequestHandler;
+    }
 
-        mAudioVideoRequestHandler = PeergineAudioVideoHandler.getInstance(getApplicationContext());
-        mAudioVideoRequestHandler.setDispatchEventCallBack(ModuleApplication.this)
-                .setModuleManager(ModuleApplication.this);
-        mAudioVideoRequestHandler.setHandlerKeepAliveClient(getHandlerKeepAliveClient())
-                .setDevicesConfig(getDevicesConfig());
+    public FlashlightHandler getFlashlightHandler() {
+        if (null == mFlashlightHandler) {
+            mFlashlightHandler = new FlashlightHandler(getApplicationContext());
+        }
+        return mFlashlightHandler;
+    }
 
-        registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
-
-        mKeyHandler = KeyHandler.getInstance(getApplicationContext());
-        mKeyHandler.setAudioVideoRequestResult(mAudioVideoRequestHandler)
-                .setDispatchEventCallBack(ModuleApplication.this)
-                .setModuleManager(ModuleApplication.this);
-
-        mFlashlightHandler = FlashlightHandler.getInstance(getApplicationContext());
+    public KeyHandler getKeyHandler() {
+        if (null == mKeyHandler) {
+            mKeyHandler = new KeyHandler(getApplicationContext());
+            mKeyHandler.setAudioVideoRequestResult(getAudioVideoRequestHandler())
+                    .setDispatchEventCallBack(ModuleApplication.this)
+                    .setModuleManager(ModuleApplication.this);
+        }
+        return mKeyHandler;
     }
 
     @Override
     protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
-        return PeergineAudioVideoHandler.getInstance(getApplicationContext());
+        return getAudioVideoRequestHandler();
     }
 
     @Override
@@ -111,11 +115,10 @@ public class ModuleApplication extends BaseApplication {
     @Override
     public void onModuleEvent(RemoteEvent event) {
         super.onModuleEvent(event);
-        initHandlers();
-        mKeyHandler.onModuleEvent(event);
-        if (mAudioVideoRequestHandler.onModuleEvent(event))
+        getKeyHandler().onModuleEvent(event);
+        if (getAudioVideoRequestHandler().onModuleEvent(event))
             return;
-        if (mFlashlightHandler.onModuleEvent(event))
+        if (getFlashlightHandler().onModuleEvent(event))
             return;
     }
 }

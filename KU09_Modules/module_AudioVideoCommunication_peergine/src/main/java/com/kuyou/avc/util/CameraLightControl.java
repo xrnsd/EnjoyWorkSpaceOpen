@@ -15,7 +15,7 @@ import kuyou.common.file.FileUtils;
 import kuyou.common.utils.CommonUtils;
 
 /**
- * action :
+ * action :手电筒控制
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

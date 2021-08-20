@@ -163,7 +163,7 @@ public class ReaderImpl extends AbsReader {
                 if (len <= 0) {
                     continue;
                 }
-                Log.d("kuyou", "read > 000000000000000000000");
+                Log.d("kuyou.sdk.jt808.oksocket.core.iocore > ReaderImpl", "read >");
                 //}@ end wgx
                 bos.write(b, 0, len);
                 originalData.setBodyBytes(bos.toByteArray());

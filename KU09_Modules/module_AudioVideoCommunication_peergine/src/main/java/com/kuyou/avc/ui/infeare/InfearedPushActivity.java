@@ -15,11 +15,10 @@ import com.thermal.seekware.SeekImageView;
 import com.thermal.seekware.SeekUtility;
 
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
-import kuyou.common.ku09.ui.BaseActivity;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :红外
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -46,7 +45,7 @@ public class InfearedPushActivity extends BaseAVCActivity implements SeekCamera.
 
     @Override
     public int getTypeCode() {
-        return IAudioVideo.MEDIA_TYPE_INFEARED;
+        return IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED;
     }
 
     @Override

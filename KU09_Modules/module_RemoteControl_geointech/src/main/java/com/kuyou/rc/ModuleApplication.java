@@ -2,10 +2,10 @@ package com.kuyou.rc;
 
 import android.content.Context;
 
-import com.kuyou.rc.alarm.AlarmHandler;
-import com.kuyou.rc.key.KeyHandler;
-import com.kuyou.rc.location.LocationHandler;
-import com.kuyou.rc.platform.PlatformInteractiveHandler;
+import com.kuyou.rc.handler.AlarmHandler;
+import com.kuyou.rc.handler.KeyHandler;
+import com.kuyou.rc.handler.LocationHandler;
+import com.kuyou.rc.handler.PlatformInteractiveHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +85,7 @@ public class ModuleApplication extends BaseApplication {
 
     public LocationHandler getLocationHandler() {
         if (null == mLocationHandler) {
-            mLocationHandler = LocationHandler.getInstance()
+            mLocationHandler = new LocationHandler()
                     .init(getApplicationContext(), getHandlerKeepAliveClient().getLooper(), getConfig());
             mLocationHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
@@ -94,7 +94,7 @@ public class ModuleApplication extends BaseApplication {
 
     public KeyHandler getKeyHandler() {
         if (null == mKeyHandler) {
-            mKeyHandler = KeyHandler.getInstance();
+            mKeyHandler = new KeyHandler();
             mKeyHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mKeyHandler;
@@ -102,8 +102,8 @@ public class ModuleApplication extends BaseApplication {
 
     public AlarmHandler getAlarmHandler() {
         if (null == mAlarmHandler) {
-            mAlarmHandler = new AlarmHandler();
-            mAlarmHandler.setLocationProvider(getLocationHandler().getLocationProvider());
+            mAlarmHandler = new AlarmHandler()
+                    .setLocationProvider(getLocationHandler().getLocationProvider());
             mAlarmHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mAlarmHandler;

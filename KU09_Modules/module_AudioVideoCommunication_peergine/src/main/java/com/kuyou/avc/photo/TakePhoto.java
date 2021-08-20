@@ -37,8 +37,7 @@ import java.util.Arrays;
 
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
-import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.ku09.ui.BaseActivity;
 
 /**
@@ -255,7 +254,7 @@ public class TakePhoto extends BaseActivity {
     }
 
     private boolean isLocalDeviceSendInitiate() {
-        return IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
+        return IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
     }
 
     protected void onResult(boolean result, String info) {

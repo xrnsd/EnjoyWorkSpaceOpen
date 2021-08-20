@@ -8,7 +8,7 @@ import android.os.Bundle;
 import kuyou.common.protocol.flow.ILifeListener;
 
 /**
- * action :
+ * action :调试用基础UI节目实现
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

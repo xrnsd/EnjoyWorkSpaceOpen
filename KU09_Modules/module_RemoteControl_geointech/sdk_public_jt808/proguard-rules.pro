@@ -20,35 +20,60 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-#disable debug log
+# ================== basic =====================
 -assumenosideeffects class android.util.Log {
-#    public static *** d(...);
+    public static *** d(...);
     public static *** v(...);
 }
 
-# ================== other =====================
+-assumenosideeffects class java.lang.System {
+    public static *** out(...);
+}
 
 -printmapping proguardMapping.txt #输出混淆前后代码映射关系
 -keepattributes Signature #保留泛型
 -keepattributes SourceFile, LineNumberTable #崩溃抛出异常时,保留源码文件名和源码行号
 
--dontwarn com.saicmaxus.jt808_sdk.oksocket.client.**
--dontwarn com.saicmaxus.jt808_sdk.oksocket.common.**
--dontwarn com.saicmaxus.jt808_sdk.oksocket.server.**
--dontwarn com.saicmaxus.jt808_sdk.oksocket.core.**
+# ================== common =====================
 
--keep class com.saicmaxus.jt808_sdk.oksocket.client.** { *; }
--keep class com.saicmaxus.jt808_sdk.oksocket.common.** { *; }
--keep class com.saicmaxus.jt808_sdk.oksocket.server.** { *; }
--keep class com.saicmaxus.jt808_sdk.oksocket.core.** { *; }
+#android framework
+-keep class android.app.**  {*;}
+
+#eventBus
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+#kuyou IPC
+-keep class kuyou.common.ipc**  {*;}
+-keep class * extends kuyou.common.ipcRemoteEventConverter {
+    *;
+}
+
+#kuyou device local config
+-keep class kuyou.common.ku09.config.**  {*;}
+
+# ================== private =====================
+
+-dontwarn kuyou.sdk.jt808.oksocket.client.**
+-dontwarn kuyou.sdk.jt808.oksocket.common.**
+-dontwarn kuyou.sdk.jt808.oksocket.server.**
+-dontwarn kuyou.sdk.jt808.oksocket.core.**
+
+-keep class kuyou.sdk.jt808.oksocket.client.** { *; }
+-keep class kuyou.sdk.jt808.oksocket.common.** { *; }
+-keep class kuyou.sdk.jt808.oksocket.server.** { *; }
+-keep class kuyou.sdk.jt808.oksocket.core.** { *; }
 
 -keepclassmembers enum * {
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
--keep class com.saicmaxus.jt808_sdk.oksocket.client.sdk.client.OkSocketOptions$* {
+-keep class kuyou.sdk.jt808.oksocket.client.sdk.client.OkSocketOptions$* {
     *;
 }
--keep class com.saicmaxus.jt808_sdk.oksocket.server.impl.OkServerOptions$* {
+-keep class kuyou.sdk.jt808.oksocket.server.impl.OkServerOptions$* {
     *;
 }

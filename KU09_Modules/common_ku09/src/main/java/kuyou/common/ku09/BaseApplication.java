@@ -19,7 +19,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.config.DevicesConfig;
-import kuyou.common.ku09.event.IDispatchEventCallBack;
+import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
@@ -33,16 +33,21 @@ import kuyou.common.utils.DebugUtil;
 import kuyou.common.utils.SystemPropertiesUtils;
 
 /**
- * action :实现HelmetModuleManageServiceManager相关接口
+ * action :模块通用基础实现[抽象]
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-4 <br/>
- * 1 HelmetModuleManageServiceManager相关AIDL接口都实现都封装在KU09_Modules各自的Application里面
- * 2 BaseApplication 实现了模块活动保持,按键事件分发,等模块间公共接口
+ * 已实现列表：<br/>
+ * 1 IPC框架初始化 <br/>
+ * 2 log保存 <br/>
+ * 3 模块活动保持 <br/>
+ * 4 设备基础配置 <br/>
+ * 5 设备部分状态监听 <br/>
+ * 6 按键监听分发 <br/>
  * <p>
  */
 public abstract class BaseApplication extends Application implements
-        IDispatchEventCallBack,
+        IDispatchEventCallback,
         IModuleManager {
 
     protected String TAG = "kuyou.common.ku09 > BaseApplication";
@@ -369,7 +374,7 @@ public abstract class BaseApplication extends Application implements
             Log.e(TAG, "play > process fail : content is invalid");
             return;
         }
-        Log.d(TAG, "play > content= " + content);
+        //Log.d(TAG, "play > content= " + content);
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 
@@ -429,11 +434,6 @@ public abstract class BaseApplication extends Application implements
         return new RemoteEventBus.IFrameLiveListener() {
             @Override
             public void onIpcFrameResisterSuccess() {
-//                if (null != getHandlerKeepAliveClient()) {
-//                    getHandlerKeepAliveClient().sendEmptyMessage(MSG_IPC_FRAME_INIT_FINISH);
-//                } else {
-//                    Log.e(TAG, "onIpcFrameResisterSuccess > process fail : HandlerKeepAliveClient is null");
-//                }
                 BaseApplication.this.onIpcFrameResisterSuccess();
             }
 

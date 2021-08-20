@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.IDispatchEventCallBack;
+import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
 /**
@@ -18,7 +18,7 @@ import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 public abstract class BaseHandler {
     protected final String TAG = "kuyou.common.ku09 > BaseHandler";
 
-    private IDispatchEventCallBack mDispatchEventCallBack;
+    private IDispatchEventCallback mDispatchEventCallBack;
     private IModuleManager mModuleManager;
     private Context mContext;
 
@@ -32,9 +32,13 @@ public abstract class BaseHandler {
 
     public abstract boolean onModuleEvent(RemoteEvent event);
 
-    public BaseHandler setDispatchEventCallBack(IDispatchEventCallBack dispatchEventCallBack) {
+    public BaseHandler setDispatchEventCallBack(IDispatchEventCallback dispatchEventCallBack) {
         mDispatchEventCallBack = dispatchEventCallBack;
         return BaseHandler.this;
+    }
+
+    protected IDispatchEventCallback getDispatchEventCallBack() {
+        return mDispatchEventCallBack;
     }
 
     public BaseHandler setModuleManager(IModuleManager moduleManager) {

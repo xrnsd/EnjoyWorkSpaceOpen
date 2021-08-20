@@ -15,14 +15,25 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-#disable debug log
-#-assumenosideeffects class android.util.Log {
-##    public static *** d(...);
-#    public static *** v(...);
-#}
-#-assumenosideeffects class java.lang.System {
-##    public static *** out(...);
-#}
+
+# ================== basic =====================
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+
+-assumenosideeffects class java.lang.System {
+    public static *** out(...);
+}
+
+-printmapping proguardMapping.txt #输出混淆前后代码映射关系
+-keepattributes Signature #保留泛型
+-keepattributes SourceFile, LineNumberTable #崩溃抛出异常时,保留源码文件名和源码行号
+
+# ================== common =====================
+
+#android framework
+-keep class android.app.**  {*;}
 
 #eventBus
 -keepattributes *Annotation*
@@ -31,18 +42,16 @@
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
-#IPC
+#kuyou IPC
 -keep class kuyou.common.ipc**  {*;}
--keep class com.kuyou.ipc**  {*;}
 -keep class * extends kuyou.common.ipcRemoteEventConverter {
     *;
 }
 
--printmapping proguardMapping.txt #输出混淆前后代码映射关系
--keepattributes Signature #保留泛型
--keepattributes SourceFile, LineNumberTable #崩溃抛出异常时,保留源码文件名和源码行号
+#kuyou device local config
+-keep class kuyou.common.ku09.config.**  {*;}
 
-# ================== other =====================
+# ================== private =====================
 
 -keep class android.app.**  {*;}
 -keep class com.peergine.**  {*;}

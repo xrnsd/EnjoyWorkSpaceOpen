@@ -9,10 +9,10 @@ import org.greenrobot.eventbus.Subscribe;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :视频通话[基于Peergine]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -28,7 +28,7 @@ public class MultiCaptureVideo extends MultiCapture {
 
     @Override
     public int getTypeCode() {
-        return IAudioVideo.MEDIA_TYPE_VIDEO;
+        return IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO;
     }
 
     //本地事件

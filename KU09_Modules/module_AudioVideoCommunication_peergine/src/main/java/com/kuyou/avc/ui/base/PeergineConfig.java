@@ -1,7 +1,7 @@
 package com.kuyou.avc.ui.base;
 
 /**
- * action :
+ * action :Peergine的音视频服务配置
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

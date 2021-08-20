@@ -3,7 +3,7 @@ package com.kuyou.vc.protocol.info;
 import com.kuyou.vc.protocol.CodecVoice;
 
 /**
- * action :
+ * action :协议编解码项[语音控制][硬件实现][最大音量]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

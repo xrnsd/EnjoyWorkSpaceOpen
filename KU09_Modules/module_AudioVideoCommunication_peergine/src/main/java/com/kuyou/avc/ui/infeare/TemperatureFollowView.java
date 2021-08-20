@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import com.thermal.seekware.SeekUtility;
 
 /**
- * action :
+ * action :温度字符显示
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-16 <br/>

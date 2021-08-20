@@ -35,19 +35,14 @@ import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
-
-import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_AUDIO;
-import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_GROUP;
-import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_INFEARED;
-import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_VIDEO;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :协处理器[音视频][基于Peergine]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -55,19 +50,6 @@ import static kuyou.common.ku09.event.avc.base.IAudioVideo.MEDIA_TYPE_VIDEO;
  * </p>
  */
 public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler implements ITakePhotoResultListener {
-
-    private static PeergineAudioVideoHandler sMain;
-
-    private PeergineAudioVideoHandler() {
-    }
-
-    public static PeergineAudioVideoHandler getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new PeergineAudioVideoHandler();
-            sMain.setContext(context.getApplicationContext());
-        }
-        return sMain;
-    }
 
     protected final String TAG = "com.kuyou.avc.handle > " + this.getClass().getSimpleName();
 
@@ -83,8 +65,12 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
 
     private SharedPreferences mSPHandleStatus;
 
-    private int mMediaType = IAudioVideo.MEDIA_TYPE_DEFAULT;
-    private OperateAndTimeoutCallback mOperateAndTimeoutCallback;
+    private int mMediaType = IJT808ExtensionProtocol.MEDIA_TYPE_DEFAULT;
+    private OperateAndTimeoutHandler mOperateAndTimeoutHandler;
+
+    public PeergineAudioVideoHandler(Context context) {
+        setContext(context.getApplicationContext());
+    }
 
     @Override
     public void onIpcFrameResisterSuccess() {
@@ -104,21 +90,21 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 .append("\nmediaTypCache = ").append(mediaTypCache)
                 .toString());
         switch (mediaTypCache) {
-            case MEDIA_TYPE_GROUP:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                 if (!getCacheVal(getContext(), KEY_GROUP_OWNER, false)) {
                     Log.d(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组未正常退出,非群主无需处理 ");
                     return;
                 }
                 Log.d(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组不正常 ");
                 break;
-            case MEDIA_TYPE_VIDEO:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO:
                 Log.d(TAG, "syncPlatformAudioVideoCommunicationStatus > 视频不正常 ");
                 if (HS_OPEN == handleStatusCache) {
                     handleStatusCache = HS_CLOSE_BE_EXECUTING;
                     //return;
                 }
                 break;
-            case MEDIA_TYPE_AUDIO:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO:
                 Log.d(TAG, "syncPlatformAudioVideoCommunicationStatus > 语音不正常");
                 if (HS_OPEN == handleStatusCache) {
                     handleStatusCache = HS_CLOSE_BE_EXECUTING;
@@ -132,11 +118,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         switch (handleStatusCache) {
             case HS_OPEN:
                 mMediaType = mediaTypCache;
-                getOperateAndTimeoutCallback().start(HS_OPEN_REQUEST_BE_EXECUTING, 15000);
+                getOperateAndTimeoutHandler().start(HS_OPEN_REQUEST_BE_EXECUTING, 15000);
                 break;
             default:
                 mMediaType = mediaTypCache;
-                getOperateAndTimeoutCallback().start(HS_CLOSE_BE_EXECUTING, 3000);
+                getOperateAndTimeoutHandler().start(HS_CLOSE_BE_EXECUTING, 3000);
                 break;
         }
     }
@@ -159,6 +145,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         BaseAVCActivity item = (BaseAVCActivity) activity;
         int typeCode = item.getTypeCode();
         if (-1 != typeCode) {
+            item.setAudioVideoRequestCallback(PeergineAudioVideoHandler.this);
+            item.setDispatchEventCallback(PeergineAudioVideoHandler.this.getDispatchEventCallBack());
             Log.d(TAG, "onActivityCreated > put activity =" + activity.getLocalClassName());
             mItemListOnline.put(typeCode, item);
             setHandleStatus(HS_OPEN);
@@ -172,10 +160,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             Log.d(TAG, "onActivityCreated > get up activity =" + activity.getLocalClassName());
             return;
         }
-        int typeCode = ((BaseAVCActivity) activity).getTypeCode();
+        BaseAVCActivity item = (BaseAVCActivity) activity;
+        int typeCode = item.getTypeCode();
         if (-1 != typeCode) {
             switch (typeCode) {
-                case MEDIA_TYPE_GROUP:
+                case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                     mCollectingEndIdRemote = null;
                     break;
                 default:
@@ -189,7 +178,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 .setFlowId(EventAudioVideoOperateRequest.getFlowId(event))
                 .setToken(EventAudioVideoOperateRequest.getToken(event))
                 .setResultCode(result));
-        if (IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL == result
+        if (IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL == result
                 && BuildConfig.DEBUG) {
             play(getContext().getString(R.string.media_request_open_handle_parameter_fail));
         }
@@ -199,20 +188,20 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     public String getTitleByMediaType(final int mediaType, int combinationStrResId) {
         String title = null;
         switch (mediaType) {
-            case MEDIA_TYPE_AUDIO:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO:
                 title = "语音";
                 break;
-            case MEDIA_TYPE_VIDEO:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO:
                 title = "视频";
                 break;
-            case MEDIA_TYPE_INFEARED:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED:
                 title = "红外";
                 break;
-            case MEDIA_TYPE_GROUP:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                 title = "群组";
                 break;
             default:
-                return null;
+                return "未知模式";
         }
         return 0 > combinationStrResId ? title : getContext().getString(combinationStrResId, title);
     }
@@ -241,6 +230,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             @Override
             public void run() {
                 synchronized (mItemListOnline) {
+                    Log.d(TAG, " exitAllLiveItem > size = " + mItemListOnline.size());
                     Set<Integer> set = mItemListOnline.keySet();
                     Iterator<Integer> it = set.iterator();
                     BaseAVCActivity activity;
@@ -250,7 +240,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                         if (null == activity || activity.isDestroyed()) {
                             continue;
                         }
-                        if (-1 != activity.getTypeCode() && MEDIA_TYPE_VIDEO == activity.getTypeCode()) {
+                        if (-1 != activity.getTypeCode() && IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO == activity.getTypeCode()) {
                             CameraLightControl.getInstance(getContext()).switchLaserLight(false);
                         }
                         activity.exit();
@@ -261,13 +251,13 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             }
         });
         //群聊且为群主时
-        if (MEDIA_TYPE_GROUP == PeergineAudioVideoHandler.this.getMediaType()
+        if (IJT808ExtensionProtocol.MEDIA_TYPE_GROUP == PeergineAudioVideoHandler.this.getMediaType()
                 && isGroupOwner()) {
             Log.d(TAG, "getOperateAndTimeoutCallback > 通知平台群组即将关闭");
             dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                    .setMediaType(MEDIA_TYPE_GROUP)
-                    .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                    .setEventType(IAudioVideo.EVENT_TYPE_CLOSE)
+                    .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_GROUP)
+                    .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                    .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE)
                     .setRemote(true));
         }
     }
@@ -284,8 +274,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     public void switchMediaType() {
         String content = null;
         if (getHandlerStatus() == IAudioVideoRequestCallback.HS_NORMAL) {
-            mMediaType = mMediaType >= MEDIA_TYPE_GROUP
-                    ? mMediaType = MEDIA_TYPE_AUDIO
+            mMediaType = mMediaType >= IJT808ExtensionProtocol.MEDIA_TYPE_GROUP
+                    ? mMediaType = IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO
                     : mMediaType + 1;
             content = getTitleByMediaType(mMediaType, R.string.key_switch_mode_success_title);
         } else {
@@ -305,16 +295,22 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 .append(" , mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
                 .toString());
 
+        //未支持功能
+        if (IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED == mMediaType) {
+            play("红外暂时不可用");
+            return;
+        }
+
         if (isItInHandlerState(HS_OPEN_HANDLE_BE_EXECUTING)) {
             Log.d(TAG, "performOperate > 终端取消,申请成功正在打开的通话");
-            getOperateAndTimeoutCallback().stop(HS_OPEN_HANDLE_BE_EXECUTING);
+            getOperateAndTimeoutHandler().stop(HS_OPEN_HANDLE_BE_EXECUTING);
             exitAllLiveItem();
             return;
         }
 
         if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
             Log.d(TAG, "performOperate > 终端取消,正在申请的通话");
-            getOperateAndTimeoutCallback().stop(HS_OPEN_REQUEST_BE_EXECUTING);
+            getOperateAndTimeoutHandler().stop(HS_OPEN_REQUEST_BE_EXECUTING);
             setHandleStatus(HS_NORMAL);
             play(getTitleByMediaType(mMediaType, R.string.media_request_cancel_request));
             return;
@@ -326,14 +322,19 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             return;
         }
 
+        if (isItInHandlerState(HS_CLOSE_BE_EXECUTING)) {
+            Log.d(TAG, "performOperate > 关闭中取消按键操作 ");
+            return;
+        }
+
         Log.d(TAG, "performOperate > 终端申请，开启通话");
-        getOperateAndTimeoutCallback().start(HS_OPEN_REQUEST_BE_EXECUTING, 15000);
+        getOperateAndTimeoutHandler().start(HS_OPEN_REQUEST_BE_EXECUTING, 15000);
     }
 
-    public OperateAndTimeoutCallback getOperateAndTimeoutCallback() {
-        if (null == mOperateAndTimeoutCallback) {
-            mOperateAndTimeoutCallback = OperateAndTimeoutCallback.getInstance();
-            mOperateAndTimeoutCallback.register(HS_OPEN_REQUEST_BE_EXECUTING,
+    public OperateAndTimeoutHandler getOperateAndTimeoutHandler() {
+        if (null == mOperateAndTimeoutHandler) {
+            mOperateAndTimeoutHandler = OperateAndTimeoutHandler.getInstance();
+            mOperateAndTimeoutHandler.register(HS_OPEN_REQUEST_BE_EXECUTING,
                     new Runnable() {
                         @Override
                         public void run() {
@@ -341,8 +342,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                             PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_REQUEST_BE_EXECUTING);
                             PeergineAudioVideoHandler.this.dispatchEvent(new EventAudioVideoParametersApplyRequest()
                                     .setMediaType(PeergineAudioVideoHandler.this.getMediaType())
-                                    .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                                    .setEventType(IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                                    .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                                    .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                                     .setRemote(true));
                         }
                     },
@@ -353,11 +354,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                             PeergineAudioVideoHandler.this.onModuleEvent(new EventAudioVideoParametersApplyResult()
                                     .setResult(false)
                                     .setMediaType(mMediaType)
-                                    .setEventType(IAudioVideo.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE));
+                                    .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE));
                         }
                     });
 
-            mOperateAndTimeoutCallback.register(HS_CLOSE_BE_EXECUTING,
+            mOperateAndTimeoutHandler.register(HS_CLOSE_BE_EXECUTING,
                     new Runnable() {
                         @Override
                         public void run() {
@@ -372,14 +373,14 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                             Log.d(TAG, "OperateTimeoutCallback > 向平台发出音视频关闭请求 > 失败：未响应 > 重新发送关闭指令");
 //                            dispatchEvent(new EventAudioVideoParametersApplyRequest()
 //                                    .setMediaType(getMediaType())
-//                                    .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-//                                    .setEventType(IAudioVideo.EVENT_TYPE_CLOSE)
+//                                    .setPlatformType(JT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+//                                    .setEventType(JT808ExtensionProtocol.EVENT_TYPE_CLOSE)
 //                                    .setRemote(true));
                             setHandleStatus(HS_NORMAL);
                         }
                     });
         }
-        return mOperateAndTimeoutCallback;
+        return mOperateAndTimeoutHandler;
     }
 
     @Override
@@ -392,7 +393,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                     setHandleStatus(HS_NORMAL);
 
                     //平台未响应,超时处理
-                    if (IAudioVideo.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE ==
+                    if (IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE ==
                             EventAudioVideoParametersApplyResult.getEventType(event)) {
                         play(getTitleByMediaType(EventAudioVideoParametersApplyResult.getMediaType(event),
                                 R.string.media_request_timeout_request));
@@ -403,13 +404,13 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
                 Log.d(TAG, "onModuleEvent > 处理拍照请求");
 
-                if (IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeRequest.getEventType(event)) {
+                if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeRequest.getEventType(event)) {
                     play("正在为您拍照");
                 }
 
                 //截图拍照
-                if (isLiveOnlineByType(MEDIA_TYPE_VIDEO) && isItInHandlerState(HS_OPEN)) {
-                    int result = getOnlineList().get(MEDIA_TYPE_VIDEO).takePhoto(event, new BaseAVCActivity.IVideoCameraResultListener() {
+                if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO) && isItInHandlerState(HS_OPEN)) {
+                    int result = getOnlineList().get(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO).takePhoto(event, new BaseAVCActivity.IVideoCameraResultListener() {
                         @Override
                         public void onScreenshot(String result) {
                             PeergineAudioVideoHandler.this.onTakePhotoResult(true, result, event.getData());
@@ -432,9 +433,9 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 final int eventType = EventAudioVideoOperateRequest.getEventType(event);
 
                 //平台拒绝
-                if (IAudioVideo.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType) {
+                if (IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType) {
                     if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
-                        getOperateAndTimeoutCallback().stop(HS_OPEN_REQUEST_BE_EXECUTING);
+                        getOperateAndTimeoutHandler().stop(HS_OPEN_REQUEST_BE_EXECUTING);
                         play(getTitleByMediaType(mMediaType, R.string.media_request_open_rejected_title));
                         setHandleStatus(HS_NORMAL);
                         Log.d(TAG, "onModuleEvent > 处理音视频申请 > 平台拒绝通话申请");
@@ -445,13 +446,13 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 }
 
                 //关闭通话
-                if (IAudioVideo.EVENT_TYPE_CLOSE == eventType) {
+                if (IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType) {
                     if (HS_NORMAL == getHandlerStatus()) {
                         return true;
                     }
                     if (HS_CLOSE_BE_EXECUTING == getHandlerStatus()
                             || HS_CLOSE_BE_EXECUTING == getHandleStatusCache(getContext())) {
-                        getOperateAndTimeoutCallback().stop(HS_CLOSE_BE_EXECUTING);
+                        getOperateAndTimeoutHandler().stop(HS_CLOSE_BE_EXECUTING);
                     } else {
                         exitAllLiveItem();
                     }
@@ -460,7 +461,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 }
 
                 //开启通话
-                getOperateAndTimeoutCallback().stop(HS_OPEN_REQUEST_BE_EXECUTING);
+                getOperateAndTimeoutHandler().stop(HS_OPEN_REQUEST_BE_EXECUTING);
                 setHandleStatus(HS_OPEN_HANDLE_BE_EXECUTING);
 
                 resultStr = openItem(getContext(), event);
@@ -485,20 +486,20 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         Intent item = new Intent();
         Log.d(TAG, "openItem >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
         switch (mediaType) {
-            case MEDIA_TYPE_AUDIO:
-                Log.d(TAG, "openItem > MEDIA_TYPE_AUDIO");
+            case IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO:
+                Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO");
                 item.setClass(context, MultiCaptureAudio.class);
                 break;
-            case MEDIA_TYPE_VIDEO:
-                Log.d(TAG, "openItem > MEDIA_TYPE_VIDEO");
+            case IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO:
+                Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO");
                 item.setClass(context, MultiCaptureVideo.class);
                 break;
-            case MEDIA_TYPE_INFEARED:
-                Log.d(TAG, "openItem > MEDIA_TYPE_INFEARED");
+            case IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED:
+                Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED");
                 item.setClass(context, MultiCaptureInfeared.class);
                 break;
-            case MEDIA_TYPE_GROUP:
-                Log.d(TAG, "openItem > MEDIA_TYPE_GROUP");
+            case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
+                Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_GROUP");
                 mCollectingEndIdRemote = EventAudioVideoOperateRequest.getToken(event);
                 item.setClass(context, MultiCaptureGroup.class);
                 try {
@@ -520,7 +521,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                     }
                 } catch (Exception e) {
                     Log.e(TAG, Log.getStackTraceString(e));
-                    onResult(event, IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                    onResult(event, IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                     return getTitleByMediaType(mediaType, R.string.media_request_open_handle_fail);
                 }
                 break;
@@ -538,7 +539,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             }
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
-            onResult(event, IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+            onResult(event, IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
         }
         return getTitleByMediaType(mediaType, R.string.media_request_open_handle_fail);
     }
@@ -560,7 +561,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     public void onTakePhotoResult(boolean result, String info, Bundle data) {
         if (result) {
             Log.d(TAG, "onResult > 拍照成功 > 申请上传");
-            if (IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
+            if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
                 play("拍照成功");
             }
             dispatchEvent(new EventPhotoUploadRequest()
@@ -569,7 +570,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                     .setRemote(true));
         } else {
             Log.d(TAG, "onResult > 拍照失败");
-            if (IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
+            if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
                 play("拍照失败");
             }
             dispatchEvent(new EventPhotoTakeResult()
@@ -600,7 +601,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         SharedPreferences.Editor editor = mSPHandleStatus.edit();
         editor.putInt(KEY_HANDLER_STATUS, getHandlerStatus());
         editor.putInt(KEY_MEDIA_TYPE, getMediaType());
-        if (MEDIA_TYPE_GROUP == getMediaType()) {
+        if (IJT808ExtensionProtocol.MEDIA_TYPE_GROUP == getMediaType()) {
             editor.putBoolean(KEY_GROUP_OWNER, isGroupOwner());
         }
         editor.commit();

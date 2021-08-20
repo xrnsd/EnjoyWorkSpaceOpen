@@ -1,7 +1,7 @@
 package com.kuyou.vc.definition;
 
 /**
- * action :
+ * action :语音控制，模块数据校验配置
  * <p>
  * author: wuguoxian <br/>
  * date: 20-12-15 <br/>

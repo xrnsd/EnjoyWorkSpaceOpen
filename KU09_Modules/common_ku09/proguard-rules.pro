@@ -20,11 +20,16 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# ================== 自定义 =====================
+
 #disable debug log
-#-assumenosideeffects class android.util.Log {
-#    public static *** d(...);
-#    public static *** v(...);
-#}
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+-assumenosideeffects class java.lang.System {
+    public static *** out(...);
+}
 
 #eventBus
 -keepattributes *Annotation*

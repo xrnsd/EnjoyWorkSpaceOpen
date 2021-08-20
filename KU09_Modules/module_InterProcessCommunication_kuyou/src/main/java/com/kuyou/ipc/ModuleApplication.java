@@ -6,7 +6,7 @@ import android.content.Intent;
 import kuyou.common.ipc.FrameRemoteService;
 
 /**
- * action :
+ * action :IPC框架核心进程
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

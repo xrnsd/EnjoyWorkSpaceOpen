@@ -4,7 +4,7 @@ import com.kuyou.vc.protocol.CodecVoice;
 import com.kuyou.vc.protocol.base.IOnParseListener;
 
 /**
- * action :
+ * action :协议编解码项[语音控制][硬件实现][打开红外热成像视频]
  * <p>
 ftAdb * author: wuguoxian <br/>
  * date: 21-1-25 <br/>

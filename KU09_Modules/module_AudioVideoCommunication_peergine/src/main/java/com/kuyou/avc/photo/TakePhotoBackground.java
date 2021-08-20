@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
 
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 public class TakePhotoBackground extends Service {
 
@@ -121,7 +121,7 @@ public class TakePhotoBackground extends Service {
     }
 
     private boolean isLocalDeviceSendInitiate() {
-        return IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
+        return IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(getData());
     }
 
     protected void onResult(boolean result, String info) {

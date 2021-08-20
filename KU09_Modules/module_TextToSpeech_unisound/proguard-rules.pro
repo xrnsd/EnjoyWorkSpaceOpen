@@ -19,12 +19,24 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-#disable debug log
+# ================== basic =====================
 -assumenosideeffects class android.util.Log {
-#    public static *** d(...);
+    public static *** d(...);
     public static *** v(...);
 }
+
+-assumenosideeffects class java.lang.System {
+    public static *** out(...);
+}
+
+-printmapping proguardMapping.txt #输出混淆前后代码映射关系
+-keepattributes Signature #保留泛型
+-keepattributes SourceFile, LineNumberTable #崩溃抛出异常时,保留源码文件名和源码行号
+
+# ================== common =====================
+
+#android framework
+-keep class android.app.**  {*;}
 
 #eventBus
 -keepattributes *Annotation*
@@ -33,16 +45,13 @@
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
-#IPC
+#kuyou IPC
 -keep class kuyou.common.ipc**  {*;}
 -keep class * extends kuyou.common.ipcRemoteEventConverter {
     *;
 }
 
-# ================== other =====================
+#kuyou device local config
+-keep class kuyou.common.ku09.config.**  {*;}
 
--printmapping proguardMapping.txt #输出混淆前后代码映射关系
--keepattributes Signature #保留泛型
--keepattributes SourceFile, LineNumberTable #崩溃抛出异常时,保留源码文件名和源码行号
-
--keep class android.app.**  {*;}
+# ================== private =====================

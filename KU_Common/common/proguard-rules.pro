@@ -19,11 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# ================== 自定义 =====================
 
 #disable debug log
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
+}
+-assumenosideeffects class java.lang.System {
+    public static *** out(...);
 }
 
 -printmapping proguardMapping.txt #输出混淆前后代码映射关系

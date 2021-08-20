@@ -13,8 +13,6 @@ public abstract class RemoteControlDeviceConfig {
          */
         public final static String RESERVE = "00";
     }
-
-    protected final String TAG = "kuyou.sdk.jt808 > " + this.getClass().getSimpleName();
     
     private String mOrderId = "1234567";  // 订单号
 
@@ -26,17 +24,12 @@ public abstract class RemoteControlDeviceConfig {
     /**
      * UWB模块_ID
      */
-    public String getUwbId(){
-        return "0";
-    }
+    public abstract String getUwbId();
 
     /**
      * 多端视频服务SDK配置信息：采集端ID
      */
-    public String getCollectingEndId(){
-        
-        return null;
-    }
+    public abstract String getCollectingEndId();
 
     /**
      * 服务器地址

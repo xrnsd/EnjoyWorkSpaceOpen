@@ -3,10 +3,10 @@ package com.kuyou.avc.ui;
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.base.MultiCapture;
 
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :群组通话[基于Peergine,采集端]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -22,7 +22,7 @@ public class MultiCaptureGroup extends MultiCapture {
 
     @Override
     public int getTypeCode() {
-        return IAudioVideo.MEDIA_TYPE_GROUP;
+        return IJT808ExtensionProtocol.MEDIA_TYPE_GROUP;
     }
 
     @Override

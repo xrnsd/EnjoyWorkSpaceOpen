@@ -13,18 +13,15 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
-//import org.greenrobot.eventbus.Subscribe;
-//import kuyou.common.ku09.event.common.base.EventKey;
-
 /**
- * action :
+ * action :模块UI界面通用基础实现[抽象]
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-25 <br/>
  * <p>
  */
 public abstract class BaseActivity extends AppCompatActivity {
-    protected final String TAG = "kuyou.common.ku09.ui > " + this.getClass().getSimpleName();
+    protected final String TAG = "kuyou.common.ku09.ui > BaseActivity";
 
     private static final String KEY_WATCH_DOG_FLAG = "isLaunchByWatchDog";
     private static final String KEY_WATCH_DOG_RESTART_FLAG = "isLaunchByWatchDogRestart";
@@ -108,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void play(String content) {
-        Log.d(TAG, "play > content= " + content);
+        //Log.d(TAG, "play > content= " + content);
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 }

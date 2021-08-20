@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.vc;
 import kuyou.common.ku09.event.vc.base.EventVoiceControl;
 
 /**
- * action :
+ * action :事件[模块关闭]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

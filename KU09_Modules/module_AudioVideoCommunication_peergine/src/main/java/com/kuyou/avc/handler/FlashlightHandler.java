@@ -14,7 +14,7 @@ import kuyou.common.ku09.event.avc.EventLaserLightResult;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 
 /**
- * action :
+ * action :协处理器[手电筒]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -24,18 +24,8 @@ import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 public class FlashlightHandler extends BaseHandler {
     protected final String TAG = "com.kuyou.avc.handle > FlashlightHandler";
 
-    private static FlashlightHandler sMain;
-
-    private FlashlightHandler() {
-
-    }
-
-    public static FlashlightHandler getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new FlashlightHandler();
-            sMain.setContext(context.getApplicationContext());
-        }
-        return sMain;
+    public FlashlightHandler(Context context) {
+        setContext(context.getApplicationContext());
     }
 
     @Override

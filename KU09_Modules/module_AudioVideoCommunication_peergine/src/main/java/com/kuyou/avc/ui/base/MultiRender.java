@@ -24,7 +24,7 @@ import com.peergine.plugin.lib.pgLibJNINode;
 
 import java.util.Date;
 
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 public abstract class MultiRender extends BaseAVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     protected final String TAG = "com.kuyou.avc.ui.custom > " + this.getClass().getSimpleName();
@@ -112,11 +112,11 @@ public abstract class MultiRender extends BaseAVCActivity implements ActivityCom
             } else if (sAct.equals("Login")) {
                 // Login reply
                 if (sData.equals("0")) {
-                    onResult(IAudioVideo.RESULT_SUCCESS);
+                    onResult(IJT808ExtensionProtocol.RESULT_SUCCESS);
                     String sInfo = "Login success";
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 } else {
-                    onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
+                    onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     String sInfo = "Login failed, error=" + sData;
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 }
@@ -355,7 +355,7 @@ public abstract class MultiRender extends BaseAVCActivity implements ActivityCom
                 m_sServerAddr, "", 1, sInitParam, this);
         if (iErr != pgLibLiveMultiError.PG_ERR_Normal) {
             Log.e(TAG, "LiveStart: Live.Initialize failed! iErr=" + iErr);
-            onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
+            onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
             exit();
             return;
         }

@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.tts;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :事件[语音生成][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

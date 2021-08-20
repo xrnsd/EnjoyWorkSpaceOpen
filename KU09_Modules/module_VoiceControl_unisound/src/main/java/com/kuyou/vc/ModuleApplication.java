@@ -17,20 +17,20 @@ import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.event.vc.base.EventVoiceControl;
 import kuyou.common.ku09.key.KeyConfig;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :语音控制相关
+ * action :语音控制模块
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-3 <br/>
  * <p>
  */
-public class ModuleApplication extends BaseApplication implements IVoiceControlCustomConfig, IAudioVideo {
+public class ModuleApplication extends BaseApplication implements IVoiceControlCustomConfig {
 
     private static ModuleApplication sApp;
     private AudioMngHelper mAudioMngHelper;
@@ -147,9 +147,9 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
             @Override
             public boolean onCallEg() {
                 dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                        .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                        .setMediaType(IAudioVideo.MEDIA_TYPE_AUDIO)
-                        .setEventType(IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                        .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                        .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                         .setRemote(true));
                 return super.onCallEg();
             }
@@ -157,9 +157,9 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
             @Override
             public boolean onCallHome() {
                 dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                        .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                        .setMediaType(IAudioVideo.MEDIA_TYPE_AUDIO)
-                        .setEventType(IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                        .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                        .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                         .setRemote(true));
                 return super.onCallHome();
             }
@@ -167,8 +167,8 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
             @Override
             public boolean onCallEnd() {
                 dispatchEvent(new EventAudioVideoOperateRequest()
-                        .setMediaType(IAudioVideo.MEDIA_TYPE_AUDIO)
-                        .setEventType(IAudioVideo.EVENT_TYPE_CLOSE)
+                        .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE)
                         .setRemote(true));
                 return super.onCallEnd();
             }
@@ -178,14 +178,14 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
                 boolean result = super.onVideo(switchStatus);
                 if (!switchStatus) {
                     dispatchEvent(new EventAudioVideoOperateRequest()
-                            .setMediaType(IAudioVideo.MEDIA_TYPE_VIDEO)
-                            .setEventType(IAudioVideo.EVENT_TYPE_CLOSE)
+                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO)
+                            .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE)
                             .setRemote(true));
                 }
                 dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                        .setMediaType(IAudioVideo.MEDIA_TYPE_VIDEO)
-                        .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                        .setEventType(IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                        .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO)
+                        .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                         .setRemote(true));
                 return result;
             }
@@ -203,14 +203,14 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
                 boolean result = super.onThermalCamera(switchStatus);
                 if (!switchStatus) {
                     dispatchEvent(new EventAudioVideoOperateRequest()
-                            .setMediaType(IAudioVideo.MEDIA_TYPE_INFEARED)
-                            .setEventType(IAudioVideo.EVENT_TYPE_CLOSE)
+                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED)
+                            .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE)
                             .setRemote(true));
                 }else{
                     dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                            .setMediaType(IAudioVideo.MEDIA_TYPE_INFEARED)
-                            .setPlatformType(IAudioVideo.PLATFORM_TYPE_PEERGIN)
-                            .setEventType(IAudioVideo.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED)
+                            .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                            .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                             .setRemote(true));
                 }
                 return result;
@@ -236,7 +236,7 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
         super.onModuleEvent(event);
         switch (event.getCode()) {
             case EventVoiceControl.Code.VOICE_WAKEUP:
-                play("正在为您打开语音");
+                play("正在为您打开语音控制");
                 getVoiceControl().start();
                 break;
             default:

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.avc.base.EventRequest;
 
 /**
@@ -62,6 +61,9 @@ public class EventAudioVideoOperateRequest extends EventRequest {
     }
 
     public static int getFlowId(Bundle data) {
+        if (null == data) {
+            return -1;
+        }
         return data.getInt(KEY_EVENT_DATA_FLOW_ID);
     }
 

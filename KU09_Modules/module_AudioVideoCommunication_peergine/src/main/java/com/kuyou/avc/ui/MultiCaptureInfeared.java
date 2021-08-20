@@ -3,10 +3,10 @@ package com.kuyou.avc.ui;
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.base.MultiCapExter;
 
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :红外[基于Peergine]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -22,7 +22,7 @@ public class MultiCaptureInfeared extends MultiCapExter {
 
     @Override
     public int getTypeCode() {
-        return IAudioVideo.MEDIA_TYPE_INFEARED;
+        return IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED;
     }
 
     @Override

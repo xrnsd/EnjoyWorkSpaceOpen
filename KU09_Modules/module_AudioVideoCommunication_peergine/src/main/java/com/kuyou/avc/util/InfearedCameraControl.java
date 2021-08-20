@@ -5,7 +5,7 @@ import android.util.Log;
 import kuyou.common.file.FileUtils;
 
 /**
- * action :
+ * action :激光灯控制
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -60,7 +60,7 @@
         </activity>
         
         <activity
-            android:name="com.kuyou.rc.location.amap.LocationActivity"
+            android:name=".handler.location.amap.LocationActivity"
             android:label="RC_LocationActivity"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"

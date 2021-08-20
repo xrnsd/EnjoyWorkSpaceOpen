@@ -20,8 +20,8 @@ import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BaseApplication;
 import kuyou.common.ku09.event.common.EventPowerChange;
-import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
+import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
 /**
  * action :语音合成相关实现
@@ -87,7 +87,7 @@ public class ModuleApplication extends BaseApplication {
         if (null != statusSuper) {
             status.append(statusSuper);
         }
-        if(null == mTTSPlayer){
+        if (null == mTTSPlayer) {
             status.append(",TTS初始化异常");
         }
         return status.toString();
@@ -128,12 +128,12 @@ public class ModuleApplication extends BaseApplication {
                         if (null != mTTSPlayer) {
                             isPlaying = true;
                             mTTSPlayer.play(mPlayText);
-                            Log.d(TAG, "  MSG_PLAY > mPlayText=" + mPlayText);
+                            Log.i(TAG, "handleMessage > MSG_PLAY > text = " + mPlayText);
                         }
                         break;
                     case MSG_RESET:
                         mPlayTextOld = null;
-                        Log.d(TAG, "  MSG_RESET > mPlayTextOld content has been reset");
+                        Log.d(TAG, "handleMessage > MSG_RESET");
                         break;
                     default:
                         break;
@@ -162,6 +162,11 @@ public class ModuleApplication extends BaseApplication {
 
             @Override
             public void onPlayEnd(String speechSynthesisContent) {
+                if (EventPowerChange.POWER_STATUS.SHUTDOWN == ModuleApplication.this.getPowerStatus()) {
+                    getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis() + 120 * 1000);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    return;
+                }
                 isPlaying = false;
                 mHandlerPlay.sendEmptyMessage(MSG_PLAY);
                 mHandlerPlay.sendEmptyMessageDelayed(MSG_RESET, 2000);
@@ -175,25 +180,21 @@ public class ModuleApplication extends BaseApplication {
      */
     protected void onRequestTtsPlay(String text) {
         if (null == text || text.length() <= 0) {
-            Log.d(TAG, "onRequestTtsPlay > text is null ");
+            Log.w(TAG, "onRequestTtsPlay > text is null ");
             return;
         }
         if (null == mPendingPlaylist) {
-            Log.d(TAG, "onRequestTtsPlay > tts module is init fail > auto restart tts");
+            Log.w(TAG, "onRequestTtsPlay > tts module is init fail > auto restart tts");
             getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis() + 60 * 1000);
             android.os.Process.killProcess(android.os.Process.myPid());
             return;
         }
         if (null != mPlayTextOld && mPlayTextOld.equals(text)) {
-            Log.d(TAG, " onRequestTtsPlay > 重复 tts 已取消 > text=" + text);
+            Log.w(TAG, " onRequestTtsPlay > 重复 tts 已取消 > text=" + text);
             return;
         }
         if (getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
-            mHandlerPlay.removeMessages(MSG_PLAY);
-            synchronized (mPendingPlaylist) {
-                mPendingPlaylist.clear();
-            }
-            Log.w(TAG, "onRequestTtsPlay > system is shutting down > cancel play text = " + text);
+            Log.w(TAG, "onRequestTtsPlay > system is ready shut down > cancel play text = " + text);
             return;
         }
         if (!mPendingPlaylist.offer(text)) {
@@ -217,16 +218,20 @@ public class ModuleApplication extends BaseApplication {
 
     @Override
     public void play(String text) {
-        Log.d(TAG, "play > text=" + text);
         onRequestTtsPlay(text);
     }
 
     @Override
     public void onPowerStatus(int status) {
-        if (status == EventPowerChange.POWER_STATUS.SHUTDOWN) {
-            onRequestTtsPlay("关机");
-        }
         super.onPowerStatus(status);
+        if (status == EventPowerChange.POWER_STATUS.SHUTDOWN) {
+            synchronized (mPendingPlaylist) {
+                mHandlerPlay.removeMessages(MSG_PLAY);
+                mPendingPlaylist.clear();
+                mHandlerPlay.removeMessages(MSG_RESET);
+            }
+            mTTSPlayer.play("关机");
+        }
     }
 
     @Override

@@ -24,7 +24,7 @@ import com.peergine.android.livemulti.pgLibLiveMultiCapture;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.plugin.lib.pgLibJNINode;
 
-import kuyou.common.ku09.event.avc.base.IAudioVideo;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 
 public abstract class MultiCapture extends BaseAVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -144,12 +144,12 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
                 if (sData.equals("0")) {
                     String sInfo = "Login success";
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
-                    onResult(IAudioVideo.RESULT_SUCCESS);
+                    onResult(IJT808ExtensionProtocol.RESULT_SUCCESS);
                 } else {
                     if ("8".equals(sData)) {
-                        onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                        onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                     }
-                    onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
+                    onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     String sInfo = "Login failed, error=" + sData;
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 }
@@ -427,7 +427,7 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
         int iErr = m_Live.Initialize(m_sDevID, "", getConfig().getServerAddress(), "", 3, sInitParam, this);
         if (iErr != 0) {
             Log.d(TAG, "LiveStart: Live.Initialize failed! iErr=" + iErr);
-            onResult(IAudioVideo.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
+            onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
             return;
         }
 
@@ -436,15 +436,15 @@ public abstract class MultiCapture extends BaseAVCActivity implements ActivityCo
         m_View.addView(m_Wnd);
         m_Wnd.setVisibility(View.GONE);
 
-        if (getTypeCode() == IAudioVideo.MEDIA_TYPE_VIDEO
-                || getTypeCode() == IAudioVideo.MEDIA_TYPE_GROUP) {
+        if (getTypeCode() == IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO
+                || getTypeCode() == IJT808ExtensionProtocol.MEDIA_TYPE_GROUP) {
             final String sVideoParam = "(Code){3}(Mode){3}(Rate){66}(BitRate){500}(MaxStream){3}(SendCache){1}";
             m_Live.VideoStart(0, sVideoParam, null);
         }
 
-        if (getTypeCode() == IAudioVideo.MEDIA_TYPE_VIDEO
-                || getTypeCode() == IAudioVideo.MEDIA_TYPE_AUDIO
-                || getTypeCode() == IAudioVideo.MEDIA_TYPE_GROUP) {
+        if (getTypeCode() == IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO
+                || getTypeCode() == IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO
+                || getTypeCode() == IJT808ExtensionProtocol.MEDIA_TYPE_GROUP) {
             String sAudioParam = "";
             // String sAudioParam = "(AecConfig){1,-1,-1,-1,-1}"; // Low level aec.
             m_Live.AudioStart(0, sAudioParam);
