@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.kuyou.vc.protocol.base.VoiceControl;
+import com.kuyou.vc.protocol.basic.VoiceControl;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ import kuyou.common.bytes.ByteUtils;
  * </p>
  */
 public class VoiceControlHardware extends VoiceControl {
+    private final String TAG = "com.kuyou.vc.protocol.base > VoiceControlHardware";
 
     private SerialPortImpl mSerialPort;
     private Param mParam;
@@ -36,7 +37,7 @@ public class VoiceControlHardware extends VoiceControl {
     private Handler mHandler = new Handler();
 
     @Override
-    protected int getPolicy() {
+    public int getType() {
         return TYPE.HARDWARE;
     }
 
@@ -62,12 +63,11 @@ public class VoiceControlHardware extends VoiceControl {
                     @Override
                     public void onReceiveData(byte[] data) {
                         Log.d(TAG, "onReceiveData > data = " + ByteUtils.bytes2hex(data));
-                        disPatchVoiceCommand(data);
+                        VoiceControlHardware.this.disPatchVoiceCommand(data);
                     }
 
                     @Override
                     public void onExceptionResult(Exception e) {
-
                     }
                 });
         mSerialPort = SerialPortImpl.getInstance(mParam);
@@ -75,7 +75,6 @@ public class VoiceControlHardware extends VoiceControl {
 
     @Override
     public void onWakeup() {
-
     }
 
     @Override
@@ -85,7 +84,7 @@ public class VoiceControlHardware extends VoiceControl {
         mSerialPort.open();
 
         mHandler.removeCallbacks(mRunnableTimeOut);
-        mHandler.postDelayed(mRunnableTimeOut,70000);
+        mHandler.postDelayed(mRunnableTimeOut, 70000);
     }
 
     @Override
@@ -94,14 +93,13 @@ public class VoiceControlHardware extends VoiceControl {
             mSerialPort.close();
         Log.d(TAG, "stop > ");
         FileUtils.writeInternalAntennaDevice(mParam.getPathDev(), mParam.getPathDevOffVal());
-
         mHandler.removeCallbacks(mRunnableTimeOut);
     }
 
     @Override
     public void onSleep() {
         mHandler.removeCallbacks(mRunnableTimeOut);
-        mHandler.postDelayed(mRunnableTimeOut,60000);
+        mHandler.postDelayed(mRunnableTimeOut, 60000);
     }
 
     @Override

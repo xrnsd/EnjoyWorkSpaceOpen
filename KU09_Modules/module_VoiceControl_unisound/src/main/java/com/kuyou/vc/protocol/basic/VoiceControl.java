@@ -1,4 +1,4 @@
-package com.kuyou.vc.protocol.base;
+package com.kuyou.vc.protocol.basic;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,7 +17,13 @@ import java.util.List;
  * </p>
  */
 public abstract class VoiceControl implements InfoBase.IParseFinishListener {
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+
+    private final String TAG = "com.kuyou.vc.protocol.base > VoiceControl";
+
+    public static interface Config {
+        public static final String appKey = "_appkey_";
+        public static final String secret = "_secret_";
+    }
 
     public static interface TYPE {
         /**
@@ -38,7 +44,7 @@ public abstract class VoiceControl implements InfoBase.IParseFinishListener {
         public void onPlay(String text);
     }
 
-    private int mTypeCode = TYPE.SOFT;
+    private int mTypeCode = -1;
     private Context mContext;
     private List<String> mCommandList = null;
 
@@ -47,27 +53,12 @@ public abstract class VoiceControl implements InfoBase.IParseFinishListener {
 
     public void init(Context context) {
         mContext = context;
-        mTypeCode = getPolicy();
         mCommandList = getCommandList();
         mCodecVoice = CodecVoice.getInstance();
         mCodecVoice.initInfo(context, VoiceControl.this);
     }
 
-    public void setType(int code) {
-        mTypeCode = code;
-    }
-
-    public int getType() {
-        return mTypeCode;
-    }
-
-    public boolean isEnableSoftwareIdentification() {
-        return TYPE.SOFT == mTypeCode;
-    }
-
-    public boolean isEnableHardwareIdentification() {
-        return TYPE.HARDWARE == mTypeCode;
-    }
+    public abstract int getType();
 
     public void setListener(IOnParseListener listener) {
         if (null == mCodecVoice) {
@@ -145,8 +136,6 @@ public abstract class VoiceControl implements InfoBase.IParseFinishListener {
      * 停止录音,停止语音识别
      */
     public abstract void stop();
-
-    protected abstract int getPolicy();
 
     protected abstract List<String> getCommandList();
 }

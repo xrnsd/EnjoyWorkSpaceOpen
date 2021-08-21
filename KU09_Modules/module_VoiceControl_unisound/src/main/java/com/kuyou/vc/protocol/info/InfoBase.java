@@ -3,7 +3,7 @@ package com.kuyou.vc.protocol.info;
 import android.util.Log;
 
 import com.kuyou.vc.protocol.CodecVoice;
-import com.kuyou.vc.protocol.base.IOnParseListener;
+import com.kuyou.vc.protocol.basic.IOnParseListener;
 
 import java.util.Arrays;
 

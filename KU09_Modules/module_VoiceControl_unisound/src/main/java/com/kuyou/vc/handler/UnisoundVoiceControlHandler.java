@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.kuyou.vc.protocol.VoiceControlHardware;
 import com.kuyou.vc.protocol.VoiceControlSoft;
-import com.kuyou.vc.protocol.base.IOnParseListener;
-import com.kuyou.vc.protocol.base.VoiceControl;
+import com.kuyou.vc.protocol.basic.IOnParseListener;
+import com.kuyou.vc.protocol.basic.VoiceControl;
 import com.kuyou.vc.protocol.info.InfoVolume;
 
 import kuyou.common.audio.AudioMngHelper;
@@ -19,42 +19,53 @@ import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :协处理器[语音控制]
+ * action :协处理器[语音控制][Unisound]
  * <p>
- * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-21 <br/>
+ * 待实现:<br/>
+ * 在线升级语音指令<br/>
+ * 语音控制模式切换<br/>
+ * 添加独立的调试模式<br/>
  * </p>
  */
-public class VoiceControlHandler extends BaseHandler {
-    private final String TAG = "com.kuyou.vc.handler > VoiceHandler";
+public class UnisoundVoiceControlHandler extends BaseHandler {
+    private final String TAG = "com.kuyou.vc.handler > UnisoundVoiceControlHandler";
 
     private AudioMngHelper mAudioMngHelper;
     private VoiceControl mVoiceControl;
 
-    private int mVoiceType = VoiceControl.TYPE.HARDWARE;
-
-    public VoiceControlHandler(Context context) {
+    public UnisoundVoiceControlHandler(Context context) {
         setContext(context.getApplicationContext());
         mAudioMngHelper = new AudioMngHelper(getContext());
     }
 
-    public void init() {
-        if (VoiceControl.TYPE.SOFT == getVoiceType()) {
+    public UnisoundVoiceControlHandler init(int voiceType) {
+        if (VoiceControl.TYPE.SOFT == voiceType) {
             mVoiceControl = new VoiceControlSoft();
-        } else if (VoiceControl.TYPE.HARDWARE == getVoiceType()) {
+        } else if (VoiceControl.TYPE.HARDWARE == voiceType) {
             mVoiceControl = new VoiceControlHardware();
         } else {
-            throw new RuntimeException("getVoiceType() is invalid");
+            throw new RuntimeException("getVoiceControlType() is invalid");
         }
         mVoiceControl.init(getContext());
         mVoiceControl.setListener(getListener());
         mVoiceControl.setCallBack(new VoiceControl.ICallBack() {
             @Override
             public void onPlay(String text) {
-                VoiceControlHandler.this.play(text);
+                UnisoundVoiceControlHandler.this.play(text);
             }
         });
+        return UnisoundVoiceControlHandler.this;
+    }
+
+    public void switchType(int type) {
+        if (type == mVoiceControl.getType()) {
+            return;
+        }
+        mVoiceControl.stop();
+        init(type);
+        mVoiceControl.start();
     }
 
     @Override
@@ -73,34 +84,18 @@ public class VoiceControlHandler extends BaseHandler {
         return null != getVoiceControl();
     }
 
-    protected int getVoiceType() {
-        return mVoiceType;
-    }
-
-    public VoiceControlHandler setVoiceType(int voiceType) {
-        mVoiceType = voiceType;
-        return VoiceControlHandler.this;
-    }
-
     protected VoiceControl getVoiceControl() {
         return mVoiceControl;
     }
 
     protected IOnParseListener getListener() {
         return new IOnParseListener() {
-
             @Override
             public boolean onWakeup(boolean switchStatus) {
                 if (switchStatus) {
                     getVoiceControl().onWakeup();
-
                 } else {
                     getVoiceControl().onSleep();
-
-//                    if (null != mNearPowerAlarmStatus) {
-//                        //NearPowerAlarm.open(mNearPowerAlarmStatus);
-//                        mNearPowerAlarmStatus = null;
-//                    }
                 }
                 return super.onWakeup(switchStatus);
             }

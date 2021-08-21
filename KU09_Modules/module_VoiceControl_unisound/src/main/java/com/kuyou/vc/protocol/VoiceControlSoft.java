@@ -3,9 +3,7 @@ package com.kuyou.vc.protocol;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.vc.protocol.base.VoiceControl;
-import com.kuyou.vc.sdk.Config;
-import com.kuyou.vc.sdk.Utils;
+import com.kuyou.vc.protocol.basic.VoiceControl;
 import com.unisound.client.SpeechConstants;
 import com.unisound.client.SpeechUnderstander;
 import com.unisound.client.SpeechUnderstanderListener;
@@ -17,6 +15,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import kuyou.common.file.FileUtils;
+
 /**
  * action :语音控制[软件实现]
  * <p>
@@ -25,6 +25,8 @@ import java.util.List;
  * <p>
  */
 public class VoiceControlSoft extends VoiceControl {
+
+    private final String TAG = "com.kuyou.vc.protocol.base > VoiceControlSoft";
 
     private final String TAG_WAKEUP = "wakeup";
     private final String TARGET_DEST_DIR = "/YunZhiSheng/asrfix/";
@@ -37,11 +39,10 @@ public class VoiceControlSoft extends VoiceControl {
     private boolean mVocabInserted = false;
 
     private StringBuffer mStringBufferCommand;
-
     private SpeechUnderstander mMixSpeechUnderstander;
 
     @Override
-    protected int getPolicy() {
+    public int getType() {
         return TYPE.SOFT;
     }
 
@@ -54,7 +55,7 @@ public class VoiceControlSoft extends VoiceControl {
         Log.d(TAG, "init: ");
         mStringBufferCommand = new StringBuffer();
         mFilePathJsgfdat = context.getFilesDir() + TARGET_DEST_DIR;
-        Utils.copyFile(context, FILE_NAME_CLG, mFilePathJsgfdat);
+        FileUtils.copyFile(context, FILE_NAME_CLG, mFilePathJsgfdat);
         mFilePathJsgfdat += FILE_NAME_CLG;
         mMixSpeechUnderstander = new SpeechUnderstander(context,
                 Config.appKey, Config.secret);

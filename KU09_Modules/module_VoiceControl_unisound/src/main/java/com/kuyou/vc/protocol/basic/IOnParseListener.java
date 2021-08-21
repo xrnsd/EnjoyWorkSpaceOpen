@@ -1,4 +1,4 @@
-package com.kuyou.vc.protocol.base;
+package com.kuyou.vc.protocol.basic;
 
 import android.util.Log;
 

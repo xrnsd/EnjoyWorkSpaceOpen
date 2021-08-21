@@ -1,7 +1,7 @@
 package com.kuyou.vc.protocol.info;
 
 import com.kuyou.vc.protocol.CodecVoice;
-import com.kuyou.vc.protocol.base.IOnParseListener;
+import com.kuyou.vc.protocol.basic.IOnParseListener;
 
 /**
  * action :

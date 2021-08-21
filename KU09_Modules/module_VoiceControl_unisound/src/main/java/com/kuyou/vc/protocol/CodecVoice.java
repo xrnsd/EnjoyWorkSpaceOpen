@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.kuyou.vc.protocol.base.IOnParseListener;
+import com.kuyou.vc.protocol.basic.IOnParseListener;
 import com.kuyou.vc.protocol.info.InfoBase;
 
 import java.util.Arrays;

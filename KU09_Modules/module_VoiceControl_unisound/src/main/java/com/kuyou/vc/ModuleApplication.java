@@ -1,8 +1,7 @@
 package com.kuyou.vc;
 
-import com.kuyou.vc.definition.IVoiceControlCustomConfig;
-import com.kuyou.vc.handler.VoiceControlHandler;
-import com.kuyou.vc.protocol.base.VoiceControl;
+import com.kuyou.vc.handler.UnisoundVoiceControlHandler;
+import com.kuyou.vc.protocol.basic.VoiceControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +20,15 @@ import kuyou.common.ku09.key.KeyConfig;
  * date: 20-11-3 <br/>
  * <p>
  */
-public class ModuleApplication extends BaseApplication implements IVoiceControlCustomConfig {
+public class ModuleApplication extends BaseApplication {
+
+    private final String TAG = "com.kuyou.vc > ModuleApplication";
+
+    public static final int INIT_CHECK_COUNT_MAX = 10;
+    public static final int INIT_CHECK_FREQ = 10 * 1000;
 
     private KeyHandler mKeyHandler;
-    private VoiceControlHandler mVoiceControlHandler;
+    private UnisoundVoiceControlHandler mUnisoundVoiceControlHandler;
 
     @Override
     protected String getApplicationName() {
@@ -34,7 +38,6 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
     @Override
     protected void init() {
         super.init();
-
         registerHandler(getVoiceControlHandler(), getKeyHandler());
     }
 
@@ -92,14 +95,13 @@ public class ModuleApplication extends BaseApplication implements IVoiceControlC
         return mKeyHandler;
     }
 
-    public VoiceControlHandler getVoiceControlHandler() {
-        if (null == mVoiceControlHandler) {
-            mVoiceControlHandler = new VoiceControlHandler(getApplicationContext());
-            mVoiceControlHandler.setVoiceType(VoiceControl.TYPE.HARDWARE);
-            mVoiceControlHandler.setDispatchEventCallBack(ModuleApplication.this);
-            mVoiceControlHandler.setModuleManager(ModuleApplication.this);
-            mVoiceControlHandler.init();
+    public UnisoundVoiceControlHandler getVoiceControlHandler() {
+        if (null == mUnisoundVoiceControlHandler) {
+            mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler(getApplicationContext());
+            mUnisoundVoiceControlHandler.setDispatchEventCallBack(ModuleApplication.this);
+            mUnisoundVoiceControlHandler.setModuleManager(ModuleApplication.this);
+            mUnisoundVoiceControlHandler.init(VoiceControl.TYPE.HARDWARE);
         }
-        return mVoiceControlHandler;
+        return mUnisoundVoiceControlHandler;
     }
 }

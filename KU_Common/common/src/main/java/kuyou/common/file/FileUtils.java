@@ -565,4 +565,45 @@ public class FileUtils {
         Log.i(TAG, "autoClean > process success ");
         return true;
     }
+
+    public static void copyFile(Context context, String assetsFile, String destination) {
+        InputStream is = null;
+        FileOutputStream fos = null;
+        byte[] buf1 = new byte[512];
+        try {
+            File des = new File(destination, assetsFile);
+            if (des.exists()) {
+                return;
+            }
+            if (!new File(destination).exists()) {
+                Log.d(TAG, "mkdirs  " + new File(destination).mkdirs());
+            }
+            Log.d(TAG, "copy to: " + des.getAbsolutePath());
+            fos = new FileOutputStream(des);
+            is = context.getAssets().open(assetsFile);
+            int readCount;
+            while ((readCount = is.read(buf1)) > 0) {
+                fos.write(buf1, 0, readCount);
+            }
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "copy: ", e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
