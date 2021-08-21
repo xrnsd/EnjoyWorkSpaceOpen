@@ -26,16 +26,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String KEY_WATCH_DOG_FLAG = "isLaunchByWatchDog";
     private static final String KEY_WATCH_DOG_RESTART_FLAG = "isLaunchByWatchDogRestart";
 
+    protected boolean isEnableContentView() {
+        return true;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //EventBus.getDefault().register(this);
         if (-1 != getContentViewResId()) {
             super.setContentView(getContentViewResId());
-        } else {
+        } else if (isEnableContentView()) {
             throw new RuntimeException("getContentViewResId is none");
         }
-        initViews();
+        if (isEnableContentView()) {
+            initViews();
+        } else {
+            init();
+        }
     }
 
     @Override
@@ -44,28 +52,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         autoHideOrRestart(this);
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        EventBus.getDefault().unregister(this);
-//    }
+    protected void init() {
 
-//    @Subscribe
-//    public void onModuleEvent(RemoteEvent event) {
-//        switch (event.getCode()) {
-//            case EventKey.Code.KEY_CLICK:
-//                onKeyClick(EventKey.getKeyCode(event));
-//                break;
-//            case EventKey.Code.KEY_DOUBLE_CLICK:
-//                onKeyDoubleClick(EventKey.getKeyCode(event));
-//                break;
-//            case EventKey.Code.KEY_LONG_CLICK:
-//                onKeyLongClick(EventKey.getKeyCode(event));
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    }
 
     protected void initViews() {
 

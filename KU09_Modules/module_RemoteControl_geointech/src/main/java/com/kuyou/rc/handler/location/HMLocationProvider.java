@@ -66,15 +66,7 @@ public class HMLocationProvider implements ILocationProvider {
         if (null != mHmmsm) {
             return mHmmsm;
         }
-        try {
-            mHmmsm = ModuleApplication.getInstance()
-                    .getHelmetModuleManageServiceManager();
-        } catch (Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
-        if (null == mHmmsm) {
-            mHmmsm = (HelmetModuleManageServiceManager) getContext().getSystemService("helmet_module_manage_service");
-        }
+        mHmmsm = (HelmetModuleManageServiceManager) getContext().getSystemService("helmet_module_manage_service");
         return mHmmsm;
     }
 

@@ -24,6 +24,7 @@ import com.kuyou.avc.ui.MultiCaptureVideo;
 import com.kuyou.avc.ui.MultiRenderGroup;
 import com.kuyou.avc.ui.base.BaseAVCActivity;
 import com.kuyou.avc.util.CameraLightControl;
+import com.kuyou.avc.util.InfearedCameraControl;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -70,6 +71,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
 
     public PeergineAudioVideoHandler(Context context) {
         setContext(context.getApplicationContext());
+        InfearedCameraControl.close();
     }
 
     @Override

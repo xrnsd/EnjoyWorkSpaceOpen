@@ -17,7 +17,7 @@ import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.BaseHandler;
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;

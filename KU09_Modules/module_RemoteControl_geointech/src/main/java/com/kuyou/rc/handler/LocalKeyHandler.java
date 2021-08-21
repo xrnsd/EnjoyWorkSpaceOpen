@@ -2,14 +2,12 @@ package com.kuyou.rc.handler;
 
 import android.util.Log;
 
-import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.BaseHandler;
 import kuyou.common.ku09.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmSos;
-import kuyou.common.ku09.key.IKeyEventListener;
+import kuyou.common.ku09.handler.KeyHandler;
 import kuyou.common.ku09.key.KeyConfig;
 
 /**
@@ -20,19 +18,14 @@ import kuyou.common.ku09.key.KeyConfig;
  * date: 21-7-23 <br/>
  * </p>
  */
-public class KeyHandler extends BaseHandler implements IKeyEventListener, IPowerStatusListener {
+public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener {
     protected final String TAG = "com.kuyou.rc.handler > KeyHandler";
 
     private boolean isEnableNearPowerAlarm = true;
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
-        return false;
-    }
-
-    @Override
     public void onKeyClick(int keyCode) {
-        Log.d(TAG, "onKeyClick > keyCode = "+keyCode);
+        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.ALARM_NEAR_POWER:
                 if (!isEnableNearPowerAlarm) {
@@ -57,12 +50,12 @@ public class KeyHandler extends BaseHandler implements IKeyEventListener, IPower
 
     @Override
     public void onKeyDoubleClick(int keyCode) {
-        Log.d(TAG, "onKeyDoubleClick > keyCode = "+keyCode);
+        Log.d(TAG, "onKeyDoubleClick > keyCode = " + keyCode);
     }
 
     @Override
     public void onKeyLongClick(int keyCode) {
-        Log.d(TAG, "onKeyLongClick > keyCode = "+keyCode);
+        Log.d(TAG, "onKeyLongClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.CALL:
                 dispatchEvent(new EventAlarmSos()

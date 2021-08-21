@@ -10,7 +10,7 @@ import kuyou.common.ku09.event.vc.base.EventVoiceControl;
  * date: 21-3-29 <br/>
  * </p>
  */
-public class EventModuleInitFinish extends EventVoiceControl {
+public class EventVCModuleLiveInitFinish extends EventVoiceControl {
     @Override
     public int getCode() {
         return Code.MODULE_INIT_FINISH;

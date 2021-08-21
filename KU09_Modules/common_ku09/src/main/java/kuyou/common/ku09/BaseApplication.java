@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
@@ -24,9 +25,8 @@ import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
-import kuyou.common.ku09.event.common.base.EventKey;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.key.IKeyEventListener;
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -38,7 +38,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * author: wuguoxian <br/>
  * date: 20-11-4 <br/>
  * 已实现列表：<br/>
- * 1 IPC框架初始化 <br/>
+ * 1 IPC框架配置 <br/>
  * 2 log保存 <br/>
  * 3 模块活动保持 <br/>
  * 4 设备基础配置 <br/>
@@ -331,13 +331,35 @@ public abstract class BaseApplication extends Application implements
                 delayedMillisecond);
     }
 
-    // ============================ 事件相关 ============================
+    // ============================ 模块间IPC，模块与系统服务 ============================
 
-    private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
-    private IPowerStatusListener mPowerStatusListener;
-    private IKeyEventListener mKeyEventListener;
+    private List<BaseHandler> mHandlerList = new ArrayList<>();
 
+    /**
+     * action:远程事件的监听列表
+     **/
     protected abstract List<Integer> getEventDispatchList();
+
+    /**
+     * action:模块间IPC框架状态监听器
+     **/
+    protected abstract RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener();
+
+    /**
+     * action:注册事件处理器
+     **/
+    protected void registerHandler(BaseHandler... handlers) {
+        if (null == handlers || handlers.length == 0) {
+            Log.e(TAG, "registerHandler > process fail : handlers is null");
+        }
+        for (BaseHandler handler : handlers) {
+            mHandlerList.add(handler);
+        }
+    }
+
+    protected List<BaseHandler> getHandlerList() {
+        return mHandlerList;
+    }
 
     @Override
     public void dispatchEvent(RemoteEvent event) {
@@ -347,26 +369,12 @@ public abstract class BaseApplication extends Application implements
     //本地事件
     @Subscribe
     public void onModuleEvent(RemoteEvent event) {
-        switch (event.getCode()) {
-            case EventPowerChange.Code.POWER_CHANGE:
-                final int val = EventPowerChange.getPowerStatus(event);
-                if (val == getPowerStatus()) {
-                    return;
-                }
-                getPowerStatusListener().onPowerStatus(val);
-                break;
-            case EventKey.Code.KEY_CLICK:
-                getKeyListener().onKeyClick(EventKey.getKeyCode(event));
-                break;
-            case EventKey.Code.KEY_LONG_CLICK:
-                getKeyListener().onKeyLongClick(EventKey.getKeyCode(event));
-                break;
-            case EventKey.Code.KEY_DOUBLE_CLICK:
-                getKeyListener().onKeyDoubleClick(EventKey.getKeyCode(event));
-                break;
-            default:
-                break;
+        for (BaseHandler handler : getHandlerList()) {
+            if (handler.onModuleEvent(event)) {
+                return;
+            }
         }
+        Log.d(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());
     }
 
     public void play(String content) {
@@ -376,79 +384,6 @@ public abstract class BaseApplication extends Application implements
         }
         //Log.d(TAG, "play > content= " + content);
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
-    }
-
-    protected IPowerStatusListener getPowerStatusListener() {
-        if (null == mPowerStatusListener) {
-            mPowerStatusListener = new IPowerStatusListener() {
-                @Override
-                public void onPowerStatus(int status) {
-                    BaseApplication.this.onPowerStatus(status);
-                }
-            };
-        }
-        return mPowerStatusListener;
-    }
-
-    protected void onPowerStatus(int status) {
-        Log.d(TAG, "onPowerStatus > status = " + status);
-        mPowerStatus = status;
-    }
-
-    protected int getPowerStatus() {
-        return mPowerStatus;
-    }
-
-    protected IKeyEventListener getKeyListener() {
-        if (null == mKeyEventListener) {
-            mKeyEventListener = new IKeyEventListener() {
-                @Override
-                public void onKeyClick(int keyCode) {
-                    BaseApplication.this.onKeyClick(keyCode);
-                }
-
-                @Override
-                public void onKeyDoubleClick(int keyCode) {
-                    BaseApplication.this.onKeyDoubleClick(keyCode);
-                }
-
-                @Override
-                public void onKeyLongClick(int keyCode) {
-                    BaseApplication.this.onKeyLongClick(keyCode);
-                }
-            };
-        }
-        return mKeyEventListener;
-    }
-
-    protected void onKeyClick(int keyCode) {
-    }
-
-    protected void onKeyDoubleClick(int keyCode) {
-    }
-
-    protected void onKeyLongClick(int keyCode) {
-    }
-
-    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
-        return new RemoteEventBus.IFrameLiveListener() {
-            @Override
-            public void onIpcFrameResisterSuccess() {
-                BaseApplication.this.onIpcFrameResisterSuccess();
-            }
-
-            @Override
-            public void onIpcFrameUnResister() {
-                BaseApplication.this.onIpcFrameUnResister();
-            }
-        };
-    }
-
-    protected void onIpcFrameResisterSuccess() {
-    }
-
-    protected void onIpcFrameUnResister() {
-
     }
 
     // =========================== 设备配置等==============================

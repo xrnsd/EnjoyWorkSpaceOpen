@@ -1,9 +1,10 @@
-package kuyou.common.ku09;
+package kuyou.common.ku09.handler;
 
 import android.content.Context;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.IModuleManager;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
@@ -18,9 +19,9 @@ import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 public abstract class BaseHandler {
     protected final String TAG = "kuyou.common.ku09 > BaseHandler";
 
-    private IDispatchEventCallback mDispatchEventCallBack;
-    private IModuleManager mModuleManager;
     private Context mContext;
+    private IModuleManager mModuleManager;
+    private IDispatchEventCallback mDispatchEventCallBack;
 
     protected Context getContext() {
         return mContext;

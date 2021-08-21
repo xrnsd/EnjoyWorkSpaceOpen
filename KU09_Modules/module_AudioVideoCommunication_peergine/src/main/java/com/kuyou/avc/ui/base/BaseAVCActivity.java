@@ -2,12 +2,12 @@ package com.kuyou.avc.ui.base;
 
 import android.util.Log;
 
-import com.kuyou.avc.ModuleApplication;
 import com.kuyou.avc.R;
 import com.kuyou.avc.handler.base.IAudioVideoRequestCallback;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.IDispatchEventCallback;
+import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
@@ -97,8 +97,11 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
                 recreate();
                 return;
             }
-            Log.e(TAG, "onResult > 模块视频服务异常，重新打开多次无效，放弃快速重置，准备重启模块");
-            ModuleApplication.getInstance().reboot(500);
+            Log.e(TAG, "onResult > 模块视频服务异常，重新打开多次无效，放弃快速重置");
+            dispatchEvent(new EventAVCModuleLiveExit()
+                    .setExitType(EventAVCModuleLiveExit.ExitType.REBOOT)
+                    .setRemote(false));
+            return;
         }
 
         playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
@@ -115,16 +118,14 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
             String token = EventAudioVideoOperateRequest.getToken(getIntent().getExtras());
             String channel = EventAudioVideoOperateRequest.getChannelId(getIntent().getExtras());
 
-
-            if (null == token) {
-                token = "hzjy070607";
-                channel = "1111";
-            }
+//            if (null == token) {
+//                token = "hzjy070607";
+//                channel = "1111";
+//            }
 
             if (null == token) {
                 Log.w(TAG, "getConfig > token is null");
-                //onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
-                token = ModuleApplication.getInstance().getDevicesConfig().getCollectingEndId();
+                onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                 exit();
                 return null;
             }

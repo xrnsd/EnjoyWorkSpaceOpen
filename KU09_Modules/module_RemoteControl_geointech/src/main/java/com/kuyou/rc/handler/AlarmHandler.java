@@ -7,7 +7,7 @@ import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.BaseHandler;
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;

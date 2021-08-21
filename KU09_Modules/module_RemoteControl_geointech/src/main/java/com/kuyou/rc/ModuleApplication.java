@@ -3,7 +3,7 @@ package com.kuyou.rc;
 import android.content.Context;
 
 import com.kuyou.rc.handler.AlarmHandler;
-import com.kuyou.rc.handler.KeyHandler;
+import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
@@ -11,12 +11,11 @@ import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BaseApplication;
-import kuyou.common.ku09.IPowerStatusListener;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
-import kuyou.common.ku09.key.IKeyEventListener;
+import kuyou.common.ku09.handler.ModuleCommonHandler;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 
 /**
@@ -28,18 +27,13 @@ import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
  */
 public class ModuleApplication extends BaseApplication {
 
-    private static ModuleApplication sApplication;
+    private RemoteControlDeviceConfig mConfig;
 
-    public static ModuleApplication getInstance() {
-        return sApplication;
-    }
-
-    protected RemoteControlDeviceConfig mConfig;
-
+    private ModuleCommonHandler mModuleCommonHandler;
     private PlatformInteractiveHandler mPlatformInteractiveHandler;
     private LocationHandler mLocationHandler;
     private AlarmHandler mAlarmHandler;
-    private KeyHandler mKeyHandler;
+    private LocalKeyHandler mLocalKeyHandler;
 
     @Override
     protected String getApplicationName() {
@@ -58,9 +52,21 @@ public class ModuleApplication extends BaseApplication {
     }
 
     @Override
+    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
+        return null;
+    }
+
+    @Override
     protected void init() {
         super.init();
-        sApplication = ModuleApplication.this;
+
+        registerHandler(
+                getModuleCommonHandler(),
+                getLocalKeyHandler(),
+                getPlatformInteractiveHandler(),
+                getAlarmHandler(),
+                getLocationHandler());
+
         getPlatformInteractiveHandler().connect();
     }
 
@@ -82,65 +88,6 @@ public class ModuleApplication extends BaseApplication {
             return "未正常定位,尝试复位";
         }
         return null;
-    }
-
-    public LocationHandler getLocationHandler() {
-        if (null == mLocationHandler) {
-            int policy = 0;
-            policy |= ILocationProviderPolicy.POLICY_PROVIDER_CACHE_LOCATION;
-            policy |= ILocationProviderPolicy.POLICY_PROVIDER_AMAP;
-            //policy |= ILocationProviderPolicy.POLICY_FILER;
-            mLocationHandler = new LocationHandler()
-                    .setLocationProviderPolicy(policy)
-                    .initProviderFilter(ModuleApplication.this, getHandlerKeepAliveClient().getLooper(), getConfig());
-            mLocationHandler.setDispatchEventCallBack(ModuleApplication.this);
-        }
-        return mLocationHandler;
-    }
-
-    public KeyHandler getKeyHandler() {
-        if (null == mKeyHandler) {
-            mKeyHandler = new KeyHandler();
-            mKeyHandler.setDispatchEventCallBack(ModuleApplication.this);
-        }
-        return mKeyHandler;
-    }
-
-    public AlarmHandler getAlarmHandler() {
-        if (null == mAlarmHandler) {
-            mAlarmHandler = new AlarmHandler()
-                    .setLocationProvider(getLocationHandler().getLocationProvider());
-            mAlarmHandler.setDispatchEventCallBack(ModuleApplication.this);
-        }
-        return mAlarmHandler;
-    }
-
-    protected PlatformInteractiveHandler getPlatformInteractiveHandler() {
-        if (null == mPlatformInteractiveHandler) {
-            mPlatformInteractiveHandler = new PlatformInteractiveHandler(new PlatformInteractiveHandler.IControlHandlerCallback() {
-                @Override
-                public Context getContext() {
-                    return ModuleApplication.this;
-                }
-
-                @Override
-                public RemoteControlDeviceConfig getConfig() {
-                    return ModuleApplication.this.getConfig();
-                }
-            });
-            mPlatformInteractiveHandler.setEventCallBack(ModuleApplication.this);
-        }
-        return mPlatformInteractiveHandler;
-    }
-
-    @Override
-    protected IPowerStatusListener getPowerStatusListener() {
-        return getKeyHandler();
-    }
-
-    @Override
-    protected IKeyEventListener getKeyListener() {
-        return getKeyHandler();
     }
 
     public RemoteControlDeviceConfig getConfig() {
@@ -195,11 +142,60 @@ public class ModuleApplication extends BaseApplication {
         return mConfig;
     }
 
-    @Override
-    public void onModuleEvent(RemoteEvent event) {
-        super.onModuleEvent(event);
-        getPlatformInteractiveHandler().onModuleEvent(event);
-        getAlarmHandler().onModuleEvent(event);
-        getLocationHandler().onModuleEvent(event);
+    public ModuleCommonHandler getModuleCommonHandler() {
+        if (null == mModuleCommonHandler) {
+            mModuleCommonHandler = new ModuleCommonHandler()
+                    .setPowerStatusListener(getLocalKeyHandler());
+        }
+        return mModuleCommonHandler;
+    }
+
+    public LocationHandler getLocationHandler() {
+        if (null == mLocationHandler) {
+            int policy = 0;
+            policy |= ILocationProviderPolicy.POLICY_PROVIDER_CACHE_LOCATION;
+            policy |= ILocationProviderPolicy.POLICY_PROVIDER_AMAP;
+            //policy |= ILocationProviderPolicy.POLICY_FILER;
+            mLocationHandler = new LocationHandler()
+                    .setLocationProviderPolicy(policy)
+                    .initProviderFilter(ModuleApplication.this, getHandlerKeepAliveClient().getLooper(), getConfig());
+            mLocationHandler.setDispatchEventCallBack(ModuleApplication.this);
+        }
+        return mLocationHandler;
+    }
+
+    public LocalKeyHandler getLocalKeyHandler() {
+        if (null == mLocalKeyHandler) {
+            mLocalKeyHandler = new LocalKeyHandler();
+            mLocalKeyHandler.setDispatchEventCallBack(ModuleApplication.this);
+        }
+        return mLocalKeyHandler;
+    }
+
+    public AlarmHandler getAlarmHandler() {
+        if (null == mAlarmHandler) {
+            mAlarmHandler = new AlarmHandler()
+                    .setLocationProvider(getLocationHandler().getLocationProvider());
+            mAlarmHandler.setDispatchEventCallBack(ModuleApplication.this);
+        }
+        return mAlarmHandler;
+    }
+
+    protected PlatformInteractiveHandler getPlatformInteractiveHandler() {
+        if (null == mPlatformInteractiveHandler) {
+            mPlatformInteractiveHandler = new PlatformInteractiveHandler(new PlatformInteractiveHandler.IControlHandlerCallback() {
+                @Override
+                public Context getContext() {
+                    return ModuleApplication.this;
+                }
+
+                @Override
+                public RemoteControlDeviceConfig getConfig() {
+                    return ModuleApplication.this.getConfig();
+                }
+            });
+            mPlatformInteractiveHandler.setDispatchEventCallBack(ModuleApplication.this);
+        }
+        return mPlatformInteractiveHandler;
     }
 }

@@ -8,6 +8,8 @@ import android.util.Log;
 import com.kuyou.rc.handler.platform.PlatformConnectManager;
 import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
+
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import com.kuyou.rc.protocol.jt808extend.item.SicAudioVideo;
@@ -21,7 +23,6 @@ import java.io.File;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
@@ -41,7 +42,6 @@ import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.common.ku09.event.rc.base.EventResult;
-import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
@@ -57,7 +57,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  * date: 21-3-29 <br/>
  * </p>
  */
-public class PlatformInteractiveHandler {
+public class PlatformInteractiveHandler extends BaseHandler {
 
     protected final String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
 
@@ -66,8 +66,6 @@ public class PlatformInteractiveHandler {
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
 
     private IControlHandlerCallback mControlHandlerCallback;
-
-    private IDispatchEventCallback mEventCallBack;
 
     public static interface IControlHandlerCallback {
         public Context getContext();
@@ -78,19 +76,6 @@ public class PlatformInteractiveHandler {
     public PlatformInteractiveHandler(IControlHandlerCallback callback) {
         super();
         mControlHandlerCallback = callback;
-    }
-
-    public PlatformInteractiveHandler setEventCallBack(IDispatchEventCallback callBack) {
-        mEventCallBack = callBack;
-        return PlatformInteractiveHandler.this;
-    }
-
-    protected void dispatchEvent(RemoteEvent event) {
-        if (null == mEventCallBack) {
-            Log.e(TAG, "dispatchEvent > process fail : mEventCallBack is null");
-            return;
-        }
-        mEventCallBack.dispatchEvent(event);
     }
 
     public IControlHandlerCallback getControlHandlerCallback() {
@@ -168,11 +153,6 @@ public class PlatformInteractiveHandler {
             }).load(PlatformInteractiveHandler.this.getConfig());
         }
         return mJt808ExtendProtocolCodec;
-    }
-
-    private void play(String text) {
-        Log.d(TAG, "play > text = " + text);
-        dispatchEvent(new EventTextToSpeechPlayRequest(text));
     }
 
     public String isReady() {

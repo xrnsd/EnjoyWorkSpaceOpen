@@ -1,7 +1,5 @@
 package kuyou.common.ku09.event.common.base;
 
-import kuyou.common.ipc.RemoteEvent;
-
 /**
  * action :定义模块事件Code范围
  * <p>

@@ -16,7 +16,7 @@ import java.util.Map;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BaseHandler;
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.config.DevicesConfig;
 
 /**

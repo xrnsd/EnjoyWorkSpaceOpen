@@ -21,6 +21,7 @@ public abstract class EventTextToSpeech extends RemoteEvent {
         //模块状态相关 0~127
         public final static int MODULE_INIT_FINISH = FLAG_CODE + 0;
         public final static int MODULE_EXIT = FLAG_CODE + 1;
+        public final static int MODULE_INIT_REQUEST = FLAG_CODE + 2;
 
         //业务需求相关 128 ~ 2047
         public final static int TEXT_PLAY = FLAG_CODE + 128;

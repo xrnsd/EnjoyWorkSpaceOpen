@@ -6,7 +6,7 @@ import android.util.Log;
 import com.kuyou.avc.util.CameraLightControl;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.BaseHandler;
+import kuyou.common.ku09.handler.BaseHandler;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightResult;
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;

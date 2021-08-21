@@ -8,7 +8,7 @@ package kuyou.common.ku09.event.tts;
  * date: 21-3-29 <br/>
  * </p>
  */
-public class EventInitFinish extends EventTextToSpeech {
+public class EventTTSModuleLiveInitFinish extends EventTextToSpeech {
     @Override
     public int getCode() {
         return Code.MODULE_INIT_FINISH;
