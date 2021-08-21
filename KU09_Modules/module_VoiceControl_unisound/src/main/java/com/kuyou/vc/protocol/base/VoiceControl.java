@@ -9,7 +9,7 @@ import com.kuyou.vc.protocol.info.InfoBase;
 import java.util.List;
 
 /**
- * action :
+ * action :协议编解码器[语音控制][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

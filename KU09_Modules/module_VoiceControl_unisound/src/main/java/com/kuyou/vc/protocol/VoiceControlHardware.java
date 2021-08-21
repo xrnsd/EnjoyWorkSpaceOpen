@@ -15,7 +15,7 @@ import kuyou.common.serialport.protocol.SerialPortImpl;
 import kuyou.common.bytes.ByteUtils;
 
 /**
- * action :
+ * action :语音控制[硬件实现]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

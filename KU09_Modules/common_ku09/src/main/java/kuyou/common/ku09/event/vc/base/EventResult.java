@@ -5,7 +5,7 @@ import android.util.Log;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :事件[语音控制相关][请求处理结果][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

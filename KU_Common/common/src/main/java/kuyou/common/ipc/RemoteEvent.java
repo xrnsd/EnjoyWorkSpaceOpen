@@ -3,7 +3,7 @@ package kuyou.common.ipc;
 import android.os.Bundle;
 
 /**
- * action :
+ * action :IPC框架传递的事件
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

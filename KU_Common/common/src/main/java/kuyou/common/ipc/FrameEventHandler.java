@@ -8,7 +8,7 @@ import java.util.List;
 import kuyou.common.ipc.base.IRemoteEventFrameStatusListener;
 
 /**
- * action :
+ * action :IPC框架内部事件处理器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

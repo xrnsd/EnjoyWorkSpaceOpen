@@ -6,7 +6,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 
 /**
- * action :
+ * action :协处理器[铃声][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -10,7 +10,7 @@ import kuyou.common.bytes.ByteUtils;
 import kuyou.common.utils.CRC16;
 
 /**
- * action :
+ * action :语音控制模块指令校验器[硬件实现]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

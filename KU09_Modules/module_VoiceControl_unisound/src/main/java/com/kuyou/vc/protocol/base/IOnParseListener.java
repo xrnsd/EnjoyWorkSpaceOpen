@@ -3,7 +3,7 @@ package com.kuyou.vc.protocol.base;
 import android.util.Log;
 
 /**
- * action :
+ * action :编解码结果监听器[语音控制]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

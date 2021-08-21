@@ -6,7 +6,7 @@ import kuyou.common.protocol.Info;
 import kuyou.common.bytes.ByteUtils;
 
 /**
- * action :
+ * action :指令编解码[UWB的ID]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

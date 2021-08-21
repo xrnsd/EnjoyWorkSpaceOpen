@@ -1,7 +1,7 @@
 package com.kuyou.rc.protocol.uwb.basic;
 
 /**
- * action :
+ * action :接口[模块状态]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -1,7 +1,7 @@
 package kuyou.common.ipc.base;
 
 /**
- * action :
+ * action :IPC框架的通用配置
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * action :
+ * action :IPC框架服务
  * <p>
  * author: wuguoxian <br/>
  * date: 21-7-22 <br/>

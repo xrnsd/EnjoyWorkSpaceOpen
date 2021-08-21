@@ -14,7 +14,7 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.ku09.ui.BasePermissionsActivity;
 
 /**
- * action :
+ * action :音视频通信[抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

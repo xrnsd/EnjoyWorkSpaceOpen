@@ -8,7 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * action :
+ * action :加密[Base64]
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-4 <br/>

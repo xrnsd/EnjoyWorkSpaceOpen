@@ -5,7 +5,7 @@ import android.os.Bundle;
 import kuyou.common.ipc.RemoteEvent;
 
 /**
- * action :
+ * action :接口[拍照结果]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

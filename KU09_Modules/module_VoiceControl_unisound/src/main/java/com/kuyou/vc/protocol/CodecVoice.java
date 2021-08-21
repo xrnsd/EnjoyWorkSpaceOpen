@@ -24,7 +24,7 @@ import kuyou.common.bytes.ByteUtils;
 import kuyou.common.utils.ClassUtils;
 
 /**
- * action :
+ * action :语音控制解码器[硬件实现]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

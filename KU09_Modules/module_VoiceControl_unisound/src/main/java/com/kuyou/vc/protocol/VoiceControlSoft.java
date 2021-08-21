@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * action :语音控制相关实现封装
+ * action :语音控制[软件实现]
  * <p>
  * author: wuguoxian <br/>
  * date: 20-11-3 <br/>

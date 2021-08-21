@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * action :
+ * action :字符转化相关封装实现
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -6,7 +6,7 @@ import com.kuyou.avc.ui.base.MultiRender;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
- * action :
+ * action :音视频通信[群组通话][采集端]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

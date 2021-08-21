@@ -6,7 +6,7 @@ import android.media.MediaPlayer;
 import com.kuyou.avc.R;
 
 /**
- * action :
+ * action :协处理器[铃声][本地]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
