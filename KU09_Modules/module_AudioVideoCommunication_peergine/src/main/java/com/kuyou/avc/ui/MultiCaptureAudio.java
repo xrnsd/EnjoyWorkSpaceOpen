@@ -1,7 +1,7 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.base.MultiCapture;
+import com.kuyou.avc.ui.basic.MultiCapture;
 
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 

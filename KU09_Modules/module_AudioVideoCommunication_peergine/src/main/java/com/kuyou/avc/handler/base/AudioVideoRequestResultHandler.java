@@ -9,7 +9,7 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.kuyou.avc.ui.base.BaseAVCActivity;
+import com.kuyou.avc.ui.basic.BaseAVCActivity;
 
 import java.util.HashMap;
 import java.util.Map;

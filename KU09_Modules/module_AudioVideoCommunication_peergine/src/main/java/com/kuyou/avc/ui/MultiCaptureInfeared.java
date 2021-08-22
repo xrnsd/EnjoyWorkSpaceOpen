@@ -1,7 +1,7 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.base.MultiCapExter;
+import com.kuyou.avc.ui.basic.MultiCapExter;
 
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 

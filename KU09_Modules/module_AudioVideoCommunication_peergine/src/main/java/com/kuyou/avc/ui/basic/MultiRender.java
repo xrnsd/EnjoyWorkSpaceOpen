@@ -1,4 +1,4 @@
-package com.kuyou.avc.ui.base;
+package com.kuyou.avc.ui.basic;
 
 import android.Manifest;
 import android.app.AlertDialog;

@@ -1,15 +1,5 @@
 package com.kuyou.avc.handler.base;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Handler;
-
-import com.kuyou.avc.ui.base.BaseAVCActivity;
-
-import java.util.Map;
-
-import kuyou.common.ipc.RemoteEvent;
-
 public interface IAudioVideoRequestCallback {
 
     /**

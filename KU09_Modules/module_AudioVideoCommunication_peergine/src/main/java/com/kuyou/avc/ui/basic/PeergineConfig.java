@@ -1,4 +1,4 @@
-package com.kuyou.avc.ui.base;
+package com.kuyou.avc.ui.basic;
 
 /**
  * action :Peergine的音视频服务配置

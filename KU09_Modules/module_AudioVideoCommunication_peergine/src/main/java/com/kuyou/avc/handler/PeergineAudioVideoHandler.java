@@ -22,7 +22,7 @@ import com.kuyou.avc.ui.MultiCaptureGroup;
 import com.kuyou.avc.ui.MultiCaptureInfeared;
 import com.kuyou.avc.ui.MultiCaptureVideo;
 import com.kuyou.avc.ui.MultiRenderGroup;
-import com.kuyou.avc.ui.base.BaseAVCActivity;
+import com.kuyou.avc.ui.basic.BaseAVCActivity;
 import com.kuyou.avc.util.CameraLightControl;
 import com.kuyou.avc.util.InfearedCameraControl;
 

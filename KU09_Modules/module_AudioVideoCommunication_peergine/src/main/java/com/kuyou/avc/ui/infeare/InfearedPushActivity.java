@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.base.BaseAVCActivity;
+import com.kuyou.avc.ui.basic.BaseAVCActivity;
 import com.kuyou.avc.util.InfearedCameraControl;
 import com.thermal.seekware.SeekCamera;
 import com.thermal.seekware.SeekCameraManager;
