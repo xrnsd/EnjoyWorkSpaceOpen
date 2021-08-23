@@ -35,11 +35,11 @@ import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -325,7 +325,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         }
 
         if (isLiveOnlineByType(-1)) {
-            Log.d(TAG, "performOperate > 终端关闭，已经打开的通话");
+            Log.d(TAG, "performOperate > 终端关闭，已经打开的通话," + getHandleStatusContent());
             exitAllLiveItem();
             return;
         }

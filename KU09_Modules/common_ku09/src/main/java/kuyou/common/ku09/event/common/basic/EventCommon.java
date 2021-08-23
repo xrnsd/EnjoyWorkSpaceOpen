@@ -1,4 +1,4 @@
-package kuyou.common.ku09.event.common.base;
+package kuyou.common.ku09.event.common.basic;
 
 /**
  * action :定义模块事件Code范围

@@ -9,9 +9,9 @@ import androidx.core.content.ContextCompat;
 
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveInitRequest;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.ui.BasePermissionsActivity;
+import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
-public class MainActivity extends BasePermissionsActivity {
+public class MainActivity extends BasicPermissionsHandlerActivity {
 
     private static final String TAG = "com.kuyou.tts > MainActivity";
     private static final int REQUEST_PERMISSIONS_CODE = 99;

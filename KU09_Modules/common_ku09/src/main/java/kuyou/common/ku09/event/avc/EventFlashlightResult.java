@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.avc;
 
-import kuyou.common.ku09.event.avc.base.EventResult;
+import kuyou.common.ku09.event.avc.basic.EventResult;
 
 /**
  * action :事件[手电筒开关结果]

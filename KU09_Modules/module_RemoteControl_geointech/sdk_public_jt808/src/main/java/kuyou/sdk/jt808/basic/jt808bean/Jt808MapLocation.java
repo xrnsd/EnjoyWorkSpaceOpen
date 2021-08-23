@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.jt808bean;
+package kuyou.sdk.jt808.basic.jt808bean;
 
 public class Jt808MapLocation {
 

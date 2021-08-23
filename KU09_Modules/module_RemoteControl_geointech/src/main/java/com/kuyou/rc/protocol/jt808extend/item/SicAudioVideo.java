@@ -8,9 +8,9 @@ import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import java.util.Arrays;
 
 import kuyou.common.bytes.ByteUtils;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
 
 /**
  * action :JT808扩展的单项指令编解码器[音视频]

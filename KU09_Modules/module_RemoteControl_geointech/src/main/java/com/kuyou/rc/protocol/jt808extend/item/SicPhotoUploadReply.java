@@ -7,7 +7,7 @@ import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
 import java.util.Arrays;
 
 import kuyou.common.bytes.ByteUtils;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**

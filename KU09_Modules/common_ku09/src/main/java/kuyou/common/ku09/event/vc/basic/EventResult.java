@@ -1,4 +1,4 @@
-package kuyou.common.ku09.event.vc.base;
+package kuyou.common.ku09.event.vc.basic;
 
 import android.util.Log;
 
@@ -46,6 +46,6 @@ public class EventResult extends EventVoiceControl {
     }
 
     public static boolean isResultSuccess(RemoteEvent event) {
-        return kuyou.common.ku09.event.rc.base.EventResult.ResultCode.SUCCESS == getResultCode(event);
+        return kuyou.common.ku09.event.rc.basic.EventResult.ResultCode.SUCCESS == getResultCode(event);
     }
 }

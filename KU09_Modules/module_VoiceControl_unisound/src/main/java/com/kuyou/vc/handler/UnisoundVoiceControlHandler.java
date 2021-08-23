@@ -14,7 +14,7 @@ import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
-import kuyou.common.ku09.event.vc.base.EventVoiceControl;
+import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 

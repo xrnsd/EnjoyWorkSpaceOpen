@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.avc.base.EventResult;
+import kuyou.common.ku09.event.avc.basic.EventResult;
 
 /**
  * action :事件[拍照结果]

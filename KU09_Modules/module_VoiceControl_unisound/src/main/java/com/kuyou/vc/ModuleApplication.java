@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
 import kuyou.common.ku09.key.KeyConfig;

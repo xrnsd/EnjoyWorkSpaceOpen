@@ -27,7 +27,7 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 
 public abstract class MultiCapture extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    protected final String TAG = "com.kuyou.avc.ui.custom >" + this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.avc.ui.basic >" + this.getClass().getSimpleName();
 
     private EditText m_editServer;
     private EditText m_editDevID;
@@ -168,6 +168,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 // The capture is offline.
                 String sInfo = "Capture offline";
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
+                exit();
             } else if (sAct.equals("RecordStopVideo")) {
                 // Record stop video.
                 String sInfo = "Record stop video: " + sData;

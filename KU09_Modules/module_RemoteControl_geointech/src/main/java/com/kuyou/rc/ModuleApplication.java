@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 
 /**
  * action :远程控制模块

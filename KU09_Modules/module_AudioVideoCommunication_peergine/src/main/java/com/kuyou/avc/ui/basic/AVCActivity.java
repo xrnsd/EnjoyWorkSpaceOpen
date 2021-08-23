@@ -11,7 +11,7 @@ import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.common.ku09.ui.BasePermissionsActivity;
+import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 /**
  * action :音视频通信[抽象]
@@ -21,7 +21,7 @@ import kuyou.common.ku09.ui.BasePermissionsActivity;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class AVCActivity extends BasePermissionsActivity {
+public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
 
     protected static final String TAG = "com.kuyou.avc.ui.base > BaseAVCActivity";
 

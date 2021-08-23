@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.common;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.base.EventKey;
+import kuyou.common.ku09.event.common.basic.EventKey;
 
 /**
  * action :事件[电源状态变化]

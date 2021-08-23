@@ -1,6 +1,6 @@
 package com.kuyou.rc.protocol.jt808extend.item;
 
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 
 /**
  * action :协议编解码项[语音控制][硬件实现][打开视频通话]

@@ -20,7 +20,7 @@ import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
  * date: 20-11-25 <br/>
  * <p>
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BasicActivity extends AppCompatActivity {
     protected final String TAG = "kuyou.common.ku09.ui > BaseActivity";
 
     private static final String KEY_WATCH_DOG_FLAG = "isLaunchByWatchDog";

@@ -1,9 +1,9 @@
-package kuyou.sdk.jt808.base.socketbean;
+package kuyou.sdk.jt808.basic.socketbean;
 
 import kuyou.sdk.jt808.oksocket.core.iocore.interfaces.IPulseSendable;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.interfaces.SocketPulseListener;
-import kuyou.sdk.jt808.base.jt808coding.JT808Directive;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.interfaces.SocketPulseListener;
+import kuyou.sdk.jt808.basic.jt808coding.JT808Directive;
 
 public class PulseData implements IPulseSendable {
 

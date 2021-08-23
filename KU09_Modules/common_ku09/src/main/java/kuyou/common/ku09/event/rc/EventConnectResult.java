@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ku09.event.rc.base.EventResult;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 
 /**
  * action :事件[连接后台请求处理结果]

@@ -11,9 +11,9 @@ import java.util.List;
 
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.common.base.EventCommon;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.common.basic.EventCommon;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 
 /**
  * action :音视频服务模块

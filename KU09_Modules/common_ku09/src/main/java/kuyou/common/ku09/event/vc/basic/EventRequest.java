@@ -1,4 +1,4 @@
-package kuyou.common.ku09.event.vc.base;
+package kuyou.common.ku09.event.vc.basic;
 
 import android.util.Log;
 

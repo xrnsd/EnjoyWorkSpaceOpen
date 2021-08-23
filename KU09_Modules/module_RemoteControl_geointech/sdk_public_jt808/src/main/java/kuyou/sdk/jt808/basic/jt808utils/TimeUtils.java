@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.jt808utils;
+package kuyou.sdk.jt808.basic.jt808utils;
 
 
 import java.text.SimpleDateFormat;

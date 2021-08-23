@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.jt808coding;
+package kuyou.sdk.jt808.basic.jt808coding;
 
 import android.text.TextUtils;
 import java.util.ArrayList;

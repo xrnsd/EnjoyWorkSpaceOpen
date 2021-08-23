@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.vc;
 
-import kuyou.common.ku09.event.vc.base.EventVoiceControl;
+import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 
 /**
  * action :事件[模块关闭]

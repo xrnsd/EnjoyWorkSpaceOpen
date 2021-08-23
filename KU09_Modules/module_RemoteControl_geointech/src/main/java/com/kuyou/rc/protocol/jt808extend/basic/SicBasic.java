@@ -3,9 +3,9 @@ package com.kuyou.rc.protocol.jt808extend.basic;
 import java.util.Arrays;
 
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
+import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
 
 /**
  * action :JT808扩展的单项指令编解码器[抽象]

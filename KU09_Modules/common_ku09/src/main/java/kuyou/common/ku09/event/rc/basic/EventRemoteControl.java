@@ -1,7 +1,7 @@
-package kuyou.common.ku09.event.rc.base;
+package kuyou.common.ku09.event.rc.basic;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.base.RemoteEventCommon;
+import kuyou.common.ku09.event.common.basic.RemoteEventCommon;
 
 /**
  * action :事件[远程控制相关][抽象]

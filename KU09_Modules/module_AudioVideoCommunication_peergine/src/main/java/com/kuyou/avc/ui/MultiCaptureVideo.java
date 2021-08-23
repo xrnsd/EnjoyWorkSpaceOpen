@@ -8,7 +8,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.avc.base.EventRequest;
+import kuyou.common.ku09.event.avc.basic.EventRequest;
 
 /**
  * action :事件[音视频处理请求]

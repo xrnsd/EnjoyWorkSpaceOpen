@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 
 /**
  * action :事件[位置上报/心跳开始]

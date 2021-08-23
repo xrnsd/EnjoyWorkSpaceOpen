@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base;
+package kuyou.sdk.jt808.basic;
 
 
 public abstract class RemoteControlDeviceConfig {

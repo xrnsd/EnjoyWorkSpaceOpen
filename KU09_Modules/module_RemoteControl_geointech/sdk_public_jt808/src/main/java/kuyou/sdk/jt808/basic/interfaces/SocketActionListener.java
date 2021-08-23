@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.interfaces;
+package kuyou.sdk.jt808.basic.interfaces;
 
 public interface SocketActionListener {
 

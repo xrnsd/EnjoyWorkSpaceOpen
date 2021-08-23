@@ -38,7 +38,7 @@ import java.util.Arrays;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.common.ku09.ui.BaseActivity;
+import kuyou.common.ku09.ui.BasicActivity;
 
 /**
  * action :相机测试[抽象]
@@ -48,7 +48,7 @@ import kuyou.common.ku09.ui.BaseActivity;
  * date: 21-3-09 <br/>
  * </p>
  */
-public class TakePhoto extends BaseActivity {
+public class TakePhoto extends BasicActivity {
 
     private static final String TAG = "com.kuyou.avc > TakePhoto >";
 

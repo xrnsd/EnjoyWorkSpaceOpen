@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.interfaces;
+package kuyou.sdk.jt808.basic.interfaces;
 
 /**
  * 初始开始上报位置监听

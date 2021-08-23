@@ -1,9 +1,8 @@
-package kuyou.common.ku09.event.common.base;
+package kuyou.common.ku09.event.common.basic;
 
 import android.os.Bundle;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.permission.CommonDialog;
 
 /**
  * action :事件[远程事件扩展，添加事件类型][抽象]

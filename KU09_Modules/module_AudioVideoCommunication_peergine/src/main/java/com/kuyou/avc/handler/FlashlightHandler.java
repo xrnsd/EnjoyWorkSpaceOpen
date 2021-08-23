@@ -11,7 +11,7 @@ import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightResult;
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
 import kuyou.common.ku09.event.avc.EventLaserLightResult;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 
 /**
  * action :协处理器[手电筒]

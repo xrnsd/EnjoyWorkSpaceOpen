@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.socketbean;
+package kuyou.sdk.jt808.basic.socketbean;
 
 import kuyou.sdk.jt808.oksocket.core.iocore.interfaces.ISendable;
 

@@ -1,7 +1,6 @@
-package kuyou.common.ku09.event.avc.base;
+package kuyou.common.ku09.event.avc.basic;
 
-import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.base.RemoteEventCommon;
+import kuyou.common.ku09.event.common.basic.RemoteEventCommon;
 
 /**
  * action :模块事件基础配置

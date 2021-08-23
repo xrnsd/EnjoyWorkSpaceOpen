@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.avc;
 
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 
 /**
  * action :事件[安全帽模块:音视频通信 初始化完成]

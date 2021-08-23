@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.exceptions;
+package kuyou.sdk.jt808.basic.exceptions;
 
 public class SocketManagerException extends Exception{
     public SocketManagerException() {

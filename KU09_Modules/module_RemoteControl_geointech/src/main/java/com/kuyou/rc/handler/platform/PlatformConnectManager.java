@@ -4,11 +4,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.exceptions.SocketManagerException;
-import kuyou.sdk.jt808.base.protocol.JT808ReaderProtocol;
-import kuyou.sdk.jt808.base.socketbean.PulseData;
-import kuyou.sdk.jt808.base.socketbean.SendDataBean;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
+import kuyou.sdk.jt808.basic.protocol.JT808ReaderProtocol;
+import kuyou.sdk.jt808.basic.socketbean.PulseData;
+import kuyou.sdk.jt808.basic.socketbean.SendDataBean;
 import kuyou.sdk.jt808.oksocket.client.impl.client.action.ActionDispatcher;
 import kuyou.sdk.jt808.oksocket.client.sdk.OkSocket;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;

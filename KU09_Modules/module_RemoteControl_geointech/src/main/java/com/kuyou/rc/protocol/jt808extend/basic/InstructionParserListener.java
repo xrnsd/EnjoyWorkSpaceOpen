@@ -5,7 +5,7 @@ import com.kuyou.rc.protocol.jt808extend.item.SicPhotoTake;
 import com.kuyou.rc.protocol.jt808extend.item.SicPhotoUploadReply;
 import com.kuyou.rc.protocol.jt808extend.item.SicTextMessage;
 
-import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
+import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 
 /**
  * action :JT808扩展指令编解码器解码结果监听器

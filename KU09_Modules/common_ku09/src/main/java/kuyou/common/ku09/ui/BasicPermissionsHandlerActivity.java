@@ -26,7 +26,7 @@ import kuyou.common.permission.PermissionUtil;
  * date: 20-11-25 <br/>
  * <p>
  */
-public abstract class BasePermissionsActivity extends BaseActivity {
+public abstract class BasicPermissionsHandlerActivity extends BasicActivity {
 
     //是否需要检测后台定位权限，设置为true时，如果用户没有给予后台定位权限会弹窗提示
     private boolean needCheckBackLocation = false;
@@ -196,7 +196,7 @@ public abstract class BasePermissionsActivity extends BaseActivity {
 
     protected void showMissingPermissionDialog() {
         Log.d(TAG, "showMissingPermissionDialog: ");
-        PermissionUtil.showSureDialog(BasePermissionsActivity.this, getString(R.string.miss_permissions_config_title),
+        PermissionUtil.showSureDialog(BasicPermissionsHandlerActivity.this, getString(R.string.miss_permissions_config_title),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

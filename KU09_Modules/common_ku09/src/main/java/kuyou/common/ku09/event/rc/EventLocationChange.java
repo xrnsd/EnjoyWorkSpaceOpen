@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc;
 import android.location.Location;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.base.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 
 /**
  * action :事件[设备位置变化]

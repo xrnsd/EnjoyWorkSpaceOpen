@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.protocol;
+package kuyou.sdk.jt808.basic.protocol;
 
 import kuyou.sdk.jt808.oksocket.client.impl.exceptions.ManuallyDisconnectException;
 import kuyou.sdk.jt808.oksocket.core.utils.SLog;

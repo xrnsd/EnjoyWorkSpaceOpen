@@ -1,4 +1,4 @@
-package kuyou.sdk.jt808.base.jt808coding;
+package kuyou.sdk.jt808.basic.jt808coding;
 
 
 
@@ -8,12 +8,11 @@ import kuyou.common.bytes.BCD8421Operater;
 import kuyou.common.bytes.BitOperator;
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.bytes.HexUtil;
-import kuyou.common.bytes.ByteUtils;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.exceptions.SocketManagerException;
-import kuyou.sdk.jt808.base.jt808bean.Generate808andSeqBean;
-import kuyou.sdk.jt808.base.jt808bean.Header808Bean;
-import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
+import kuyou.sdk.jt808.basic.jt808bean.Generate808andSeqBean;
+import kuyou.sdk.jt808.basic.jt808bean.Header808Bean;
+import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 
 import java.util.Arrays;
 

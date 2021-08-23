@@ -1,13 +1,13 @@
-package kuyou.sdk.jt808.base.jt808coding;
+package kuyou.sdk.jt808.basic.jt808coding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.bytes.BitOperator;
 import kuyou.common.bytes.ByteUtils;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.jt808bean.Jt808MapLocation;
-import kuyou.sdk.jt808.base.jt808utils.TimeUtils;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.jt808bean.Jt808MapLocation;
+import kuyou.sdk.jt808.basic.jt808utils.TimeUtils;
 
 public class JT808Directive {
 

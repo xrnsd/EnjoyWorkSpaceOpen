@@ -350,12 +350,12 @@ public abstract class BasicModuleApplication extends Application implements
             mFrameLiveListener = new RemoteEventBus.IFrameLiveListener() {
                 @Override
                 public void onIpcFrameResisterSuccess() {
-
+                    Log.d(TAG, "onIpcFrameResisterSuccess > ");
                 }
 
                 @Override
                 public void onIpcFrameUnResister() {
-
+                    Log.d(TAG, "onIpcFrameUnResister > ");
                 }
             };
         }

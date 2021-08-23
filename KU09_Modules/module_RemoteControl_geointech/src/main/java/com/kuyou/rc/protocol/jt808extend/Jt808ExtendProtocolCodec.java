@@ -12,10 +12,10 @@ import java.util.Map;
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
-import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
-import kuyou.sdk.jt808.base.exceptions.SocketManagerException;
-import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
+import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
+import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
 import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
 
 /**

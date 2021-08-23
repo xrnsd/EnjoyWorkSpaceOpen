@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.avc;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.avc.base.EventRequest;
+import kuyou.common.ku09.event.avc.basic.EventRequest;
 
 /**
  * action :事件[激光指示灯开关请求]

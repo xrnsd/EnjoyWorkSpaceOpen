@@ -2,9 +2,9 @@ package com.kuyou.rc;
 
 import android.os.Bundle;
 
-import kuyou.common.ku09.ui.BasePermissionsActivity;
+import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
-public class MainActivity extends BasePermissionsActivity {
+public class MainActivity extends BasicPermissionsHandlerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

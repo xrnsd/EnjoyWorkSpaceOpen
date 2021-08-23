@@ -1,9 +1,9 @@
 package com.kuyou.vc;
 
 import android.Manifest;
-import kuyou.common.ku09.ui.BasePermissionsActivity;
+import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
-public class MainActivity extends BasePermissionsActivity {
+public class MainActivity extends BasicPermissionsHandlerActivity {
     protected final String TAG = "com.kuyou.voicecontrol > MainActivity";
 
     @Override

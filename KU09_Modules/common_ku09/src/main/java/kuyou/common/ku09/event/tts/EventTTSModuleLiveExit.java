@@ -2,7 +2,6 @@ package kuyou.common.ku09.event.tts;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 
 /**
  * action :事件[安全帽模块:语音合成 退出]

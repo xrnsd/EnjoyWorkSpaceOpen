@@ -2,7 +2,7 @@ package com.kuyou.rc.protocol.jt808extend.item;
 
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
 
-import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**

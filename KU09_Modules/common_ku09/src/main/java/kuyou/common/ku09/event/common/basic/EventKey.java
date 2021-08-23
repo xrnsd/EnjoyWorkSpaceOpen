@@ -1,4 +1,4 @@
-package kuyou.common.ku09.event.common.base;
+package kuyou.common.ku09.event.common.basic;
 
 import androidx.annotation.NonNull;
 

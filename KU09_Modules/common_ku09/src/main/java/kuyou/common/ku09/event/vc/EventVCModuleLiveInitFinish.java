@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.vc;
 
-import kuyou.common.ku09.event.vc.base.EventVoiceControl;
+import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 
 /**
  * action :事件[安全帽模块:语音控制 初始化完成]

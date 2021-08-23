@@ -18,12 +18,10 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.AMapLocationQualityReport;
-import com.kuyou.rc.ModuleApplication;
 import com.kuyou.rc.R;
 import com.kuyou.rc.handler.location.basic.ILocationDispatcherCallback;
 
-import kuyou.common.ku09.ui.BasePermissionsActivity;
-import kuyou.common.utils.CommonUtils;
+import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 /**
  * action :位置接口实现,不负责具体业务
@@ -32,7 +30,7 @@ import kuyou.common.utils.CommonUtils;
  * date: 20-11-25 <br/>
  * <p>
  */
-public class AmapLocationActivity extends BasePermissionsActivity
+public class AmapLocationActivity extends BasicPermissionsHandlerActivity
         implements AMapLocationListener {
 
     protected final String TAG = "com.kuyou.jt808.location > " + this.getClass().getSimpleName();

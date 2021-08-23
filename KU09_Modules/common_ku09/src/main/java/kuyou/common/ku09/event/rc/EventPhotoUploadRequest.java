@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.rc;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.base.EventRequest;
+import kuyou.common.ku09.event.rc.basic.EventRequest;
 
 /**
  * action :事件[图片上传请求]

@@ -3,7 +3,7 @@ package kuyou.sdk.jt808.utils;
 import android.util.Log;
 
 import kuyou.common.bytes.HexUtil;
-import kuyou.sdk.jt808.base.jt808coding.JTT808Coding;
+import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
 
 import java.util.Arrays;
 
