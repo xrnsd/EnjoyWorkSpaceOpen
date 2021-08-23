@@ -1,4 +1,4 @@
-package com.kuyou.avc.photo;
+package com.kuyou.avc.handler.photo;
 
 import android.os.Bundle;
 

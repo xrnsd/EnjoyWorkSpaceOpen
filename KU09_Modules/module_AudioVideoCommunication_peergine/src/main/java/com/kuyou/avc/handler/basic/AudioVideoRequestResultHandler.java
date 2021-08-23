@@ -45,7 +45,8 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
         mDevicesConfig = devicesConfig;
     }
 
-    protected Map<Integer, AVCActivity> getOnlineList() {
+    @Override
+    public Map<Integer, AVCActivity> getOnlineList() {
         return mItemListOnline;
     }
 
@@ -62,9 +63,10 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
     /**
      * action:对应模式的通信是否开启
      */
-    protected abstract boolean isLiveOnlineByType(final int typeCode);
+    protected abstract boolean isLiveOnlineByType(int typeCode);
 
-    protected int getHandlerStatus() {
+    @Override
+    public int getHandlerStatus() {
         return mHandlerStatus;
     }
 

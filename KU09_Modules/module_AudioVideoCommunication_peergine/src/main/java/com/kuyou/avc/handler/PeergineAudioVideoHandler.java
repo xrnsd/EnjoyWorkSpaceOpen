@@ -17,8 +17,8 @@ import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
 import com.kuyou.avc.handler.basic.CameraLightControl;
 import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import com.kuyou.avc.handler.thermal.ThermalCameraControl;
-import com.kuyou.avc.photo.ITakePhotoResultListener;
-import com.kuyou.avc.photo.TakePhotoBackground;
+import com.kuyou.avc.handler.photo.ITakePhotoResultListener;
+import com.kuyou.avc.handler.photo.TakePhotoBackground;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
 import com.kuyou.avc.ui.MultiCaptureThermal;
@@ -50,9 +50,9 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
  * date: 21-7-23 <br/>
  * </p>
  */
-public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler implements ITakePhotoResultListener {
+public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
-    protected final String TAG = "com.kuyou.avc.handle > " + this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.avc.handle > PeergineAudioVideoHandler";
 
     private final String KEY_HANDLER_STATUS = "HandlerStatus";
     private final String KEY_MEDIA_TYPE = "MediaType";
@@ -271,7 +271,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     }
 
     @Override
-    protected boolean isLiveOnlineByType(final int typeCode) {
+    protected boolean isLiveOnlineByType(int typeCode) {
         if (-1 == typeCode) {
             return mItemListOnline.size() > 0;
         }
@@ -408,44 +408,6 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                     }
                 }
                 break;
-
-            case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
-                Log.d(TAG, "onModuleEvent > 处理拍照请求");
-
-                if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeRequest.getEventType(event)) {
-                    play("正在为您拍照");
-                }
-
-                //截图拍照
-                if (isItInHandlerState(HS_OPEN)) {
-                    int onLineTypeCode = -1;
-                    if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO)) {
-                        onLineTypeCode = IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO;
-                    }
-                    if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL)) {
-                        onLineTypeCode = IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL;
-                    }
-                    if (-1 != onLineTypeCode) {
-                        int result = getOnlineList()
-                                .get(onLineTypeCode)
-                                .screenshot(event, new AVCActivity.IVideoCameraResultListener() {
-                                    @Override
-                                    public void onScreenshotResult(String result) {
-                                        PeergineAudioVideoHandler.this.onTakePhotoResult(true, result, event.getData());
-                                    }
-                                });
-                        if (-1 != result) {//异常失败处理
-                            PeergineAudioVideoHandler.this.onTakePhotoResult(false, "", event.getData());
-                        }
-                        return true;
-                    }
-                }
-                //后台相机拍照
-                TakePhotoBackground.perform(getContext(), event.getData(), PeergineAudioVideoHandler.this);
-                ////前台相机拍照
-                //TakePhoto.perform(getContext(), event.getData(), PeergineAudioVideoHandler.this);
-                return true;
-
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST:
                 Log.d(TAG, "onModuleEvent > 处理音视频请求");
 
@@ -582,28 +544,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
         saveStatus2Cache(getContext());
     }
 
-    @Override
-    public void onTakePhotoResult(boolean result, String info, Bundle data) {
-        if (result) {
-            Log.d(TAG, "onResult > 拍照成功 > 申请上传");
-            if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
-                play("拍照成功");
-            }
-            dispatchEvent(new EventPhotoUploadRequest()
-                    .setImgFilePath(info)
-                    .setEventType(EventPhotoUploadRequest.getEventType(data))
-                    .setRemote(true));
-        } else {
-            Log.d(TAG, "onResult > 拍照失败");
-            if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {
-                play("拍照失败");
-            }
-            dispatchEvent(new EventPhotoTakeResult()
-                    .setData(data)
-                    .setRemote(true)
-                    .setResult(false));
-        }
-    }
+
 
     private int getMediaType() {
         return mMediaType;

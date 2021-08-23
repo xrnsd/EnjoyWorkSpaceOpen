@@ -1,4 +1,4 @@
-package com.kuyou.avc.photo;
+package com.kuyou.avc.handler.photo;
 
 import android.Manifest;
 import android.content.Context;
@@ -48,7 +48,7 @@ import kuyou.common.ku09.ui.BasicActivity;
  * date: 21-3-09 <br/>
  * </p>
  */
-public class TakePhoto extends BasicActivity {
+public class TakePhotoForeground extends BasicActivity {
 
     private static final String TAG = "com.kuyou.avc > TakePhoto >";
 
@@ -59,7 +59,7 @@ public class TakePhoto extends BasicActivity {
         sTakePhotoResultListener = listener;
 
         Intent intent = new Intent();
-        intent.setClass(context, TakePhoto.class);
+        intent.setClass(context, TakePhotoForeground.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtras(data);
         context.startActivity(intent);
@@ -162,7 +162,7 @@ public class TakePhoto extends BasicActivity {
                 imageSaver.setOnResultListener(new onResultListener() {
                     @Override
                     public void onResult(boolean result, String info) {
-                        TakePhoto.this.onResult(result, info);
+                        TakePhotoForeground.this.onResult(result, info);
                     }
                 });
                 new Thread(imageSaver).start();
@@ -209,7 +209,7 @@ public class TakePhoto extends BasicActivity {
                             cameraCaptureSession = session;
                             try {
                                 session.setRepeatingRequest(mCaptureRequest, null, null);
-                                TakePhoto.this.take();
+                                TakePhotoForeground.this.take();
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                                 onResult(false, "CameraCaptureSession config fail :" + e.toString());

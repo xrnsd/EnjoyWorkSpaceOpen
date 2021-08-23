@@ -1,4 +1,4 @@
-package com.kuyou.avc.photo;
+package com.kuyou.avc.handler.photo;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -42,16 +42,16 @@ public class TakePhotoBackground extends Service {
 
     protected static final String TAG = "com.kuyou.avc.photo > BackgroundTakeService";
 
+    private static Intent sTakePhotoServer = null;
+
+    private static ITakePhotoResultListener sTakePhotoResultListener;
+
     private CameraViews mCameraViews;
     private WindowManager mWindowManager;
     private LayoutParams Params;
 
     private Bundle mData;
     private String mFileName, mFileFormatType, mImgStorageDir;
-
-    private static Intent sTakePhotoServer = null;
-
-    private static ITakePhotoResultListener sTakePhotoResultListener;
 
     public static void perform(Context context, Bundle data, ITakePhotoResultListener listener) {
         sTakePhotoResultListener = listener;
