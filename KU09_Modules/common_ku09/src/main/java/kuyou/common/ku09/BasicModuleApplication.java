@@ -26,7 +26,7 @@ import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -46,11 +46,11 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 6 按键监听分发 <br/>
  * <p>
  */
-public abstract class BaseApplication extends Application implements
+public abstract class BasicModuleApplication extends Application implements
         IDispatchEventCallback,
         IModuleManager {
 
-    protected String TAG = "kuyou.common.ku09 > BaseApplication";
+    protected String TAG = "kuyou.common.ku09 > BasicModuleApplication";
 
     protected HelmetModuleManageServiceManager mHelmetModuleManageServiceManager;
 
@@ -71,17 +71,17 @@ public abstract class BaseApplication extends Application implements
                 .register(new RemoteEventBus.IRegisterConfig() {
                     @Override
                     public RemoteEventBus.IFrameLiveListener getFrameLiveListener() {
-                        return BaseApplication.this.getIpcFrameLiveListener();
+                        return BasicModuleApplication.this.getIpcFrameLiveListener();
                     }
 
                     @Override
                     public List<Integer> getEventDispatchList() {
-                        return BaseApplication.this.getEventDispatchList();
+                        return BasicModuleApplication.this.getEventDispatchList();
                     }
 
                     @Override
                     public Object getLocalEventDispatchHandler() {
-                        return BaseApplication.this;
+                        return BasicModuleApplication.this;
                     }
                 });
         //StrictMode相关
@@ -170,22 +170,22 @@ public abstract class BaseApplication extends Application implements
 
             @Override
             public void onPowerStatus(int status) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventPowerChange().setPowerStatus(status));
+                BasicModuleApplication.this.dispatchEvent(new EventPowerChange().setPowerStatus(status));
             }
 
             @Override
             public void onKeyClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyClick(keyCode));
+                BasicModuleApplication.this.dispatchEvent(new EventKeyClick(keyCode));
             }
 
             @Override
             public void onKeyDoubleClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyDoubleClick(keyCode));
+                BasicModuleApplication.this.dispatchEvent(new EventKeyDoubleClick(keyCode));
             }
 
             @Override
             public void onKeyLongClick(int keyCode) throws RemoteException {
-                BaseApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
+                BasicModuleApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
             }
         });
     }
@@ -333,7 +333,9 @@ public abstract class BaseApplication extends Application implements
 
     // ============================ 模块间IPC，模块与系统服务 ============================
 
-    private List<BaseHandler> mHandlerList = new ArrayList<>();
+    private RemoteEventBus.IFrameLiveListener mFrameLiveListener;
+
+    private List<BasicEventHandler> mEventHandlerList = new ArrayList<>();
 
     /**
      * action:远程事件的监听列表
@@ -343,22 +345,41 @@ public abstract class BaseApplication extends Application implements
     /**
      * action:模块间IPC框架状态监听器
      **/
-    protected abstract RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener();
+    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
+        if (null == mFrameLiveListener) {
+            mFrameLiveListener = new RemoteEventBus.IFrameLiveListener() {
+                @Override
+                public void onIpcFrameResisterSuccess() {
+
+                }
+
+                @Override
+                public void onIpcFrameUnResister() {
+
+                }
+            };
+        }
+        return mFrameLiveListener;
+    }
 
     /**
      * action:注册事件处理器
      **/
-    protected void registerHandler(BaseHandler... handlers) {
-        if (null == handlers || handlers.length == 0) {
+    protected void registerEventHandler(BasicEventHandler... handlers) {
+        if (null == handlers || 0 == handlers.length) {
             Log.e(TAG, "registerHandler > process fail : handlers is null");
+            return;
         }
-        for (BaseHandler handler : handlers) {
-            mHandlerList.add(handler);
+        for (BasicEventHandler handler : handlers) {
+            handler.setContext(BasicModuleApplication.this);
+            handler.setDispatchEventCallBack(BasicModuleApplication.this);
+            handler.setModuleManager(BasicModuleApplication.this);
+            mEventHandlerList.add(handler);
         }
     }
 
-    protected List<BaseHandler> getHandlerList() {
-        return mHandlerList;
+    protected List<BasicEventHandler> getEventHandlerList() {
+        return mEventHandlerList;
     }
 
     @Override
@@ -369,7 +390,7 @@ public abstract class BaseApplication extends Application implements
     //本地事件
     @Subscribe
     public void onModuleEvent(RemoteEvent event) {
-        for (BaseHandler handler : getHandlerList()) {
+        for (BasicEventHandler handler : getEventHandlerList()) {
             if (handler.onModuleEvent(event)) {
                 return;
             }

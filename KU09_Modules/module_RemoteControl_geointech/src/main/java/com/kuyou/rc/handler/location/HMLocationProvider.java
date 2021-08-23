@@ -99,9 +99,10 @@ public class HMLocationProvider implements ILocationProvider {
 
     protected Location getLocationCache() {
         if (null == mLocationCache) {
-            mLocationCache = new Location(ILocationProvider.CACHE_PROVIDER);
-            mLocationCache.setLongitude(0);
-            mLocationCache.setLatitude(0);
+            //本地位置缓存持久化暂时未实现
+//            mLocationCache = new Location(ILocationProvider.CACHE_PROVIDER);
+//            mLocationCache.setLongitude(0);
+//            mLocationCache.setLatitude(0);
         }
         if (null == mLocationCache) {
             return getLocationFake();

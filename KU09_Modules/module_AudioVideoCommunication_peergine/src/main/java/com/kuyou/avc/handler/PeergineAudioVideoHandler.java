@@ -13,18 +13,18 @@ import androidx.annotation.NonNull;
 
 import com.kuyou.avc.BuildConfig;
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.base.AudioVideoRequestResultHandler;
-import com.kuyou.avc.handler.base.IAudioVideoRequestCallback;
+import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
+import com.kuyou.avc.handler.basic.CameraLightControl;
+import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
+import com.kuyou.avc.handler.thermal.ThermalCameraControl;
 import com.kuyou.avc.photo.ITakePhotoResultListener;
 import com.kuyou.avc.photo.TakePhotoBackground;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
-import com.kuyou.avc.ui.MultiCaptureInfeared;
+import com.kuyou.avc.ui.MultiCaptureThermal;
 import com.kuyou.avc.ui.MultiCaptureVideo;
 import com.kuyou.avc.ui.MultiRenderGroup;
-import com.kuyou.avc.ui.basic.BaseAVCActivity;
-import com.kuyou.avc.util.CameraLightControl;
-import com.kuyou.avc.util.InfearedCameraControl;
+import com.kuyou.avc.ui.basic.AVCActivity;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -71,7 +71,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
 
     public PeergineAudioVideoHandler(Context context) {
         setContext(context.getApplicationContext());
-        InfearedCameraControl.close();
+        ThermalCameraControl.close();
     }
 
     @Override
@@ -140,11 +140,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         super.onActivityCreated(activity, savedInstanceState);
-        if (!(activity instanceof BaseAVCActivity)) {
+        if (!(activity instanceof AVCActivity)) {
             Log.d(TAG, "onActivityCreated > get up activity =" + activity.getLocalClassName());
             return;
         }
-        BaseAVCActivity item = (BaseAVCActivity) activity;
+        AVCActivity item = (AVCActivity) activity;
         int typeCode = item.getTypeCode();
         if (-1 != typeCode) {
             item.setAudioVideoRequestCallback(PeergineAudioVideoHandler.this);
@@ -158,11 +158,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
         super.onActivityDestroyed(activity);
-        if (!(activity instanceof BaseAVCActivity)) {
+        if (!(activity instanceof AVCActivity)) {
             Log.d(TAG, "onActivityCreated > get up activity =" + activity.getLocalClassName());
             return;
         }
-        BaseAVCActivity item = (BaseAVCActivity) activity;
+        AVCActivity item = (AVCActivity) activity;
         int typeCode = item.getTypeCode();
         if (-1 != typeCode) {
             switch (typeCode) {
@@ -196,10 +196,14 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
             case IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO:
                 title = "视频";
                 break;
-            case IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL:
                 title = "红外";
                 break;
             case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
+                //非采集端的提示的特殊处理
+                if (!isGroupOwner() && R.string.media_request_open_success == combinationStrResId) {
+                    return getContext().getString(R.string.media_request_enter_group_success);
+                }
                 title = "群组";
                 break;
             default:
@@ -227,15 +231,17 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
 
     @Override
     protected void exitAllLiveItem() {
-        Log.d(TAG, " exitAllLiveItem > ");
+        Log.d(TAG, " exitAllLiveItem > size = " + mItemListOnline.size());
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 synchronized (mItemListOnline) {
-                    Log.d(TAG, " exitAllLiveItem > size = " + mItemListOnline.size());
+                    if (1 > mItemListOnline.size()) {
+                        return;
+                    }
                     Set<Integer> set = mItemListOnline.keySet();
                     Iterator<Integer> it = set.iterator();
-                    BaseAVCActivity activity;
+                    AVCActivity activity;
                     while (it.hasNext()) {
                         final int typeCode = it.next();
                         activity = mItemListOnline.get(typeCode);
@@ -298,7 +304,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 .toString());
 
         //未支持功能
-        if (IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED == mMediaType) {
+        if (IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL == mMediaType) {
             play("红外暂时不可用");
             return;
         }
@@ -411,22 +417,33 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 }
 
                 //截图拍照
-                if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO) && isItInHandlerState(HS_OPEN)) {
-                    int result = getOnlineList().get(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO).takePhoto(event, new BaseAVCActivity.IVideoCameraResultListener() {
-                        @Override
-                        public void onScreenshot(String result) {
-                            PeergineAudioVideoHandler.this.onTakePhotoResult(true, result, event.getData());
-                        }
-                    });
-                    if (-1 != result) {
-                        PeergineAudioVideoHandler.this.onTakePhotoResult(false, "", event.getData());
+                if (isItInHandlerState(HS_OPEN)) {
+                    int onLineTypeCode = -1;
+                    if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO)) {
+                        onLineTypeCode = IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO;
                     }
-                    return true;
+                    if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL)) {
+                        onLineTypeCode = IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL;
+                    }
+                    if (-1 != onLineTypeCode) {
+                        int result = getOnlineList()
+                                .get(onLineTypeCode)
+                                .screenshot(event, new AVCActivity.IVideoCameraResultListener() {
+                                    @Override
+                                    public void onScreenshotResult(String result) {
+                                        PeergineAudioVideoHandler.this.onTakePhotoResult(true, result, event.getData());
+                                    }
+                                });
+                        if (-1 != result) {//异常失败处理
+                            PeergineAudioVideoHandler.this.onTakePhotoResult(false, "", event.getData());
+                        }
+                        return true;
+                    }
                 }
-                ////前台拍照
-                //TakePhoto.perform(getContext(), event.getData(), PeergineAudioVideoHandler.this);
-                //后台拍照
+                //后台相机拍照
                 TakePhotoBackground.perform(getContext(), event.getData(), PeergineAudioVideoHandler.this);
+                ////前台相机拍照
+                //TakePhoto.perform(getContext(), event.getData(), PeergineAudioVideoHandler.this);
                 return true;
 
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST:
@@ -496,9 +513,9 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                 Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO");
                 item.setClass(context, MultiCaptureVideo.class);
                 break;
-            case IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED:
+            case IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL:
                 Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED");
-                item.setClass(context, MultiCaptureInfeared.class);
+                item.setClass(context, MultiCaptureThermal.class);
                 break;
             case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                 Log.d(TAG, "openItem > IJT808ExtensionProtocol.MEDIA_TYPE_GROUP");
@@ -509,11 +526,17 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler im
                             .append(" mCollectingEndIdLocal = ").append(mCollectingEndIdLocal)
                             .append("\n mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
                             .toString());
+                    //群组必要参数缺失
                     if (null == mCollectingEndIdLocal || null == mCollectingEndIdRemote) {
                         throw new Exception(new StringBuilder("mCollectingEndId is invalid :")
                                 .append(" mCollectingEndIdLocal = ").append(mCollectingEndIdLocal)
                                 .append("\n mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
                                 .toString());
+                    }
+                    //未加入群组
+                    if (IJT808ExtensionProtocol.TOKEN_NULL.equals(mCollectingEndIdRemote)) {
+                        onResult(event, IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
+                        return "设备未加入群组，请联系管理员处理";
                     }
                     if (!mCollectingEndIdLocal.equals(mCollectingEndIdRemote)) {
                         Log.d(TAG, "openItem > 即将打开群组[播放端]");

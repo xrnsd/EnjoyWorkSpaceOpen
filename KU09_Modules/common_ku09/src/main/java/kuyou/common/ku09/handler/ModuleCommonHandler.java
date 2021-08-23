@@ -1,5 +1,7 @@
 package kuyou.common.ku09.handler;
 
+import android.util.Log;
+
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
@@ -12,7 +14,7 @@ import kuyou.common.ku09.event.common.EventPowerChange;
  * date: 21-8-21 <br/>
  * </p>
  */
-public class ModuleCommonHandler extends BaseHandler {
+public class ModuleCommonHandler extends BasicEventHandler {
 
     protected final String TAG = "kuyou.common.ku09 > KeyHandler";
 
@@ -35,6 +37,11 @@ public class ModuleCommonHandler extends BaseHandler {
 
     protected void setPowerStatus(int powerStatus) {
         mPowerStatus = powerStatus;
+        if (null == getPowerStatusListener()) {
+            Log.e(TAG, "onPowerStatus > process fail : powerStatusListener is null");
+            return;
+        }
+        getPowerStatusListener().onPowerStatus(powerStatus);
     }
 
     @Override
@@ -46,7 +53,6 @@ public class ModuleCommonHandler extends BaseHandler {
                     return true;
                 }
                 setPowerStatus(val);
-                getPowerStatusListener().onPowerStatus(val);
                 return true;
             default:
                 return false;

@@ -1,5 +1,5 @@
 
-package com.kuyou.avc.ui.infeare;
+package com.kuyou.avc.ui.thermal;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -19,7 +19,6 @@ import com.peergine.plugin.android.pgDevVideoIn;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
-
 
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private boolean m_bStarted = false;
@@ -68,15 +67,6 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
             Log.d("DevExtend", "CameraView.Start, ex=" + ex.toString());
 
             return false;
-        }
-    }
-
-    public void Clean() {
-        try {
-            Log.d("DevExtend", "CameraView.Clean");
-            Stop();
-        } catch (Exception ex) {
-            Log.d("DevExtend", "CameraView.Clean, ex=" + ex.toString());
         }
     }
 
@@ -147,6 +137,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
                     + ", Facing=" + iFacing + ", Rotate=" + iRotate + ", ImgRotate=" + iImgRotate);
 
             // Feedback the extend parameters;
+            //2
             pgDevVideoIn.SetParam(iCameraNo, pgDevVideoIn.PG_DEV_VIDEO_IN_PARAM_NO, m_iCameraNo);
             pgDevVideoIn.SetParam(iCameraNo, pgDevVideoIn.PG_DEV_VIDEO_IN_PARAM_FACING, iFacing);
             pgDevVideoIn.SetParam(iCameraNo, pgDevVideoIn.PG_DEV_VIDEO_IN_PARAM_ROTATE, iRotate);

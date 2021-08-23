@@ -49,8 +49,8 @@ public class MultiCaptureVideo extends MultiCapture {
     }
 
     @Override
-    public int takePhoto(RemoteEvent event, IVideoCameraResultListener listener) {
-        super.takePhoto(event, listener);
+    public int screenshot(RemoteEvent event, IVideoCameraResultListener listener) {
+        super.screenshot(event, listener);
         String storageDirPath = EventPhotoTakeRequest.getImgStorageDir(event.getData());
         String fileName = EventPhotoTakeRequest.getFileName(event.getData());
         String imageSaveFilePath = new StringBuilder(storageDirPath).append("/").append(fileName).toString();

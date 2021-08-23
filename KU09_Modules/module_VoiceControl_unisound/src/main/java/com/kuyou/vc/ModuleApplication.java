@@ -6,8 +6,7 @@ import com.kuyou.vc.protocol.basic.VoiceControl;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BaseApplication;
+import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
@@ -20,8 +19,7 @@ import kuyou.common.ku09.key.KeyConfig;
  * date: 20-11-3 <br/>
  * <p>
  */
-public class ModuleApplication extends BaseApplication {
-
+public class ModuleApplication extends BasicModuleApplication {
     private final String TAG = "com.kuyou.vc > ModuleApplication";
 
     public static final int INIT_CHECK_COUNT_MAX = 10;
@@ -38,7 +36,7 @@ public class ModuleApplication extends BaseApplication {
     @Override
     protected void init() {
         super.init();
-        registerHandler(getVoiceControlHandler(), getKeyHandler());
+        registerEventHandler(getVoiceControlHandler(), getKeyHandler());
     }
 
     @Override
@@ -52,11 +50,6 @@ public class ModuleApplication extends BaseApplication {
         list.add(EventAudioVideoCommunication.Code.LASER_LIGHT_RESULT);
 
         return list;
-    }
-
-    @Override
-    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
-        return null;
     }
 
     @Override
@@ -98,8 +91,6 @@ public class ModuleApplication extends BaseApplication {
     public UnisoundVoiceControlHandler getVoiceControlHandler() {
         if (null == mUnisoundVoiceControlHandler) {
             mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler(getApplicationContext());
-            mUnisoundVoiceControlHandler.setDispatchEventCallBack(ModuleApplication.this);
-            mUnisoundVoiceControlHandler.setModuleManager(ModuleApplication.this);
             mUnisoundVoiceControlHandler.init(VoiceControl.TYPE.HARDWARE);
         }
         return mUnisoundVoiceControlHandler;

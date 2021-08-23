@@ -18,6 +18,11 @@ public class MainActivity extends BasePermissionsActivity {
     private static final String KEY_IS_SYSTEM_BOOT_FIRST = "key.system.boot.first";
 
     @Override
+    protected boolean isEnableContentView() {
+        return false;
+    }
+
+    @Override
     protected void init() {
         setTitle("");
         requestPermission();

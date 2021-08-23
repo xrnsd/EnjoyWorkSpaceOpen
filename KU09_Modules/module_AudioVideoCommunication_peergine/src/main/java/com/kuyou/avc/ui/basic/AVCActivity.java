@@ -3,7 +3,7 @@ package com.kuyou.avc.ui.basic;
 import android.util.Log;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.base.IAudioVideoRequestCallback;
+import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.IDispatchEventCallback;
@@ -21,7 +21,7 @@ import kuyou.common.ku09.ui.BasePermissionsActivity;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class BaseAVCActivity extends BasePermissionsActivity {
+public abstract class AVCActivity extends BasePermissionsActivity {
 
     protected static final String TAG = "com.kuyou.avc.ui.base > BaseAVCActivity";
 
@@ -35,20 +35,20 @@ public abstract class BaseAVCActivity extends BasePermissionsActivity {
     private IDispatchEventCallback mDispatchEventCallback;
 
     public static interface IVideoCameraResultListener {
-        public void onScreenshot(String result);
+        public void onScreenshotResult(String result);
     }
 
-    protected void onScreenshot(String result) {
+    protected void onScreenshotResult(String result) {
         if (null == mVideoCameraResultListener) {
             Log.e(TAG, "onScreenshot > process fail : mVideoCameraResultListener is null");
             return;
         }
-        mVideoCameraResultListener.onScreenshot(result);
+        mVideoCameraResultListener.onScreenshotResult(result);
     }
 
     public abstract int getTypeCode();
 
-    public int takePhoto(RemoteEvent event, IVideoCameraResultListener listener) {
+    public int screenshot(RemoteEvent event, IVideoCameraResultListener listener) {
         mVideoCameraResultListener = listener;
         return -1024;
     }

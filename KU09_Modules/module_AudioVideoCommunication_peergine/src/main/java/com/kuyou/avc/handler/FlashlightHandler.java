@@ -3,10 +3,10 @@ package com.kuyou.avc.handler;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.avc.util.CameraLightControl;
+import com.kuyou.avc.handler.basic.CameraLightControl;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightResult;
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
@@ -21,7 +21,7 @@ import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
  * date: 21-7-26 <br/>
  * </p>
  */
-public class FlashlightHandler extends BaseHandler {
+public class FlashlightHandler extends BasicEventHandler {
     protected final String TAG = "com.kuyou.avc.handle > FlashlightHandler";
 
     public FlashlightHandler(Context context) {

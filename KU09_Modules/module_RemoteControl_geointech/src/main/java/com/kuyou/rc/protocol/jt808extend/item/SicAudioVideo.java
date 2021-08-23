@@ -29,7 +29,6 @@ public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
     private int mEventType = -1;
     private int mResult = -1;
 
-    protected final String TOKEN_NULL = "none";
     private String mToken = null;
 
     @Override

@@ -1,4 +1,4 @@
-package com.kuyou.avc.handler.base;
+package com.kuyou.avc.handler.basic;
 
 public interface IAudioVideoRequestCallback {
 

@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.util.MyPermission;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.android.livemulti.pgLibLiveMultiRender;
 import com.peergine.android.livemulti.pgLibLiveMultiView;
@@ -26,7 +25,7 @@ import java.util.Date;
 
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
-public abstract class MultiRender extends BaseAVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public abstract class MultiRender extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     protected final String TAG = "com.kuyou.avc.ui.custom > " + this.getClass().getSimpleName();
 
     private EditText m_editServer;
@@ -78,10 +77,10 @@ public abstract class MultiRender extends BaseAVCActivity implements ActivityCom
         return m_bTransfering;
     }
 
-    MyPermission m_myPerm = new MyPermission();
+    //MyPermission m_myPerm = new MyPermission();
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        m_myPerm.onResult(this, requestCode, permissions[0], grantResults[0]);
+        //m_myPerm.onResult(this, requestCode, permissions[0], grantResults[0]);
     }
 
     private pgLibLiveMultiRender.OnEventListener m_OnEvent = new pgLibLiveMultiRender.OnEventListener() {
@@ -270,7 +269,7 @@ public abstract class MultiRender extends BaseAVCActivity implements ActivityCom
 
         String[] sPermList = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         String[] sTextList = {"麦克风", "写存储"};
-        m_myPerm.Request(this, sPermList, sTextList);
+        //m_myPerm.Request(this, sPermList, sTextList);
 
         LiveLogin();
     }

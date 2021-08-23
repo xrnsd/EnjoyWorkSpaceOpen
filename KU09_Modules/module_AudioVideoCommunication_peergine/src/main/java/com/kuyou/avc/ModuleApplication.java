@@ -4,13 +4,13 @@ import com.kuyou.avc.handler.FlashlightHandler;
 import com.kuyou.avc.handler.LocalKeyHandler;
 import com.kuyou.avc.handler.LocalModuleCommonHandler;
 import com.kuyou.avc.handler.PeergineAudioVideoHandler;
-import com.kuyou.avc.handler.base.AudioVideoRequestResultHandler;
+import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BaseApplication;
+import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.base.EventCommon;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
@@ -23,8 +23,7 @@ import kuyou.common.ku09.event.rc.base.EventRemoteControl;
  * date: 21-7-12 <br/>
  * </p>
  */
-public class ModuleApplication extends BaseApplication {
-
+public class ModuleApplication extends BasicModuleApplication {
     private static final String TAG = "com.kuyou.avc > ModuleApplication";
 
     private LocalModuleCommonHandler mModuleEventHandler;
@@ -57,8 +56,8 @@ public class ModuleApplication extends BaseApplication {
     @Override
     protected void init() {
         super.init();
-        registerHandler(
-                getModuleEventHandler(),
+        registerEventHandler(
+                getModuleBasicEventHandler(),
                 getLocalKeyHandler(),
                 getAudioVideoRequestHandler(),
                 getFlashlightHandler());
@@ -74,7 +73,7 @@ public class ModuleApplication extends BaseApplication {
         return getAudioVideoRequestHandler();
     }
 
-    public LocalModuleCommonHandler getModuleEventHandler() {
+    public LocalModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleEventHandler) {
             mModuleEventHandler = new LocalModuleCommonHandler();
         }
@@ -84,8 +83,6 @@ public class ModuleApplication extends BaseApplication {
     public AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
         if (null == mAudioVideoRequestHandler) {
             mAudioVideoRequestHandler = new PeergineAudioVideoHandler(getApplicationContext());
-            mAudioVideoRequestHandler.setDispatchEventCallBack(ModuleApplication.this)
-                    .setModuleManager(ModuleApplication.this);
             mAudioVideoRequestHandler.setHandlerKeepAliveClient(getHandlerKeepAliveClient())
                     .setDevicesConfig(getDevicesConfig());
             registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
@@ -103,9 +100,7 @@ public class ModuleApplication extends BaseApplication {
     public LocalKeyHandler getLocalKeyHandler() {
         if (null == mLocalKeyHandler) {
             mLocalKeyHandler = new LocalKeyHandler(getApplicationContext());
-            mLocalKeyHandler.setAudioVideoRequestResult(getAudioVideoRequestHandler())
-                    .setDispatchEventCallBack(ModuleApplication.this)
-                    .setModuleManager(ModuleApplication.this);
+            mLocalKeyHandler.setAudioVideoRequestResult(getAudioVideoRequestHandler());
         }
         return mLocalKeyHandler;
     }

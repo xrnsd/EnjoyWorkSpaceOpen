@@ -40,9 +40,9 @@ android {
 
     buildTypes {
         release {
-            zipAlignEnabled true
-            minifyEnabled true
-            shrinkResources true
+//            zipAlignEnabled true
+//            minifyEnabled true
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release //加入签名配置
         }

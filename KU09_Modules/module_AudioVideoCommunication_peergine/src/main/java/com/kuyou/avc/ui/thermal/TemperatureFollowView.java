@@ -1,4 +1,4 @@
-package com.kuyou.avc.ui.infeare;
+package com.kuyou.avc.ui.thermal;
 
 import android.content.Context;
 import android.graphics.Canvas;

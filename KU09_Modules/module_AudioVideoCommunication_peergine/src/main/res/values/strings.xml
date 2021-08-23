@@ -29,6 +29,7 @@
     <string name="media_request_open_handle_parameter_fail">打开失败请重新尝试</string>
     <string name="media_request_open_success"><xliff:g id="query" example="device_id">%1$s</xliff:g>打开成功</string>
     <string name="media_request_close_success"><xliff:g id="query" example="device_id">%1$s</xliff:g>已关闭</string>
+    <string name="media_request_enter_group_success">已加入群组</string>
     <string name="media_request_exit_group_success">已退出群组</string>
     <string name="key_switch_mode_cancel_title">请先单击通话键关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
     <string name="key_switch_mode_success_title"><xliff:g id="query" example="device_id">%1$s</xliff:g>模式</string>

@@ -86,7 +86,7 @@ public interface IJT808ExtensionProtocol {
 
     public static final int MEDIA_TYPE_AUDIO = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    public static final int MEDIA_TYPE_INFEARED = 3;
+    public static final int MEDIA_TYPE_THERMAL = 3;
     public static final int MEDIA_TYPE_GROUP = 4;
     public static final int MEDIA_TYPE_DEFAULT = MEDIA_TYPE_GROUP;
 
@@ -107,6 +107,8 @@ public interface IJT808ExtensionProtocol {
     public final static int RESULT_FAIL_FAILURE_LOCAL_DEVICE_HARDWARE_EXCEPTION = 4;
     public final static int RESULT_FAIL_FAILURE_LOCAL_DEVICE_HANDLE_TIME_OUT = 5;
     public final static int RESULT_FAIL_FAILURE_OTHER = 6;
+    
+    public final static String TOKEN_NULL = "none";
 
     //Alarm
     /**

@@ -1,4 +1,4 @@
-package com.kuyou.avc.util;
+package com.kuyou.avc.handler.thermal;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import kuyou.common.file.FileUtils;
  * date: 21-4-28 <br/>
  * </p>
  */
-public class InfearedCameraControl {
+public class ThermalCameraControl {
     private static final String TAG = "com.kuyou.avc.util > InfearedCameraControl";
 
     public static boolean open() {

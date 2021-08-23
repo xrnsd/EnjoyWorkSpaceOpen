@@ -1,4 +1,4 @@
-package com.kuyou.avc.handler.base;
+package com.kuyou.avc.handler.basic;
 
 import android.app.Activity;
 import android.app.Application;
@@ -9,14 +9,14 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.kuyou.avc.ui.basic.BaseAVCActivity;
+import com.kuyou.avc.ui.basic.AVCActivity;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.config.DevicesConfig;
 
 /**
@@ -27,11 +27,11 @@ import kuyou.common.ku09.config.DevicesConfig;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class AudioVideoRequestResultHandler extends BaseHandler implements IAudioVideoRequestCallback,
+public abstract class AudioVideoRequestResultHandler extends BasicEventHandler implements IAudioVideoRequestCallback,
         Application.ActivityLifecycleCallbacks,
         RemoteEventBus.IFrameLiveListener {
 
-    protected Map<Integer, BaseAVCActivity> mItemListOnline = new HashMap<>();
+    protected Map<Integer, AVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
 
     private Handler mHandlerKeepAliveClient;
@@ -45,7 +45,7 @@ public abstract class AudioVideoRequestResultHandler extends BaseHandler impleme
         mDevicesConfig = devicesConfig;
     }
 
-    protected Map<Integer, BaseAVCActivity> getOnlineList() {
+    protected Map<Integer, AVCActivity> getOnlineList() {
         return mItemListOnline;
     }
 

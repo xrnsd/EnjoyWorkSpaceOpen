@@ -5,7 +5,7 @@
  modify      : create, chenbichao, 2012/02/10
  *************************************************************************/
 
-package com.kuyou.avc.ui.infeare;
+package com.kuyou.avc.ui.thermal;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;

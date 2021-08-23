@@ -7,7 +7,7 @@ import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
@@ -20,7 +20,7 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
  * date: 21-4-12 <br/>
  * </p>
  */
-public class AlarmHandler extends BaseHandler implements ALARM {
+public class AlarmHandler extends BasicEventHandler implements ALARM {
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
     private static AlarmHandler sMain;

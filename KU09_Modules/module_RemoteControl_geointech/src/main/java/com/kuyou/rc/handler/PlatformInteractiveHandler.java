@@ -8,9 +8,6 @@ import android.util.Log;
 import com.kuyou.rc.handler.platform.PlatformConnectManager;
 import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
-
-import kuyou.common.ku09.handler.BaseHandler;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import com.kuyou.rc.protocol.jt808extend.item.SicAudioVideo;
 import com.kuyou.rc.protocol.jt808extend.item.SicAuthentication;
@@ -42,6 +39,8 @@ import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.common.ku09.event.rc.base.EventResult;
+import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.base.jt808bean.JTT808Bean;
@@ -57,7 +56,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  * date: 21-3-29 <br/>
  * </p>
  */
-public class PlatformInteractiveHandler extends BaseHandler {
+public class PlatformInteractiveHandler extends BasicEventHandler {
 
     protected final String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
 
@@ -325,8 +324,17 @@ public class PlatformInteractiveHandler extends BaseHandler {
                 Log.d(TAG, "onModuleEvent > 开始上传照片");
                 final String filePath = EventPhotoUploadRequest.getImgFilePath(event);
                 File imgFile = new File(filePath);
+
+                boolean isUploadReady = true;
                 if (!imgFile.exists()) {
-                    Log.e(TAG, "onModuleEvent > 开始上传照片 > process fail : img is`not exists = " + filePath);
+                    isUploadReady = false;
+                    Log.e(TAG, "onModuleEvent > 开始上传照片 > process fail : 照片不存在 = " + filePath);
+                }
+                if (!isRemoteControlPlatformConnected) {
+                    Log.w(TAG, "onModuleEvent > 开始上传照片 > process fail : 未联网");
+                    play("上传失败，请检查网络链接");
+                }
+                if (!isUploadReady) {
                     dispatchEvent(new EventPhotoUploadResult()
                             .setResult(false)
                             .setEventType(EventPhotoUploadRequest.getEventType(event))
@@ -363,7 +371,9 @@ public class PlatformInteractiveHandler extends BaseHandler {
                 } else {
                     Log.w(TAG, "onModuleEvent > 照片上传失败");
                 }
-
+                if (!isRemoteControlPlatformConnected) {
+                    break;
+                }
                 SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
                 if (null == singleInstructionParser) {
                     break;

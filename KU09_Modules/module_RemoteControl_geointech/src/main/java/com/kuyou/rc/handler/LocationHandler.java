@@ -17,7 +17,7 @@ import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
@@ -30,7 +30,7 @@ import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
  * date: 21-8-5 <br/>
  * </p>
  */
-public class LocationHandler extends BaseHandler implements ILocationProviderPolicy {
+public class LocationHandler extends BasicEventHandler implements ILocationProviderPolicy {
 
     protected static final String TAG = "com.kuyou.rc.handler > LocationHandler";
 

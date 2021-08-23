@@ -15,7 +15,7 @@ import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.vc.base.EventVoiceControl;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -29,7 +29,7 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
  * 添加独立的调试模式<br/>
  * </p>
  */
-public class UnisoundVoiceControlHandler extends BaseHandler {
+public class UnisoundVoiceControlHandler extends BasicEventHandler {
     private final String TAG = "com.kuyou.vc.handler > UnisoundVoiceControlHandler";
 
     private AudioMngHelper mAudioMngHelper;
@@ -168,12 +168,12 @@ public class UnisoundVoiceControlHandler extends BaseHandler {
                 boolean result = super.onThermalCamera(switchStatus);
                 if (!switchStatus) {
                     dispatchEvent(new EventAudioVideoOperateRequest()
-                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED)
+                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL)
                             .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE)
                             .setRemote(true));
                 } else {
                     dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_INFEARED)
+                            .setMediaType(IJT808ExtensionProtocol.MEDIA_TYPE_THERMAL)
                             .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
                             .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                             .setRemote(true));

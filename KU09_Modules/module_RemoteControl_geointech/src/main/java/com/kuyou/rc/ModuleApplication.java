@@ -11,8 +11,7 @@ import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BaseApplication;
+import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.avc.base.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.base.EventRemoteControl;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
@@ -25,7 +24,8 @@ import kuyou.sdk.jt808.base.RemoteControlDeviceConfig;
  * date: 20-10-24 <br/>
  * <p>
  */
-public class ModuleApplication extends BaseApplication {
+public class ModuleApplication extends BasicModuleApplication {
+    private final String TAG = "com.kuyou.rc > ModuleApplication";
 
     private RemoteControlDeviceConfig mConfig;
 
@@ -52,16 +52,11 @@ public class ModuleApplication extends BaseApplication {
     }
 
     @Override
-    protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
-        return null;
-    }
-
-    @Override
     protected void init() {
         super.init();
 
-        registerHandler(
-                getModuleCommonHandler(),
+        registerEventHandler(
+                getModuleBasicEventHandler(),
                 getLocalKeyHandler(),
                 getPlatformInteractiveHandler(),
                 getAlarmHandler(),
@@ -142,7 +137,7 @@ public class ModuleApplication extends BaseApplication {
         return mConfig;
     }
 
-    public ModuleCommonHandler getModuleCommonHandler() {
+    public ModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleCommonHandler) {
             mModuleCommonHandler = new ModuleCommonHandler()
                     .setPowerStatusListener(getLocalKeyHandler());
@@ -159,7 +154,6 @@ public class ModuleApplication extends BaseApplication {
             mLocationHandler = new LocationHandler()
                     .setLocationProviderPolicy(policy)
                     .initProviderFilter(ModuleApplication.this, getHandlerKeepAliveClient().getLooper(), getConfig());
-            mLocationHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mLocationHandler;
     }
@@ -167,7 +161,6 @@ public class ModuleApplication extends BaseApplication {
     public LocalKeyHandler getLocalKeyHandler() {
         if (null == mLocalKeyHandler) {
             mLocalKeyHandler = new LocalKeyHandler();
-            mLocalKeyHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mLocalKeyHandler;
     }
@@ -176,7 +169,6 @@ public class ModuleApplication extends BaseApplication {
         if (null == mAlarmHandler) {
             mAlarmHandler = new AlarmHandler()
                     .setLocationProvider(getLocationHandler().getLocationProvider());
-            mAlarmHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mAlarmHandler;
     }
@@ -194,7 +186,6 @@ public class ModuleApplication extends BaseApplication {
                     return ModuleApplication.this.getConfig();
                 }
             });
-            mPlatformInteractiveHandler.setDispatchEventCallBack(ModuleApplication.this);
         }
         return mPlatformInteractiveHandler;
     }

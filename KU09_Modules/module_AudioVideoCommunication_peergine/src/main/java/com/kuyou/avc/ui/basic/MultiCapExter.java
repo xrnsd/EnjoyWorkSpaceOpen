@@ -17,9 +17,8 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.ui.infeare.AudioOutput;
-import com.kuyou.avc.ui.infeare.CameraView;
-import com.kuyou.avc.util.MyPermission;
+import com.kuyou.avc.ui.thermal.AudioOutput;
+import com.kuyou.avc.ui.thermal.CameraView;
 import com.peergine.android.livemulti.pgLibLiveMultiCapture;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.plugin.android.pgDevAudioConvert;
@@ -29,7 +28,7 @@ import com.peergine.plugin.lib.pgLibJNINode;
 
 import java.io.File;
 
-public abstract class MultiCapExter extends BaseAVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public abstract class MultiCapExter extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private EditText m_editServer;
     private EditText m_editDevID;
@@ -81,10 +80,10 @@ public abstract class MultiCapExter extends BaseAVCActivity implements ActivityC
         return m_bTransfering;
     }
 
-    MyPermission m_myPerm = new MyPermission();
+    //MyPermission m_myPerm = new MyPermission();
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        m_myPerm.onResult(this, requestCode, permissions[0], grantResults[0]);
+        //m_myPerm.onResult(this, requestCode, permissions[0], grantResults[0]);
     }
 
     private pgLibLiveMultiCapture.OnEventListener m_OnEvent = new pgLibLiveMultiCapture.OnEventListener() {
@@ -461,7 +460,7 @@ public abstract class MultiCapExter extends BaseAVCActivity implements ActivityC
 
         String[] sPermList = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         String[] sTextList = {"摄像头", "麦克风", "写存储"};
-        m_myPerm.Request(this, sPermList, sTextList);
+        //m_myPerm.Request(this, sPermList, sTextList);
     }
 
     public void onDestroy() {

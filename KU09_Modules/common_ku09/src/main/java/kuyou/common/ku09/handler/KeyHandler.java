@@ -11,7 +11,7 @@ import kuyou.common.ku09.event.common.base.EventKey;
  * date: 21-8-21 <br/>
  * </p>
  */
-public class KeyHandler extends BaseHandler {
+public class KeyHandler extends BasicEventHandler {
 
     protected final String TAG = "kuyou.common.ku09 > KeyHandler";
 

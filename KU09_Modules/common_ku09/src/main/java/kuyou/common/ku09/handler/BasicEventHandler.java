@@ -16,7 +16,7 @@ import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class BaseHandler {
+public abstract class BasicEventHandler {
     protected final String TAG = "kuyou.common.ku09 > BaseHandler";
 
     private Context mContext;
@@ -33,18 +33,18 @@ public abstract class BaseHandler {
 
     public abstract boolean onModuleEvent(RemoteEvent event);
 
-    public BaseHandler setDispatchEventCallBack(IDispatchEventCallback dispatchEventCallBack) {
+    public BasicEventHandler setDispatchEventCallBack(IDispatchEventCallback dispatchEventCallBack) {
         mDispatchEventCallBack = dispatchEventCallBack;
-        return BaseHandler.this;
+        return BasicEventHandler.this;
     }
 
     protected IDispatchEventCallback getDispatchEventCallBack() {
         return mDispatchEventCallBack;
     }
 
-    public BaseHandler setModuleManager(IModuleManager moduleManager) {
+    public BasicEventHandler setModuleManager(IModuleManager moduleManager) {
         mModuleManager = moduleManager;
-        return BaseHandler.this;
+        return BasicEventHandler.this;
     }
 
     protected void dispatchEvent(RemoteEvent event) {

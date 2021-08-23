@@ -19,7 +19,7 @@ import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.handler.BaseHandler;
+import kuyou.common.ku09.handler.BasicEventHandler;
 
 /**
  * action :
@@ -29,7 +29,7 @@ import kuyou.common.ku09.handler.BaseHandler;
  * date: 21-8-21 <br/>
  * </p>
  */
-public class TtsHandler extends BaseHandler implements IPowerStatusListener {
+public class TtsHandler extends BasicEventHandler implements IPowerStatusListener {
 
     protected final String TAG = "com.kuyou.tts.handler > TtsHandler";
 
