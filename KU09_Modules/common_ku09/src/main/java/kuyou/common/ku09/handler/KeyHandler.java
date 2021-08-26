@@ -16,31 +16,39 @@ public class KeyHandler extends BasicEventHandler {
     protected final String TAG = "kuyou.common.ku09 > KeyHandler";
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventKey.Code.KEY_CLICK, false);
+        registerHandleEvent(EventKey.Code.KEY_LONG_CLICK, false);
+        registerHandleEvent(EventKey.Code.KEY_DOUBLE_CLICK, false);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventKey.Code.KEY_CLICK:
                 onKeyClick(EventKey.getKeyCode(event));
-                return true;
+                break;
             case EventKey.Code.KEY_LONG_CLICK:
                 onKeyLongClick(EventKey.getKeyCode(event));
-                return true;
+                break;
             case EventKey.Code.KEY_DOUBLE_CLICK:
                 onKeyDoubleClick(EventKey.getKeyCode(event));
-                return true;
+                break;
             default:
                 return false;
         }
+        return true;
     }
 
-    protected void onKeyClick(int keyCode){
-        
+    protected void onKeyClick(int keyCode) {
+
     }
 
-    protected void onKeyLongClick(int keyCode){
-        
+    protected void onKeyLongClick(int keyCode) {
+
     }
 
-    protected void onKeyDoubleClick(int keyCode){
-        
+    protected void onKeyDoubleClick(int keyCode) {
+
     }
 }

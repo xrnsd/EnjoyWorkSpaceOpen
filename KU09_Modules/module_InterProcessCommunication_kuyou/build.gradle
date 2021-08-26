@@ -6,6 +6,8 @@ plugins {
 ext {
     //应用名称
     moduleName = "InterProcessCommunication_kuyou"
+    //应用包名
+    modulePackageName = "com.kuyou.ipc"
 }
 
 android {
@@ -23,7 +25,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.kuyou.ipc"
+        applicationId "${project.modulePackageName}"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -76,4 +78,9 @@ boolean isReleaseBuildType() {
         }
     }
     return false
+}
+
+task aInstallReleaseLaunch(type: Exec){
+    dependsOn 'installRelease'
+    commandLine  "adb","shell","am","broadcast","-a","action.remote.event.frame com.kuyou.ipc"
 }

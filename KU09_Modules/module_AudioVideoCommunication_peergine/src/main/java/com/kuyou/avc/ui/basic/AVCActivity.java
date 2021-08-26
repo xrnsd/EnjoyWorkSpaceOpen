@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.kuyou.avc.R;
 import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
+import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.IDispatchEventCallback;
@@ -30,36 +31,11 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
 
     private PeergineConfig mConfig = null;
     private int mResult = -1;
-    private IVideoCameraResultListener mVideoCameraResultListener;
+    private ITakePhotoByScreenshotResultCallback mTakePhotoByScreenshotResultCallback;
     private IAudioVideoRequestCallback mAudioVideoRequestCallback;
     private IDispatchEventCallback mDispatchEventCallback;
 
-    public static interface IVideoCameraResultListener {
-        public void onScreenshotResult(String result);
-    }
-
-    protected void onScreenshotResult(String result) {
-        if (null == mVideoCameraResultListener) {
-            Log.e(TAG, "onScreenshot > process fail : mVideoCameraResultListener is null");
-            return;
-        }
-        mVideoCameraResultListener.onScreenshotResult(result);
-    }
-
     public abstract int getTypeCode();
-
-    public int screenshot(RemoteEvent event, IVideoCameraResultListener listener) {
-        mVideoCameraResultListener = listener;
-        return -1024;
-    }
-
-    public void setVideoCameraResultListener(IVideoCameraResultListener videoCameraResultListener) {
-        mVideoCameraResultListener = videoCameraResultListener;
-    }
-
-    protected IDispatchEventCallback getDispatchEventCallback() {
-        return mDispatchEventCallback;
-    }
 
     public void setDispatchEventCallback(IDispatchEventCallback dispatchEventCallback) {
         mDispatchEventCallback = dispatchEventCallback;
@@ -71,6 +47,28 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
 
     public void setAudioVideoRequestCallback(IAudioVideoRequestCallback audioVideoRequestCallback) {
         mAudioVideoRequestCallback = audioVideoRequestCallback;
+    }
+
+    public int screenshot(ITakePhotoByScreenshotResultCallback callback) {
+        mTakePhotoByScreenshotResultCallback = callback;
+        return -1024;
+    }
+
+    protected IDispatchEventCallback getDispatchEventCallback() {
+        return mDispatchEventCallback;
+    }
+
+    protected ITakePhotoByScreenshotResultCallback getTakePhotoByScreenshotResultCallback() {
+        return mTakePhotoByScreenshotResultCallback;
+    }
+
+    protected void onScreenshotResult(boolean result, String info) {
+        if (null == getTakePhotoByScreenshotResultCallback()) {
+            Log.e(TAG, "onScreenshotResult > process fail : mTakePhotoByScreenshotResultCallback is null");
+            return;
+        }
+        getTakePhotoByScreenshotResultCallback()
+                .onScreenshotResult(result, info, getTakePhotoByScreenshotResultCallback().getEventData());
     }
 
     @Override
@@ -145,10 +143,26 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         return mConfig;
     }
 
-    public void exit() {
+    protected boolean onPeergineEvent(String sAct, String sData, String sRenID) {
+        return false;
+    }
+
+    protected int getResult() {
+        return mResult;
+    }
+
+    @Override
+    protected void onDestroy() {
+        exit();
+        super.onDestroy();
+    }
+
+    protected void exit() {
+        mTakePhotoByScreenshotResultCallback = null;
         try {
             playExit();
-            finish();
+            setAudioVideoRequestCallback(null);
+            setDispatchEventCallback(null);
             if (IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO == getTypeCode()) {
                 //ModuleApplication.getInstance().reboot(200);
             }
@@ -157,26 +171,10 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         }
     }
 
-    protected void onPeergineEvent(String sAct, String sData, String sRenID) {
-
-    }
-
-    protected int getResult() {
-        return mResult;
-    }
-
     protected void playExit() {
         if (IJT808ExtensionProtocol.RESULT_SUCCESS == getResult()) {
             playTitleByResId(R.string.media_request_close_success);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        setVideoCameraResultListener(null);
-        setAudioVideoRequestCallback(null);
-        setDispatchEventCallback(null);
     }
 
     protected void playTitleByResId(int resId) {

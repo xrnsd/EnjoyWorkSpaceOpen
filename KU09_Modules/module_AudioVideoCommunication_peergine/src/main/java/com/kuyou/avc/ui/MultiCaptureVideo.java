@@ -1,6 +1,7 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
+import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
 import com.kuyou.avc.ui.basic.MultiCapture;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,10 +50,10 @@ public class MultiCaptureVideo extends MultiCapture {
     }
 
     @Override
-    public int screenshot(RemoteEvent event, IVideoCameraResultListener listener) {
-        super.screenshot(event, listener);
-        String storageDirPath = EventPhotoTakeRequest.getImgStorageDir(event.getData());
-        String fileName = EventPhotoTakeRequest.getFileName(event.getData());
+    public int screenshot(ITakePhotoByScreenshotResultCallback callback) {
+        super.screenshot(callback);
+        String storageDirPath = EventPhotoTakeRequest.getImgStorageDir(callback.getEventData());
+        String fileName = EventPhotoTakeRequest.getFileName(callback.getEventData());
         String imageSaveFilePath = new StringBuilder(storageDirPath).append("/").append(fileName).toString();
         return m_Live.VideoCamera(0, imageSaveFilePath);
     }

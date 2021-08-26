@@ -52,9 +52,9 @@ public class TakePhotoForeground extends BasicActivity {
 
     private static final String TAG = "com.kuyou.avc > TakePhoto >";
 
-    private static ITakePhotoResultListener sTakePhotoResultListener;
+    private static ITakePhotoByCameraResultListener sTakePhotoResultListener;
 
-    public static void perform(Context context, Bundle data, ITakePhotoResultListener listener) {
+    public static void perform(Context context, Bundle data, ITakePhotoByCameraResultListener listener) {
         Log.d(TAG, "perform > ");
         sTakePhotoResultListener = listener;
 

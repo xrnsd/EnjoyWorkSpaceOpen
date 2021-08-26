@@ -190,16 +190,23 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventTextToSpeech.Code.MODULE_INIT_REQUEST, false);
+        registerHandleEvent(EventTextToSpeech.Code.TEXT_PLAY, true);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventTextToSpeech.Code.TEXT_PLAY:
                 onRequestTtsPlay(EventTextToSpeechPlayRequest.getPlayContent(event));
-                return true;
+                break;
             case EventTextToSpeech.Code.MODULE_INIT_REQUEST:
                 initTts();
-                return true;
+                break;
             default:
                 return false;
         }
+        return true;
     }
 }

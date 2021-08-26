@@ -63,10 +63,7 @@ public class LogcatHelper {
      * @param dirPath log的相对路径
      */
     public LogcatHelper setSaveLogDirPath(String dirPath) {
-        mLogDumper.setDirPathSaveLog(new StringBuilder()
-                .append("/kuyou/logcat")
-                .append(dirPath)
-                .toString());
+        mLogDumper.setDirPathSaveLog(dirPath);
         return this;
     }
 

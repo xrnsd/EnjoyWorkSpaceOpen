@@ -4,16 +4,11 @@ import com.kuyou.avc.handler.FlashlightHandler;
 import com.kuyou.avc.handler.LocalKeyHandler;
 import com.kuyou.avc.handler.LocalModuleCommonHandler;
 import com.kuyou.avc.handler.PeergineAudioVideoHandler;
+import com.kuyou.avc.handler.PhotoTakeHandler;
 import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.common.basic.EventCommon;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 
 /**
  * action :音视频服务模块
@@ -27,9 +22,10 @@ public class ModuleApplication extends BasicModuleApplication {
     private static final String TAG = "com.kuyou.avc > ModuleApplication";
 
     private LocalModuleCommonHandler mModuleEventHandler;
-    private AudioVideoRequestResultHandler mAudioVideoRequestHandler;
     private FlashlightHandler mFlashlightHandler;
     private LocalKeyHandler mLocalKeyHandler;
+    private AudioVideoRequestResultHandler mAudioVideoRequestHandler;
+    private PhotoTakeHandler mPhotoTakeHandler;
 
     @Override
     protected String getApplicationName() {
@@ -37,30 +33,12 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected List<Integer> getEventDispatchList() {
-        List<Integer> list = new ArrayList<>();
-
-        list.add(EventCommon.Code.NETWORK_CONNECTED);
-        list.add(EventCommon.Code.NETWORK_DISCONNECT);
-
-        list.add(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT);
-        list.add(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT);
-
-        list.add(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST);
-        list.add(EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST);
-        list.add(EventAudioVideoCommunication.Code.FLASHLIGHT_REQUEST);
-
-        return list;
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        registerEventHandler(
-                getModuleBasicEventHandler(),
-                getLocalKeyHandler(),
-                getAudioVideoRequestHandler(),
-                getFlashlightHandler());
+    protected void initRegisterEventHandlers() {
+        registerEventHandler(getModuleBasicEventHandler());
+        registerEventHandler(getLocalKeyHandler());
+        registerEventHandler(getAudioVideoRequestHandler());
+        registerEventHandler(getPhotoTakeHandler());
+        registerEventHandler(getFlashlightHandler());
     }
 
     @Override
@@ -78,6 +56,15 @@ public class ModuleApplication extends BasicModuleApplication {
             mModuleEventHandler = new LocalModuleCommonHandler();
         }
         return mModuleEventHandler;
+    }
+
+    public PhotoTakeHandler getPhotoTakeHandler() {
+        if (null == mPhotoTakeHandler) {
+            mPhotoTakeHandler = new PhotoTakeHandler();
+            mPhotoTakeHandler.setContext(getApplicationContext());
+            mPhotoTakeHandler.setAudioVideoRequestCallback(getAudioVideoRequestHandler());
+        }
+        return mPhotoTakeHandler;
     }
 
     public AudioVideoRequestResultHandler getAudioVideoRequestHandler() {

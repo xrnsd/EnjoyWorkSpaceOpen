@@ -14,6 +14,7 @@ import android.net.Uri;
  * </p>
  */
 public class RingtoneHandler {
+    protected final String TAG = "com.kuyou.avc.handler > RingtoneHandler";
     
     private Context mContext;
     private Uri mUriDefaultRingtone;

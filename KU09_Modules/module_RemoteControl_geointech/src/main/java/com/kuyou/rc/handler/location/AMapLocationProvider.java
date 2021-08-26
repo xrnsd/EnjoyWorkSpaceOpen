@@ -69,10 +69,7 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
         if (!(activity instanceof AmapLocationActivity)) {
             return;
         }
-        if (null == mLocationProviderReal) {
-            return;
-        }
-        mLocationProviderReal.setLocationDispatcherCallback(null);
+        mLocationProviderReal.setLocationDispatcherCallback(AMapLocationProvider.this);
         mLocationProviderReal = null;
     }
 

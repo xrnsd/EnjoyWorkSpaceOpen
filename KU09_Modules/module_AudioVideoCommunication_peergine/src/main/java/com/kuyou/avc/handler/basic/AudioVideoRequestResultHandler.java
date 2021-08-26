@@ -58,7 +58,7 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
     /**
      * action:解析事件项，打开对应模式的通信
      */
-    protected abstract void exitAllLiveItem();
+    protected abstract void exitAllLiveItem(int eventType);
 
     /**
      * action:对应模式的通信是否开启

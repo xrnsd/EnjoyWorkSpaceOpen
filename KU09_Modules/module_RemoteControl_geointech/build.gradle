@@ -4,6 +4,8 @@ apply plugin: 'com.android.application'
 ext {
     //应用名称
     moduleName = "RemoteControl_geointech"
+    //应用包名
+    modulePackageName = "com.kuyou.rc"
 }
 
 android {
@@ -20,7 +22,7 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
     defaultConfig {
-        applicationId "com.kuyou.rc"
+        applicationId "${project.modulePackageName}"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -87,4 +89,9 @@ boolean isReleaseBuildType() {
         }
     }
     return false
+}
+
+task aInstallReleaseLaunch(type: Exec){
+    dependsOn 'installRelease'
+    commandLine  "adb","shell","am","start","-n","${project.modulePackageName}/.MainActivity"
 }

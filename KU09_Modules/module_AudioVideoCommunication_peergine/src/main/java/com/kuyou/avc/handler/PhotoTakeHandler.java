@@ -4,19 +4,21 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
-import com.kuyou.avc.handler.photo.ITakePhotoResultListener;
+import com.kuyou.avc.handler.photo.ITakePhotoByCameraResultListener;
+import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
 import com.kuyou.avc.handler.photo.TakePhotoBackground;
-import com.kuyou.avc.ui.basic.AVCActivity;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
+import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
-public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoResultListener {
+public class PhotoTakeHandler extends BasicEventHandler
+        implements ITakePhotoByCameraResultListener, ITakePhotoByScreenshotResultCallback {
 
     protected final String TAG = "com.kuyou.avc.handle > PhotoTakeHandler";
 
@@ -40,6 +42,7 @@ public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoRes
     }
 
     private IAudioVideoRequestCallback mAudioVideoRequestCallback;
+    private RemoteEvent mRemoteEventHandled;
 
     public IAudioVideoRequestCallback getAudioVideoRequestCallback() {
         return mAudioVideoRequestCallback;
@@ -48,6 +51,14 @@ public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoRes
     public PhotoTakeHandler setAudioVideoRequestCallback(IAudioVideoRequestCallback callback) {
         this.mAudioVideoRequestCallback = callback;
         return PhotoTakeHandler.this;
+    }
+
+    protected RemoteEvent getRemoteEventHandled() {
+        return mRemoteEventHandled;
+    }
+
+    protected void setRemoteEventHandled(RemoteEvent remoteEventHandled) {
+        mRemoteEventHandled = remoteEventHandled;
     }
 
     public boolean isItInHandlerState(int handlerStatus) {
@@ -67,10 +78,16 @@ public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoRes
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT, true);
+        registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST, true);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
-
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
+                setRemoteEventHandled(event);
                 Log.d(TAG, "onModuleEvent > 处理拍照请求");
 
                 if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeRequest.getEventType(event)) {
@@ -89,14 +106,9 @@ public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoRes
                     if (-1 != onLineTypeCode) {
                         int result = getAudioVideoRequestCallback().getOnlineList()
                                 .get(onLineTypeCode)
-                                .screenshot(event, new AVCActivity.IVideoCameraResultListener() {
-                                    @Override
-                                    public void onScreenshotResult(String result) {
-                                        PhotoTakeHandler.this.onTakePhotoResult(true, result, event.getData());
-                                    }
-                                });
+                                .screenshot(PhotoTakeHandler.this);
                         if (-1 != result) {//异常失败处理
-                            PhotoTakeHandler.this.onTakePhotoResult(false, "", event.getData());
+                            PhotoTakeHandler.this.onScreenshotResult(false, "", event.getData());
                         }
                         return true;
                     }
@@ -112,7 +124,28 @@ public class PhotoTakeHandler extends BasicEventHandler implements ITakePhotoRes
     }
 
     @Override
+    public Bundle getEventData() {
+        if (null == getRemoteEventHandled()) {
+            return null;
+        }
+        return getRemoteEventHandled().getData();
+    }
+
+    @Override
+    public void onScreenshotResult(boolean result, String info, Bundle data) {
+        handlerTakePhotoResult(result, info, data);
+    }
+
+    @Override
     public void onTakePhotoResult(boolean result, String info, Bundle data) {
+        handlerTakePhotoResult(result, info, data);
+    }
+
+    protected void handlerTakePhotoResult(boolean result, String info, Bundle data) {
+        if (null == data) {
+            Log.e(TAG, "handlerTakePhotoResult > process fail : data is null");
+            return;
+        }
         if (result) {
             Log.d(TAG, "onResult > 拍照成功 > 申请上传");
             if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)) {

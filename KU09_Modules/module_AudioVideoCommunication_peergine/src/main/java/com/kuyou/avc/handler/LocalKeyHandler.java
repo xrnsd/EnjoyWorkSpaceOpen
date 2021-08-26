@@ -3,8 +3,8 @@ package com.kuyou.avc.handler;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import com.kuyou.avc.handler.basic.CameraLightControl;
+import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
@@ -42,7 +42,6 @@ public class LocalKeyHandler extends KeyHandler {
 
     @Override
     public void onKeyClick(int keyCode) {
-        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.CALL:
                 mAudioVideoHandler.performOperate();
@@ -58,8 +57,9 @@ public class LocalKeyHandler extends KeyHandler {
                         .setRemote(false));
                 break;
             default:
-                break;
+                return;
         }
+        Log.i(TAG, "onKeyClick > keyCode = " + keyCode);
     }
 
     @Override
@@ -69,8 +69,9 @@ public class LocalKeyHandler extends KeyHandler {
                 mAudioVideoHandler.switchMediaType();
                 break;
             default:
-                break;
+                return;
         }
+        Log.i(TAG, "onKeyDoubleClick > keyCode = " + keyCode);
     }
 
     @Override

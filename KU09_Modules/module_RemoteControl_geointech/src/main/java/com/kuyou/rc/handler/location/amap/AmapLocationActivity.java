@@ -33,7 +33,7 @@ import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 public class AmapLocationActivity extends BasicPermissionsHandlerActivity
         implements AMapLocationListener {
 
-    protected final String TAG = "com.kuyou.jt808.location > " + this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.rc.handler.location.amap > AmapLocationActivity";
 
     private static final int GAO_DE_POSITION_FREQ = 5000;
     private static final String NOTIFICATION_CHANNEL_NAME = "状态";

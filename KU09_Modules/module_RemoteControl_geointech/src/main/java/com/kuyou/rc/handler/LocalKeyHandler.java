@@ -25,7 +25,6 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
 
     @Override
     public void onKeyClick(int keyCode) {
-        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.ALARM_NEAR_POWER:
                 if (!isEnableNearPowerAlarm) {
@@ -44,26 +43,27 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
                         .setRemote(false));
                 break;
             default:
-                break;
+                return;
         }
+        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
     }
 
     @Override
     public void onKeyDoubleClick(int keyCode) {
-        Log.d(TAG, "onKeyDoubleClick > keyCode = " + keyCode);
+        //Log.d(TAG, "onKeyDoubleClick > keyCode = " + keyCode);
     }
 
     @Override
     public void onKeyLongClick(int keyCode) {
-        Log.d(TAG, "onKeyLongClick > keyCode = " + keyCode);
         switch (keyCode) {
             case KeyConfig.CALL:
                 dispatchEvent(new EventAlarmSos()
                         .setRemote(false));
                 break;
             default:
-                break;
+                return;
         }
+        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
     }
 
     @Override

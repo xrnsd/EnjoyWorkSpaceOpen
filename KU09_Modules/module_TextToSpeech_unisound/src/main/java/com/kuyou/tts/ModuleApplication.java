@@ -6,11 +6,7 @@ import android.os.RemoteException;
 import com.kuyou.tts.handler.LocalModuleCommonHandler;
 import com.kuyou.tts.handler.TtsHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.tts.EventTextToSpeech;
 
 /**
  * action :语音合成模块
@@ -31,10 +27,9 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected void init() {
-        super.init();
-
-        registerEventHandler(getTtsHandler(), getModuleBasicEventHandler());
+    protected void initRegisterEventHandlers() {
+        registerEventHandler(getTtsHandler());
+        registerEventHandler(getModuleBasicEventHandler());
     }
 
     @Override
@@ -46,15 +41,6 @@ public class ModuleApplication extends BasicModuleApplication {
                 ModuleApplication.this.getTtsHandler().onRequestTtsPlay(text);
             }
         });
-    }
-
-    @Override
-    protected List<Integer> getEventDispatchList() {
-        List<Integer> list = new ArrayList<>();
-
-        list.add(EventTextToSpeech.Code.TEXT_PLAY);
-
-        return list;
     }
 
     @Override

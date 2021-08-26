@@ -38,13 +38,9 @@ public class MultiRenderGroup extends MultiRender {
     }
 
     @Override
-    public void finish() {
-        exitLive();
-        super.finish();
-    }
-
-    private void exitLive(){
+    protected void exit(){
         LiveDisconnect();
+        super.exit();
     }
 
     @Override

@@ -12,6 +12,6 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-8-13 <br/>
  * </p>
  */
-public interface ITakePhotoResultListener {
+public interface ITakePhotoByCameraResultListener {
     public void onTakePhotoResult(boolean result, String info, Bundle data);
 }

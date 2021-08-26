@@ -6,12 +6,12 @@ import android.util.Log;
 import com.kuyou.avc.handler.basic.CameraLightControl;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightResult;
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
 import kuyou.common.ku09.event.avc.EventLaserLightResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
+import kuyou.common.ku09.handler.BasicEventHandler;
 
 /**
  * action :协处理器[手电筒]
@@ -29,6 +29,12 @@ public class FlashlightHandler extends BasicEventHandler {
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventAudioVideoCommunication.Code.FLASHLIGHT_REQUEST, true);
+        registerHandleEvent(EventAudioVideoCommunication.Code.LASER_LIGHT_REQUEST, true);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
 
         boolean result = false;
@@ -42,7 +48,7 @@ public class FlashlightHandler extends BasicEventHandler {
                     Log.e(TAG, "onModuleEvent > process fail : 无法打开手电筒");
                     play("无法打开手电筒");
                 }
-                return true;
+                break;
 
             case EventAudioVideoCommunication.Code.LASER_LIGHT_REQUEST:
                 Log.d(TAG, "onModuleEvent > 处理激光灯申请");
@@ -53,9 +59,10 @@ public class FlashlightHandler extends BasicEventHandler {
                     Log.e(TAG, "onModuleEvent > process fail : 无法打开激光灯");
                     play("无法打开激光灯");
                 }
-                return true;
+                break;
             default:
                 return false;
         }
+        return true;
     }
 }

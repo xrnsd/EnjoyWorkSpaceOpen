@@ -163,14 +163,14 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         }
 
         if (!isNetworkAvailable && isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkConnect());
+            dispatchEvent(new EventNetworkConnect().setRemote(true));
         } else if (isNetworkAvailable && !isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkDisconnect());
+            dispatchEvent(new EventNetworkDisconnect().setRemote(true));
         }
         isNetworkAvailable = isNetworkAvailableNow;
 
         //联网后以socketManager连接状态为准
-        if (!getPlatformConnectManager().isConnect()) {
+        if (isNetworkAvailable && !getPlatformConnectManager().isConnect()) {
             Log.w(TAG, "isReady > 未连接平台,尝试链接平台 ");
             connect();
             //return "平台连接异常";
@@ -184,7 +184,16 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         return PlatformConnectManager.getInstance(getConfig());
     }
 
-    public void connect() {
+    public void initialConnect() {
+        isNetworkAvailable = NetworkUtils.isNetworkAvailable(getControlHandlerCallback().getContext());
+        if (!isNetworkAvailable) {
+            Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
+            return;
+        }
+        connect();
+    }
+
+    protected void connect() {
         if (getPlatformConnectManager().isConnect()) {
             Log.e(TAG, "connect > process fail : HelmetSocketManager is connected");
             return;
@@ -252,6 +261,19 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + event.getCode());
         }
         return SingleInstructionParser;
+    }
+
+    @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventRemoteControl.Code.CONNECT_RESULT, false);
+        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_RESULT, false);
+        registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
+        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT, false);
+
+        registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
+        registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT, true);
+        registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT, true);
     }
 
     public boolean onModuleEvent(RemoteEvent event) {
@@ -339,7 +361,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setResult(false)
                             .setEventType(EventPhotoUploadRequest.getEventType(event))
                             .setRemote(false));
-                    return true;
+                    break;
                 }
                 UploadUtil.getInstance()
                         .setOnUploadCallBack(new UploadUtil.OnUploadCallBack() {
@@ -399,7 +421,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setResult(false)
                             .setRemote(true));
                     play("打开失败，请检查网络链接");
-                    return true;
+                    break;
                 }
 
                 //处理：平台未响应时的超时机制
@@ -434,8 +456,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 sendToRemoteControlPlatform(LocalDeviceHandleAVCResultMsg);
                 break;
             default:
-                break;
+                return false;
         }
-        return false;
+        return true;
     }
 }

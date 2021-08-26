@@ -5,6 +5,8 @@ plugins {
 ext {
     //应用名称
     moduleName = "AudioVideoCommunication_peergine"
+    //应用包名
+    modulePackageName = "com.kuyou.avc"
 }
 
 android {
@@ -22,7 +24,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.kuyou.avc"
+        applicationId "${project.modulePackageName}"
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
@@ -56,6 +58,7 @@ android {
     android.applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "${rootProject.ext.projectHardwareName}_${defaultConfig.versionName}.apk"
+            def applicationId = [variant.mergedFlavor.applicationId, variant.buildType.applicationIdSuffix].findAll().join()
         }
     }
 }
@@ -97,4 +100,9 @@ boolean isReleaseBuildType() {
         }
     }
     return false
+}
+
+task aInstallReleaseLaunch(type: Exec){
+    dependsOn 'installRelease'
+    commandLine  "adb","shell","am","start","-n","${project.modulePackageName}/.MainActivity"
 }

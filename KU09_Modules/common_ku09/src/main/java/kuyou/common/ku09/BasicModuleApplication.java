@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import kuyou.common.exception.IGlobalExceptionControl;
+import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BuildConfig;
@@ -89,6 +91,7 @@ public abstract class BasicModuleApplication extends Application implements
 
         //log相关
         initLogcatLocal();
+        initExceptionLogLocal();
 
         //初始化模块状态控制系统服务
         initHelmetModuleManageServiceManager();
@@ -115,7 +118,7 @@ public abstract class BasicModuleApplication extends Application implements
     }
 
     /**
-     * action:初始化异常log本地保存
+     * action:初始化log本地保存
      */
     protected void initLogcatLocal() {
         final String key = "persist.hm.log.save";
@@ -124,9 +127,42 @@ public abstract class BasicModuleApplication extends Application implements
             return;
         }
         LogcatHelper.getInstance(getApplicationContext())
-                .setSaveLogDirPath("/" + getApplicationName())
+                .setSaveLogDirPath(new StringBuilder()
+                        .append("/kuyou/logcat/")
+                        .append(getApplicationName())
+                        .toString())
                 .setLogSizeMax(1024 * 1024 * 10) //100M
-                .start("logcat *:d *:w | grep \"(" + android.os.Process.myPid() + ")\"");
+                .start("logcat *:i *:w *:e | grep \"(" + android.os.Process.myPid() + ")\"");
+    }
+
+    /**
+     * action:初始化异常log本地保存
+     */
+    protected void initExceptionLogLocal() {
+        final String key = "persist.hm.exception.save";
+        if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
+            Log.d(TAG, "initExceptionLogLocal > exception info auto save is disable");
+            return;
+        }
+        UncaughtExceptionManager uem = UncaughtExceptionManager
+                .getInstance(new IGlobalExceptionControl() {
+                    @Override
+                    public Application getApplication() {
+                        return BasicModuleApplication.this;
+                    }
+
+                    @Override
+                    public int getPolicy() {
+                        int flags = 0;
+                        flags |= IGlobalExceptionControl.POLICY_ENABLE_EXIT_APP;
+                        flags |= IGlobalExceptionControl.POLICY_ENABLE_CRASH_PROMPT;
+                        return flags;
+                    }
+                })
+                .setSaveExceptionLogDirPath(new StringBuilder()
+                        .append("/kuyou/logcat/")
+                        .append(getApplicationName())
+                        .toString());
     }
 
     /**
@@ -233,7 +269,7 @@ public abstract class BasicModuleApplication extends Application implements
                 }
             }
         };
-        mHelmetModuleManageServiceManager.feedWatchDog(getPackageName(), System.currentTimeMillis());
+        getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis());
         if (isAutoFeedWatchDog())
             mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, getFeedTimeLong());
     }
@@ -320,6 +356,7 @@ public abstract class BasicModuleApplication extends Application implements
     }
 
     public Handler getHandlerKeepAliveClient() {
+        initKeepAliveConfig();
         return mHandlerKeepAliveClient;
     }
 
@@ -335,12 +372,30 @@ public abstract class BasicModuleApplication extends Application implements
 
     private RemoteEventBus.IFrameLiveListener mFrameLiveListener;
 
-    private List<BasicEventHandler> mEventHandlerList = new ArrayList<>();
+    private List<BasicEventHandler> mEventHandlerList = null;
+
+    /**
+     * action:注册事件处理器
+     **/
+    protected abstract void initRegisterEventHandlers();
 
     /**
      * action:远程事件的监听列表
      **/
-    protected abstract List<Integer> getEventDispatchList();
+    protected List<Integer> getEventDispatchList() {
+        if (0 == getEventHandlerList().size()) {
+            Log.e(TAG, "getEventDispatchList > process fail : handlers is null");
+            return null;
+        }
+        List<Integer> list = new ArrayList<>();
+        for (BasicEventHandler handler : getEventHandlerList()) {
+            handler.setContext(BasicModuleApplication.this);
+            handler.setDispatchEventCallBack(BasicModuleApplication.this);
+            handler.setModuleManager(BasicModuleApplication.this);
+            list.addAll(handler.getHandleRemoteEventCodeList());
+        }
+        return list;
+    }
 
     /**
      * action:模块间IPC框架状态监听器
@@ -362,23 +417,16 @@ public abstract class BasicModuleApplication extends Application implements
         return mFrameLiveListener;
     }
 
-    /**
-     * action:注册事件处理器
-     **/
-    protected void registerEventHandler(BasicEventHandler... handlers) {
-        if (null == handlers || 0 == handlers.length) {
-            Log.e(TAG, "registerHandler > process fail : handlers is null");
-            return;
-        }
-        for (BasicEventHandler handler : handlers) {
-            handler.setContext(BasicModuleApplication.this);
-            handler.setDispatchEventCallBack(BasicModuleApplication.this);
-            handler.setModuleManager(BasicModuleApplication.this);
-            mEventHandlerList.add(handler);
-        }
+    protected BasicModuleApplication registerEventHandler(BasicEventHandler handler) {
+        getEventHandlerList().add(handler);
+        return BasicModuleApplication.this;
     }
 
     protected List<BasicEventHandler> getEventHandlerList() {
+        if (null == mEventHandlerList) {
+            mEventHandlerList = new ArrayList<>();
+            initRegisterEventHandlers();
+        }
         return mEventHandlerList;
     }
 
@@ -421,6 +469,7 @@ public abstract class BasicModuleApplication extends Application implements
     }
 
     public HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {
+        initHelmetModuleManageServiceManager();
         return mHelmetModuleManageServiceManager;
     }
 }

@@ -1,6 +1,7 @@
 package com.kuyou.rc;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.handler.LocalKeyHandler;
@@ -8,12 +9,8 @@ import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 
@@ -41,28 +38,19 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected List<Integer> getEventDispatchList() {
-        List<Integer> list = new ArrayList<>();
-
-        list.add(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT);
-        list.add(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST);
-        list.add(EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST);
-
-        return list;
+    protected void initRegisterEventHandlers() {
+        registerEventHandler(getModuleBasicEventHandler());
+        registerEventHandler(getLocalKeyHandler());
+        registerEventHandler(getPlatformInteractiveHandler());
+        registerEventHandler(getAlarmHandler());
+        registerEventHandler(getLocationHandler());
     }
 
     @Override
     protected void init() {
         super.init();
 
-        registerEventHandler(
-                getModuleBasicEventHandler(),
-                getLocalKeyHandler(),
-                getPlatformInteractiveHandler(),
-                getAlarmHandler(),
-                getLocationHandler());
-
-        getPlatformInteractiveHandler().connect();
+        getPlatformInteractiveHandler().initialConnect();
     }
 
     @Override
@@ -87,6 +75,7 @@ public class ModuleApplication extends BasicModuleApplication {
 
     public RemoteControlDeviceConfig getConfig() {
         if (null == mConfig) {
+            //getDevicesConfig() 返回的类型不是RemoteControlDeviceConfig所以需要实例化一个
             mConfig = new RemoteControlDeviceConfig() {
                 @Override
                 public String getDevId() {
@@ -139,8 +128,17 @@ public class ModuleApplication extends BasicModuleApplication {
 
     public ModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleCommonHandler) {
-            mModuleCommonHandler = new ModuleCommonHandler()
-                    .setPowerStatusListener(getLocalKeyHandler());
+            mModuleCommonHandler = new ModuleCommonHandler() {
+                @Override
+                protected void initHandleEventCodeList() {
+                    super.initHandleEventCodeList();
+                    unRegisterHandleEvent(EventCommon.Code.NETWORK_CONNECTED);
+                    unRegisterHandleEvent(EventCommon.Code.NETWORK_DISCONNECT);
+
+                    registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, false);
+                    registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, false);
+                }
+            }.setPowerStatusListener(getLocalKeyHandler());
         }
         return mModuleCommonHandler;
     }
@@ -153,7 +151,8 @@ public class ModuleApplication extends BasicModuleApplication {
             //policy |= ILocationProviderPolicy.POLICY_FILER;
             mLocationHandler = new LocationHandler()
                     .setLocationProviderPolicy(policy)
-                    .initProviderFilter(ModuleApplication.this, getHandlerKeepAliveClient().getLooper(), getConfig());
+                    .initProviderFilter(ModuleApplication.this,
+                            ModuleApplication.this.getHandlerKeepAliveClient().getLooper(), getConfig());
         }
         return mLocationHandler;
     }

@@ -3,11 +3,7 @@ package com.kuyou.vc;
 import com.kuyou.vc.handler.UnisoundVoiceControlHandler;
 import com.kuyou.vc.protocol.basic.VoiceControl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
 import kuyou.common.ku09.key.KeyConfig;
@@ -34,22 +30,9 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected void init() {
-        super.init();
-        registerEventHandler(getVoiceControlHandler(), getKeyHandler());
-    }
-
-    @Override
-    protected List<Integer> getEventDispatchList() {
-        List<Integer> list = new ArrayList<>();
-
-        list.add(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT);
-        list.add(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT);
-
-        list.add(EventAudioVideoCommunication.Code.FLASHLIGHT_RESULT);
-        list.add(EventAudioVideoCommunication.Code.LASER_LIGHT_RESULT);
-
-        return list;
+    protected void initRegisterEventHandlers() {
+        registerEventHandler(getKeyHandler());
+        registerEventHandler(getVoiceControlHandler());
     }
 
     @Override

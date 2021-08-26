@@ -17,9 +17,9 @@ import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 
 /**
@@ -150,19 +150,25 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST,false);
+        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
                 Log.d(TAG, "onModuleEvent > 开始上报位置 ");
                 mLocationReportHandler.start();
-                return true;
+                break;
             case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
                 Log.d(TAG, "onModuleEvent > 停止上报位置 ");
                 mLocationReportHandler.stop();
-                return true;
-            default:
                 break;
+            default:
+                return false;
         }
-        return false;
+        return true;
     }
 }

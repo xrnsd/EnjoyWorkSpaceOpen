@@ -70,16 +70,20 @@ public class PeergineThermalCameraCaptureHandler extends BasicEventHandler
 
     }
 
-    @Override
-    public boolean onModuleEvent(RemoteEvent event) {
-        return false;
-    }
-
     protected void onPreviewFrame(byte[] data) {
         try {
             pgDevVideoIn.CaptureProcExt(m_iDevID, data, 0, data.length, m_iCameraFormat, 0);
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }
+    }
+
+    @Override
+    protected void initHandleEventCodeList() {
+    }
+
+    @Override
+    public boolean onModuleEvent(RemoteEvent event) {
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import android.util.Log;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 
 /**
  * action :模块通用事件处理器
@@ -45,17 +46,25 @@ public class ModuleCommonHandler extends BasicEventHandler {
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
+        registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
+        registerHandleEvent(EventPowerChange.Code.POWER_CHANGE, false);
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventPowerChange.Code.POWER_CHANGE:
                 final int val = EventPowerChange.getPowerStatus(event);
                 if (val == getPowerStatus()) {
-                    return true;
+                    break;
                 }
                 setPowerStatus(val);
-                return true;
+                break;
             default:
                 return false;
         }
+        return true;
     }
 }

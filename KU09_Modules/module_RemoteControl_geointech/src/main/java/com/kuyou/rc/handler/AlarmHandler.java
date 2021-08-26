@@ -7,9 +7,9 @@ import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
+import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -33,6 +33,15 @@ public class AlarmHandler extends BasicEventHandler implements ALARM {
 
     protected ILocationProvider getLocationProvider() {
         return mLocationProvider;
+    }
+
+    @Override
+    protected void initHandleEventCodeList() {
+        registerHandleEvent(EventAlarm.Code.ALARM_NEAR_POWER, false);
+        registerHandleEvent(EventAlarm.Code.ALARM_CAP_OFF, false);
+        registerHandleEvent(EventAlarm.Code.ALARM_FALL, false);
+        registerHandleEvent(EventAlarm.Code.ALARM_GAS, false);
+        registerHandleEvent(EventAlarm.Code.ALARM_SOS, false);
     }
 
     @Override

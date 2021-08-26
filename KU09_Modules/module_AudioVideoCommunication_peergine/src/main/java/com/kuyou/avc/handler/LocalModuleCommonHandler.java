@@ -5,6 +5,7 @@ import android.util.Log;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
 
 /**
@@ -31,9 +32,10 @@ public class LocalModuleCommonHandler extends ModuleCommonHandler {
                     Log.d(TAG, "onModuleEvent > 模块即将关闭");
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                return true;
+                break;
             default:
                 return false;
         }
+        return true;
     }
 }

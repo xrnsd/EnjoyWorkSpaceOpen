@@ -85,7 +85,7 @@ public class Jt808ExtendProtocolCodec {
             Log.e(TAG, "handler > process fail : check fail");
             return;
         }
-        Log.d(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
+        Log.i(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
 
         SicBasic instruction = null;
         JTT808Bean bean = JTT808Coding.resolve808(bytes);

@@ -44,7 +44,7 @@ public class TakePhotoBackground extends Service {
 
     private static Intent sTakePhotoServer = null;
 
-    private static ITakePhotoResultListener sTakePhotoResultListener;
+    private static ITakePhotoByCameraResultListener sTakePhotoResultListener;
 
     private CameraViews mCameraViews;
     private WindowManager mWindowManager;
@@ -53,7 +53,7 @@ public class TakePhotoBackground extends Service {
     private Bundle mData;
     private String mFileName, mFileFormatType, mImgStorageDir;
 
-    public static void perform(Context context, Bundle data, ITakePhotoResultListener listener) {
+    public static void perform(Context context, Bundle data, ITakePhotoByCameraResultListener listener) {
         sTakePhotoResultListener = listener;
         sTakePhotoServer = new Intent(context, TakePhotoBackground.class);
         sTakePhotoServer.putExtras(data);

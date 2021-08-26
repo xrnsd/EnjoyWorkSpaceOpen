@@ -78,13 +78,15 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
 
         @Override
         public void event(String sAct, String sData, String sRenID) {
-            onPeergineEvent(sAct, sData, sRenID);
             Log.d(TAG, new StringBuilder()
                     .append("pgLibLiveMultiCapture.OnEventListener > event >")
                     .append("\nsAct=").append(sAct)
                     .append("\nsData=").append(sData)
                     .append("\nsRenID=").append(sRenID)
                     .toString());
+            if (onPeergineEvent(sAct, sData, sRenID)) {
+                return;
+            }
             // TODO Auto-generated method stub
             if (sAct.equals("VideoStatus")) {
                 // Video status report
@@ -100,15 +102,6 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 String sInfo = "Render join: render=" + sRenID;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
 
-                int i = 0;
-                while (true) {
-                    String sRenID1 = m_Live.RenderEnum(i);
-                    if (sRenID1.equals("")) {
-                        break;
-                    }
-                    Log.d(TAG, "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
-                    i++;
-                }
             } else if (sAct.equals("RenderLeave")) {
                 // Enable video and audio access for this Render id.
                 //m_Live.RenderAccess(sRenID, true, true);
@@ -117,15 +110,6 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 String sInfo = "Render leave: render=" + sRenID;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
 
-                int i = 0;
-                while (true) {
-                    String sRenID1 = m_Live.RenderEnum(i);
-                    if (sRenID1.equals("")) {
-                        break;
-                    }
-                    Log.d(TAG, "RenderEnum: Index=" + i + ", RenID=" + sRenID1);
-                    i++;
-                }
             } else if (sAct.equals("Message")) {
                 // Receive the message from render or capture
                 String sInfo = "Receive msg: data=" + sData + ", render=" + sRenID;
@@ -145,10 +129,11 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                     onResult(IJT808ExtensionProtocol.RESULT_SUCCESS);
                 } else {
-                    if ("8".equals(sData)) {
+                    if ("8".equals(sData)) {//用户无效，也有可能是授权到期
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                    } else {
+                        onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     }
-                    onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
                     String sInfo = "Login failed, error=" + sData;
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                 }
@@ -184,7 +169,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 String sInfo = "Forward free relpy: error=" + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("VideoCamera")) {
-                onScreenshotResult(sData);
+                onScreenshotResult(true, sData);
                 String sInfo = "The picture is save to: " + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("FilePutRequest")) {
@@ -391,7 +376,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
     private DialogInterface.OnClickListener m_DlgClick = new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
             if (which == AlertDialog.BUTTON_POSITIVE) {
-                LiveStop();
+                liveStop();
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
         }
@@ -451,31 +436,42 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
         }
     }
 
-    protected void LiveStop() {
-        Log.d(TAG, "LiveStop > ");
-//        m_Live.AudioStop(0);
-//        m_Live.VideoStop(0);
-//
-//        if (m_Wnd != null) {
-//            m_View.removeView(m_Wnd);
-//            m_Live.CameraViewRelease();
-//            m_View = null;
-//            m_Wnd = null;
-//            m_Live.Clean();
-//        }
-        if (m_Live == null) {
-            return;
-        }
-        m_Live.AudioStop(0);
-        m_Live.VideoStop(0);
+    protected void liveStop() {
+        Log.d(TAG, "liveStop > ");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                m_Live.AudioStop(0);
+//                m_Live.VideoStop(0);
+//        
+//                if (m_Wnd != null) {
+//                    m_View.removeView(m_Wnd);
+//                    m_Live.CameraViewRelease();
+//                    m_View = null;
+//                    m_Wnd = null;
+//                    m_Live.Clean();
+//                }
+                if (m_Live == null) {
+                    return;
+                }
+                m_Live.AudioStop(0);
+                m_Live.VideoStop(0);
 
-        if (m_Wnd != null) {
-            m_View.removeView(m_Wnd);
-            m_Live.CameraViewRelease();
-            m_View = null;
-            m_Wnd = null;
-        }
-        m_Live.Clean();
+                if (m_Wnd != null) {
+                    m_View.removeView(m_Wnd);
+                    m_Live.CameraViewRelease();
+                    m_View = null;
+                    m_Wnd = null;
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        m_Live.Clean();
+                    }
+                }).start();
+            }
+        });
     }
 
     private void LiveControl(String sData) {
@@ -516,7 +512,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
 
                     // For test ...
                     //RecordAudioBothStop("/sdcard/Download/capture.avi", 0);
-                    LiveStop();
+                    liveStop();
                     break;
 
                 case R.id.btnSend:
@@ -680,7 +676,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
 
     @Override
     public void onDestroy() {
-        LiveStop();
+        liveStop();
         super.onDestroy();
     }
 
@@ -694,7 +690,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
 
         // For test ...
         //RecordAudioBothStop("/sdcard/Download/capture.avi", 0);
-        LiveStop();
+        liveStop();
         super.exit();
     }
 

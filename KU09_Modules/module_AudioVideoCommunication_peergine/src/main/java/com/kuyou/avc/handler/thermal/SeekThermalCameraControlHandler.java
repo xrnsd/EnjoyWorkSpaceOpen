@@ -114,6 +114,10 @@ public class SeekThermalCameraControlHandler extends BasicEventHandler implement
     }
 
     @Override
+    protected void initHandleEventCodeList() {
+    }
+
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         return false;
     }
