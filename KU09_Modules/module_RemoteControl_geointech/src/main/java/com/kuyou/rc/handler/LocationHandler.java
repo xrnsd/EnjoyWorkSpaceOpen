@@ -151,7 +151,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
 
     @Override
     protected void initHandleEventCodeList() {
-        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST,false);
+        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
     }
 
@@ -159,11 +159,11 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
-                Log.d(TAG, "onModuleEvent > 开始上报位置 ");
+                Log.i(TAG, "onModuleEvent > 开始上报位置 ");
                 mLocationReportHandler.start();
                 break;
             case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
-                Log.d(TAG, "onModuleEvent > 停止上报位置 ");
+                Log.i(TAG, "onModuleEvent > 停止上报位置 ");
                 mLocationReportHandler.stop();
                 break;
             default:

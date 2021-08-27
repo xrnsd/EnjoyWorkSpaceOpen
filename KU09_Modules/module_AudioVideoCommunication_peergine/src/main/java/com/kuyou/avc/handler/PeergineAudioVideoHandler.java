@@ -179,7 +179,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     protected void onResult(RemoteEvent event, int result) {
         dispatchEvent(new EventAudioVideoOperateResult()
-                .setFlowId(EventAudioVideoOperateRequest.getFlowId(event))
+                .setFlowNumber(EventAudioVideoOperateRequest.getFlowNumber(event))
                 .setToken(EventAudioVideoOperateRequest.getToken(event))
                 .setResultCode(result));
         if (IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL == result

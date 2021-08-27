@@ -132,7 +132,7 @@ public abstract class BasicModuleApplication extends Application implements
                         .append(getApplicationName())
                         .toString())
                 .setLogSizeMax(1024 * 1024 * 10) //100M
-                .start("logcat *:i *:w *:e | grep \"(" + android.os.Process.myPid() + ")\"");
+                .start("logcat \"*:i*:w*:e\" | grep \"(" + android.os.Process.myPid() + ")\"");
     }
 
     /**
@@ -439,11 +439,14 @@ public abstract class BasicModuleApplication extends Application implements
     @Subscribe
     public void onModuleEvent(RemoteEvent event) {
         for (BasicEventHandler handler : getEventHandlerList()) {
-            if (handler.onModuleEvent(event)) {
-                return;
-            }
+            handler.onModuleEvent(event);
+//            if (handler.onModuleEvent(event)) {
+//                Log.d(TAG, "已消费 event = " + event.getCode());
+//                Log.d(TAG, "EventHandler = " + handler.getClass().getSimpleName());
+//                return;
+//            }
         }
-        Log.d(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());
+        Log.i(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());
     }
 
     public void play(String content) {
@@ -451,7 +454,6 @@ public abstract class BasicModuleApplication extends Application implements
             Log.e(TAG, "play > process fail : content is invalid");
             return;
         }
-        //Log.d(TAG, "play > content= " + content);
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 

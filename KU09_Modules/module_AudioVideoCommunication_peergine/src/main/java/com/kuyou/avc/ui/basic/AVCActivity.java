@@ -105,7 +105,7 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
 
         dispatchEvent(new EventAudioVideoOperateResult()
-                .setFlowId(EventAudioVideoOperateRequest.getFlowId(getIntent().getExtras()))
+                .setFlowNumber(EventAudioVideoOperateRequest.getFlowNumber(getIntent().getExtras()))
                 .setToken(EventAudioVideoOperateRequest.getToken(getIntent().getExtras()))
                 .setResultCode(result));
     }

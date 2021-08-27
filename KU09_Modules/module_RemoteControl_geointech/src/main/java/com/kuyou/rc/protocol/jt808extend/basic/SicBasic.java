@@ -84,7 +84,7 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
         mMsgHeader.setMsgBodyAttributes(msgBodyAttributes);
         mMsgHeader.setPhoneNumber(phone);
         mMsgHeader.setMsgFlowNumber(msgFlowNum);
-        setFlowId(mMsgHeader.getMsgFlowNumber());
+        setFlowNumber(mMsgHeader.getMsgFlowNumber());
 
         return Arrays.copyOfRange(bytes, 12, bytes.length);
     }
@@ -102,11 +102,11 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
         return SicBasic.this;
     }
 
-    public int getFlowId() {
+    public int getFlowNumber() {
         return mFlowId;
     }
 
-    public SicBasic setFlowId(int flowId) {
+    public SicBasic setFlowNumber(int flowId) {
         mFlowId = flowId;
         return SicBasic.this;
     }

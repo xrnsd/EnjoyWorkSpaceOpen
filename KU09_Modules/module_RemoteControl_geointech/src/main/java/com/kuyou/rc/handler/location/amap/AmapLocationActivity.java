@@ -99,7 +99,7 @@ public class AmapLocationActivity extends BasicPermissionsHandlerActivity
         if (location.getErrorCode() == 0) { //定位成功,进行处理
             dispatchLocation(location);
         }
-        printfAMapLocationInfo(location);
+        //printfAMapLocationInfo(location);
     }
 
     /**

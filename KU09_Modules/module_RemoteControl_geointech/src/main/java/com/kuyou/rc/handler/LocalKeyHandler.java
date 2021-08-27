@@ -63,7 +63,7 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
             default:
                 return;
         }
-        Log.d(TAG, "onKeyClick > keyCode = " + keyCode);
+        Log.d(TAG, "onKeyLongClick > keyCode = " + keyCode);
     }
 
     @Override

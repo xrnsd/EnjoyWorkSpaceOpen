@@ -40,7 +40,7 @@ public class FrameRemoteService extends Service {
                 Log.e(TAG, "sendEvent > mCallbackList is null");
                 return;
             }
-            Log.d(TAG, "registerCallback > sendEvent data ");
+            Log.d(TAG, "registerCallback > sendEvent = " + RemoteEvent.getCodeByData(data));
             int N = beginBroadcastCallback(mCallbackList);
             for (int i = 0; i < N; i++) {
                 try {

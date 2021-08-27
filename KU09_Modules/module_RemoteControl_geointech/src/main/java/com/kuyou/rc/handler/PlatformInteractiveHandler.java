@@ -32,6 +32,7 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
 import kuyou.common.ku09.event.rc.EventConnectResult;
+import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventLocationReportStartRequest;
 import kuyou.common.ku09.event.rc.EventLocationReportStopRequest;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
@@ -90,11 +91,10 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     switch (bean.getMsgId()) {
                         case IJT808ExtensionProtocol.S2C_RESULT_CONNECT_REPLY:
                             if (0 != bean.getReplyFlowNumber()) {
-                                Log.i(TAG, new StringBuilder(256)
-                                        .append("<<<<<<<<<<  流水号：").append(bean.getReplyFlowNumber())
-                                        .append(",服务器回复:").append(0 == bean.getReplyResult() ? "成功" : "失败")
-                                        .append("  <<<<<<<<<<\n\n")
-                                        .toString());
+                                dispatchEvent(new EventHeartbeatReply()
+                                        .setFlowNumber(bean.getReplyFlowNumber())
+                                        .setResult(0 == bean.getReplyResult())
+                                        .setRemote(false));
                                 break;
                             }
                         case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
@@ -126,7 +126,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                     EventAudioVideoOperateRequest event = null;
                     event = new EventAudioVideoOperateRequest()
-                            .setFlowId(instruction.getFlowId())
+                            .setFlowNumber(instruction.getFlowNumber())
                             .setMediaType(instruction.getMediaType())
                             .setToken(instruction.getToken())
                             .setChannelId(String.valueOf(instruction.getChannelId()))
@@ -170,10 +170,15 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         isNetworkAvailable = isNetworkAvailableNow;
 
         //联网后以socketManager连接状态为准
-        if (isNetworkAvailable && !getPlatformConnectManager().isConnect()) {
-            Log.w(TAG, "isReady > 未连接平台,尝试链接平台 ");
-            connect();
-            //return "平台连接异常";
+        if (isNetworkAvailable) {
+            if (getPlatformConnectManager().isConnect()) {
+                Log.i(TAG, "isReady > 已联网,平台链接正常 ");
+                return null;
+            }
+            Log.w(TAG, "isReady >  已联网,未连接平台,尝试链接平台 ");
+            if (!connect()) {
+                return "平台连接异常";
+            }
             return null;
         }
 
@@ -193,10 +198,10 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         connect();
     }
 
-    protected void connect() {
+    protected boolean connect() {
         if (getPlatformConnectManager().isConnect()) {
             Log.e(TAG, "connect > process fail : HelmetSocketManager is connected");
-            return;
+            return true;
         }
         try {
             getPlatformConnectManager().connect(getConfig(), new SocketActionAdapter() {
@@ -229,7 +234,9 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             });
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            return false;
         }
+        return true;
     }
 
     protected Context getContext() {
@@ -276,6 +283,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT, true);
     }
 
+    @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventRemoteControl.Code.CONNECT_RESULT:
@@ -286,7 +294,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setRemote(false));
                     break;
                 }
-                if (EventConnectResult.getResultCode(event) == EventResult.ResultCode.DIS) {
+                if (EventResult.ResultCode.DIS == EventConnectResult.getResultCode(event)) {
                     dispatchEvent(new EventLocationReportStopRequest()
                             .setRemote(false));
                     Log.w(TAG, "onModuleEvent > 服务器连接断开");
@@ -296,6 +304,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
+                //待实现鉴权失败，超时提示
                 Log.i(TAG, "onModuleEvent > 开始鉴权 ");
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
@@ -314,21 +323,19 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
             case EventRemoteControl.Code.AUTHENTICATION_RESULT:
                 if (EventAuthenticationResult.isResultSuccess(event)) {
-                    //Log.d(TAG, "onModuleEvent > 鉴权成功 ");
                     dispatchEvent(new EventLocationReportStartRequest()
                             .setRemote(false));
-                    return true;
+                } else {
+                    //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 }
-                //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 break;
 
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
-                //Log.d(TAG, "onModuleEvent > 发送指令给平台");
                 sendToRemoteControlPlatform(EventSendToRemoteControlPlatformRequest.getMsg(event));
                 break;
 
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT:
-                Log.d(TAG, "onModuleEvent > 拍照状态上传");
+                Log.i(TAG, "onModuleEvent > 拍照状态上传");
                 if (!EventPhotoTakeResult.isResultSuccess(event)) {
                     SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
                     if (null == singleInstructionParser) {
@@ -343,7 +350,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 break;
 
             case EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST:
-                Log.d(TAG, "onModuleEvent > 开始上传照片");
+                Log.i(TAG, "onModuleEvent > 开始上传照片");
                 final String filePath = EventPhotoUploadRequest.getImgFilePath(event);
                 File imgFile = new File(filePath);
 
@@ -376,7 +383,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             @Override
                             public void onUploadFinish(int resultCode) {
                                 boolean isUploadSuccess = UploadUtil.ResultCode.UPLOAD_SUCCESS == resultCode;
-                                Log.d(TAG, "onModuleEvent > onUploadFinish > " + (isUploadSuccess ? "上传成功" : "上传失败"));
+                                Log.i(TAG, "onModuleEvent > onUploadFinish > " + (isUploadSuccess ? "上传成功" : "上传失败"));
                                 dispatchEvent(new EventPhotoUploadResult()
                                         .setResult(isUploadSuccess)
                                         .setEventType(EventPhotoUploadRequest.getEventType(event))
@@ -389,7 +396,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             case EventRemoteControl.Code.PHOTO_UPLOAD_RESULT:
                 boolean isUploadSuccess = EventPhotoUploadResult.isResultSuccess(event);
                 if (isUploadSuccess) {
-                    Log.d(TAG, "onModuleEvent > 照片上传成功");
+                    Log.i(TAG, "onModuleEvent > 照片上传成功");
                 } else {
                     Log.w(TAG, "onModuleEvent > 照片上传失败");
                 }
@@ -451,7 +458,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 byte[] LocalDeviceHandleAVCResultMsg = ((SicAudioVideo) singleInstructionParserAVOR)
                         .setToken(EventAudioVideoOperateResult.getToken(event))
                         .setResult(EventAudioVideoOperateResult.getResult(event))
-                        .setFlowId(EventAudioVideoOperateResult.getFlowId(event))
+                        .setFlowNumber(EventAudioVideoOperateResult.getFlowNumber(event))
                         .getBody();
                 sendToRemoteControlPlatform(LocalDeviceHandleAVCResultMsg);
                 break;

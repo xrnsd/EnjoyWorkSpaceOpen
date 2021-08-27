@@ -95,7 +95,7 @@ public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
                 return getPackToJt808(C2S_REQUEST_PHOTO_UPLOAD, body);
 
             case BodyConfig.RESULT:
-                byte[] flowBytes = ByteUtils.int2Word(getFlowId());
+                byte[] flowBytes = ByteUtils.int2Word(getFlowNumber());
                 byte[] tokenBytesResult = getToken().getBytes();
                 byte[] resultBytes = new byte[]{ByteUtils.int2Byte(getResult())};
 

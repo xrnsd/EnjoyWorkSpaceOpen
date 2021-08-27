@@ -29,10 +29,10 @@ public class LocalModuleCommonHandler extends ModuleCommonHandler {
         switch (event.getCode()) {
             case EventTextToSpeech.Code.MODULE_EXIT:
                 if (EventAVCModuleLiveExit.isReboot(event)) {
-                    Log.d(TAG, "onModuleEvent > 模块即将重启");
+                    Log.i(TAG, "onModuleEvent > 模块即将重启");
                     reboot(500);
                 } else {
-                    Log.d(TAG, "onModuleEvent > 模块即将关闭");
+                    Log.i(TAG, "onModuleEvent > 模块即将关闭");
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 return true;

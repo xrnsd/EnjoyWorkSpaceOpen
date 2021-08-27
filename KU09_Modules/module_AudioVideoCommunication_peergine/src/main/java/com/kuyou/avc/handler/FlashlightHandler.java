@@ -51,7 +51,7 @@ public class FlashlightHandler extends BasicEventHandler {
                 break;
 
             case EventAudioVideoCommunication.Code.LASER_LIGHT_REQUEST:
-                Log.d(TAG, "onModuleEvent > 处理激光灯申请");
+                Log.i(TAG, "onModuleEvent > 处理激光灯申请");
                 result = CameraLightControl.getInstance(
                         getContext()).switchLaserLight(EventLaserLightRequest.isSwitch(event));
                 dispatchEvent(new EventLaserLightResult().setResult(result));

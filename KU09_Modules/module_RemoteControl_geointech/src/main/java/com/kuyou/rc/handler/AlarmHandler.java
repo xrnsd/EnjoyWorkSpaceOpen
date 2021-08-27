@@ -65,7 +65,7 @@ public class AlarmHandler extends BasicEventHandler implements ALARM {
                 break;
 
             case EventAlarm.Code.ALARM_SOS:
-                Log.d(TAG, "onModuleEvent > SOS报警");
+                Log.i(TAG, "onModuleEvent > SOS报警");
                 SicLocationAlarm info = getLocationProvider().getLocationInfo();
 
                 if (info.isAutoAddSosFlag()) {

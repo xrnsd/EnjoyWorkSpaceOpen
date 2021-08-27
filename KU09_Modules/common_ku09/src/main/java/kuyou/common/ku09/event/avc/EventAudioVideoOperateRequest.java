@@ -19,7 +19,7 @@ public class EventAudioVideoOperateRequest extends EventRequest {
 
     protected static final String KEY_MEDIA_TYPE = "keyEventData.mediaType";
     protected static final String KEY_EVENT_TYPE = "keyEventData.eventType";
-    protected static final String KEY_EVENT_DATA_FLOW_ID = "keyEventData.flowID";
+    protected static final String KEY_EVENT_DATA_FLOW_NUMBER = "keyEventData.flowNumber";
     protected static final String KEY_TOKEN = "keyEventData.token";
     protected static final String KEY_CHANNEL_ID = "keyEventData.channelId";
 
@@ -56,19 +56,19 @@ public class EventAudioVideoOperateRequest extends EventRequest {
         return event.getData().getInt(KEY_EVENT_TYPE);
     }
 
-    public static int getFlowId(RemoteEvent event) {
-        return event.getData().getInt(KEY_EVENT_DATA_FLOW_ID);
+    public static long getFlowNumber(RemoteEvent event) {
+        return event.getData().getLong(KEY_EVENT_DATA_FLOW_NUMBER);
     }
 
-    public static int getFlowId(Bundle data) {
+    public static long getFlowNumber(Bundle data) {
         if (null == data) {
             return -1;
         }
-        return data.getInt(KEY_EVENT_DATA_FLOW_ID);
+        return data.getLong(KEY_EVENT_DATA_FLOW_NUMBER);
     }
 
-    public EventAudioVideoOperateRequest setFlowId(int val) {
-        getData().putInt(KEY_EVENT_DATA_FLOW_ID, val);
+    public EventAudioVideoOperateRequest setFlowNumber(long val) {
+        getData().putLong(KEY_EVENT_DATA_FLOW_NUMBER, val);
         return EventAudioVideoOperateRequest.this;
     }
 
@@ -103,7 +103,7 @@ public class EventAudioVideoOperateRequest extends EventRequest {
         return new StringBuilder()
                 .append("\n getMediaType = ").append(getMediaType(EventAudioVideoOperateRequest.this))
                 .append("\n getEventType = ").append(getEventType(EventAudioVideoOperateRequest.this))
-                .append("\n getFlowId = ").append(getFlowId(EventAudioVideoOperateRequest.this))
+                .append("\n getFlowNumber = ").append(getFlowNumber(EventAudioVideoOperateRequest.this))
                 .append("\n getToken = ").append(getToken(EventAudioVideoOperateRequest.this))
                 .append("\n getChannelId = ").append(getChannelId(EventAudioVideoOperateRequest.this))
                 .toString();

@@ -55,6 +55,10 @@ public class LocationReportHandler extends Handler {
         sendEmptyMessageDelayed(MSG_REPORT_LOCATION, getReportLocationFreq());
     }
 
+    public boolean isStart() {
+        return hasMessages(MSG_REPORT_LOCATION);
+    }
+
     public void start() {
         removeMessages(MSG_REPORT_LOCATION);
         sendEmptyMessage(MSG_REPORT_LOCATION);
