@@ -335,16 +335,23 @@ public abstract class BasicModuleApplication extends Application implements
             Log.e(TAG, "getEventDispatchList > process fail : handlers is null");
             return null;
         }
-        List<Integer> list = new ArrayList<>();
-        for (BasicEventHandler handler : getEventHandlerList()) {
+        return getEventDispatchListByHandlers(getEventHandlerList());
+    }
+
+    private List<Integer> getEventDispatchListByHandlers(List<BasicEventHandler> handlerList) {
+        List<Integer> codeList = new ArrayList<>();
+        for (BasicEventHandler handler : handlerList) {
             handler.setContext(BasicModuleApplication.this);
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
             handler.setModuleManager(BasicModuleApplication.this);
             handler.setDevicesConfig(getDeviceConfig());
             handler.setStatusGuardHandler(getHandlerStatusGuard());
-            list.addAll(handler.getHandleRemoteEventCodeList());
+            if (null != handler.getSubEventHandlers()) {
+                codeList.addAll(getEventDispatchListByHandlers(handler.getSubEventHandlers()));
+            }
+            codeList.addAll(handler.getHandleRemoteEventCodeList());
         }
-        return list;
+        return codeList;
     }
 
     /**

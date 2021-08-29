@@ -93,6 +93,9 @@ public class HandlerStatusGuard extends Handler implements IStatusGuard {
             Log.e(TAG, "stop > process fail : mStatusGuardCallbackList not contains msg = " + msgWhat);
             return;
         }
+        if (!hasMessages(msgWhat)) {
+            return;
+        }
         removeMessages(msgWhat);
         mStatusGuardCallbackList.get(msgWhat).onRemoveMessage();
     }

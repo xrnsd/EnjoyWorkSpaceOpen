@@ -2,6 +2,8 @@ package kuyou.common.ku09.event.rc.basic;
 
 import android.util.Log;
 
+import kuyou.common.ipc.RemoteEvent;
+
 /**
  * action :事件[远程控制相关请求][抽象]
  * <p>
@@ -26,4 +28,15 @@ public class EventRequest extends EventRemoteControl {
         }
         return getCode();
     }
+
+    public EventRequest setRequestCode(int val) {
+        getData().putInt(KEY_REQUEST_CODE, val);
+        return EventRequest.this;
+    }
+
+    public static int getRequestCode(RemoteEvent event) {
+        return event.getData().getInt(KEY_REQUEST_CODE);
+    }
+
+
 }

@@ -34,15 +34,16 @@ public abstract class EventRemoteControl extends RemoteEventCommon {
         public final static int AUTHENTICATION_REQUEST = FLAG_CODE + 130;
         public final static int AUTHENTICATION_RESULT = FLAG_CODE + 131;
 
-        public final static int LOCATION_REPORT_START_REQUEST = FLAG_CODE + 132;
-        public final static int LOCATION_REPORT_STOP_REQUEST = FLAG_CODE + 133;
-        public final static int LOCATION_REPORT_REQUEST = FLAG_CODE + 134;
-        public final static int LOCATION_CHANGE = FLAG_CODE + 135;
+        public final static int HEARTBEAT_REPORT_REQUEST = FLAG_CODE + 132;
+        public final static int HEARTBEAT_REPORT = FLAG_CODE + 133;
+        public final static int HEARTBEAT_REPLY = FLAG_CODE + 134;
 
-        public final static int HEARTBEAT_REPORT = FLAG_CODE + 136;
-        public final static int HEARTBEAT_REPLY = FLAG_CODE + 137;
+        public final static int LOCATION_REPORT_START_REQUEST = FLAG_CODE + 135;
+        public final static int LOCATION_REPORT_STOP_REQUEST = FLAG_CODE + 136;
+        public final static int LOCATION_REPORT_REQUEST = FLAG_CODE + 137;
+        public final static int LOCATION_CHANGE = FLAG_CODE + 138;
 
-        public final static int SEND_TO_REMOTE_CONTROL_PLATFORM = FLAG_CODE + 138;
+        public final static int SEND_TO_REMOTE_CONTROL_PLATFORM = FLAG_CODE + 139;
 
         //业务需求相关 512 ~ 2047
         public final static int PHOTO_UPLOAD_REQUEST = FLAG_CODE + 512;

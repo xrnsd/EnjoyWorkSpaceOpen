@@ -5,6 +5,7 @@ import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
+import com.kuyou.rc.handler.platform.HeartbeatHandler;
 
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.common.basic.EventCommon;
@@ -67,7 +68,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return null;
     }
 
-    public ModuleCommonHandler getModuleBasicEventHandler() {
+    protected ModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleCommonHandler) {
             mModuleCommonHandler = new ModuleCommonHandler() {
                 @Override
@@ -84,7 +85,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return mModuleCommonHandler;
     }
 
-    public LocationHandler getLocationHandler() {
+    protected LocationHandler getLocationHandler() {
         if (null == mLocationHandler) {
             int policy = 0;
             policy |= ILocationProviderPolicy.POLICY_PROVIDER_CACHE_LOCATION;
@@ -97,14 +98,14 @@ public class ModuleApplication extends BasicModuleApplication {
         return mLocationHandler;
     }
 
-    public LocalKeyHandler getLocalKeyHandler() {
+    protected LocalKeyHandler getLocalKeyHandler() {
         if (null == mLocalKeyHandler) {
             mLocalKeyHandler = new LocalKeyHandler();
         }
         return mLocalKeyHandler;
     }
 
-    public AlarmHandler getAlarmHandler() {
+    protected AlarmHandler getAlarmHandler() {
         if (null == mAlarmHandler) {
             mAlarmHandler = new AlarmHandler()
                     .setLocationProvider(getLocationHandler().getLocationProvider());

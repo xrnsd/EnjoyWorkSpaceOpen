@@ -429,11 +429,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
-    public IStatusGuard getStatusGuardHandler() {
-        IStatusGuard isg = super.getStatusGuardHandler();
+    public void setStatusGuardHandler(IStatusGuard handler) {
+        super.setStatusGuardHandler(handler);
 
         //HS_OPEN_REQUEST_BE_EXECUTING
-        isg.registerStatusGuardCallback(new IStatusGuardCallback() {
+        handler.registerStatusGuardCallback(new IStatusGuardCallback() {
             @Override
             public void onReceiveMessage() {
                 PeergineAudioVideoHandler.this.getStatusGuardHandler().start(HS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
@@ -458,7 +458,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         }, new StatusGuardRequestConfig(false, 0, Looper.getMainLooper()));
 
         //HS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT
-        isg.registerStatusGuardCallback(new IStatusGuardCallback() {
+        handler.registerStatusGuardCallback(new IStatusGuardCallback() {
             @Override
             public void onReceiveMessage() {
                 Log.i(TAG, "getOperateAndTimeoutCallback > 向平台发出音视频开启请求 > 失败：未响应");
@@ -479,7 +479,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         }, new StatusGuardRequestConfig(false, 15000, Looper.getMainLooper()));
 
         //HS_CLOSE_BE_EXECUTING
-        isg.registerStatusGuardCallback(new IStatusGuardCallback() {
+        handler.registerStatusGuardCallback(new IStatusGuardCallback() {
             @Override
             public void onReceiveMessage() {
                 Log.i(TAG, "getOperateAndTimeoutCallback > 开始关闭音视频 > ");
@@ -500,7 +500,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         }, new StatusGuardRequestConfig(false, 0, Looper.getMainLooper()));
 
         //HS_CLOSE_BE_EXECUTING_TIME_OUT
-        isg.registerStatusGuardCallback(new IStatusGuardCallback() {
+        handler.registerStatusGuardCallback(new IStatusGuardCallback() {
             @Override
             public void onReceiveMessage() {
                 Log.i(TAG, "OperateTimeoutCallback > 开始关闭音视频时，平台间状态同步 > 失败：未响应");
@@ -521,8 +521,6 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 PeergineAudioVideoHandler.HS_CLOSE_BE_EXECUTING_TIME_OUT = what;
             }
         }, new StatusGuardRequestConfig(false, 0, Looper.getMainLooper()));
-
-        return isg;
     }
 
     /**

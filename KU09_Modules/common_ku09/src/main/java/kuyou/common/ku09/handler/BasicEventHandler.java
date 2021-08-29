@@ -47,6 +47,11 @@ public abstract class BasicEventHandler {
 
     protected abstract void initHandleEventCodeList();
 
+    //方便嵌套的协处理器被正确初始化
+    public List<BasicEventHandler> getSubEventHandlers() {
+        return null;
+    }
+
     protected BasicEventHandler registerHandleEvent(int eventCode, boolean isRemote) {
         if (null == mHandleLocalEventCodeList) {
             mHandleLocalEventCodeList = new ArrayList<>();

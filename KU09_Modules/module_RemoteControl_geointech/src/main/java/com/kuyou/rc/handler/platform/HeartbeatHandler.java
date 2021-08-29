@@ -1,20 +1,21 @@
 package com.kuyou.rc.handler.platform;
 
-import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 
 import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 import com.kuyou.rc.handler.platform.basic.IHeartbeatReportCallBack;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
+import kuyou.common.ku09.event.rc.EventHeartbeatReport;
+import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.basic.IStatusGuard;
+import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
+import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
 
 /**
  * action :
@@ -31,26 +32,34 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
     private boolean isHeartbeatReply = false;
     private long mHeartbeatReplyFlowId = 0;
 
-    private IHeartbeatReportCallBack mHeartbeatReportCallBack;
-    private ReportHandler mReportHandler;
-    private DeviceConfig mDeviceConfig;
+    private long mHeartbeatReportFlowId = 0;
+    private int mHeartbeatHandlerMsgFlag = -1;
 
-    public HeartbeatHandler(Looper looper) {
-        mReportHandler = new ReportHandler(looper);
-    }
+    private IHeartbeatReportCallBack mHeartbeatReportCallBack;
 
     @Override
     protected void initHandleEventCodeList() {
-        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT_REQUEST, false);
+        //registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPLY, false);
         registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPLY, false);
     }
 
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventRemoteControl.Code.HEARTBEAT_REPORT:
-                onHeartbeatReport();
+            case EventRemoteControl.Code.HEARTBEAT_REPORT_REQUEST:
+                if (EventHeartbeatRequest.RequestCode.OPEN == EventHeartbeatRequest.getRequestCode(event)) {
+                    start();
+                } else if (EventHeartbeatRequest.RequestCode.CLOSE == EventHeartbeatRequest.getRequestCode(event)) {
+                    stop();
+                } else {
+                    Log.e(TAG, "onModuleEvent > process fail : EventHeartbeatRequest is invalid");
+                }
                 break;
+//            case EventRemoteControl.Code.HEARTBEAT_REPORT:
+//                onHeartbeatReport();
+//                break;
             case EventRemoteControl.Code.HEARTBEAT_REPLY:
 
                 mHeartbeatReplyFlowId = EventHeartbeatReply.getFlowNumber(event);
@@ -69,9 +78,31 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
     }
 
     @Override
+    public void setStatusGuardHandler(IStatusGuard handler) {
+        super.setStatusGuardHandler(handler);
+        handler.registerStatusGuardCallback(new IStatusGuardCallback() {
+            @Override
+            public void onReceiveMessage() {
+                HeartbeatHandler.this.mHeartbeatReportFlowId += 1;
+                HeartbeatHandler.this.dispatchEvent(new EventHeartbeatReport().setRemote(false));
+            }
+
+            @Override
+            public void onRemoveMessage() {
+
+            }
+
+            @Override
+            public void setReceiveMessage(int what) {
+                HeartbeatHandler.this.mHeartbeatHandlerMsgFlag = what;
+            }
+        }, new StatusGuardRequestConfig(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()));
+    }
+
+    @Override
     public boolean isHeartbeatConnected() {
 
-        if (!mReportHandler.isStart()) {
+        if (!isStart()) {
             Log.w(TAG, "isHeartbeatConnected > process fail : Heartbeat none start");
             return false;
         }
@@ -83,106 +114,39 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
             Log.w(TAG, "isHeartbeatConnected > process fail : Heartbeat reply fail");
             return false;
         }
-        boolean result = (2 > Math.abs(mReportHandler.getReportTime() - mHeartbeatReplyFlowId));
+        boolean result = (2 > Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId));
         Log.d(TAG, "isHeartbeatConnected > result = " + result);
         return true;
     }
 
     @Override
     public void start() {
-        mReportHandler.start();
+        if (null == getStatusGuardHandler()
+                || -1 == mHeartbeatHandlerMsgFlag) {
+            Log.e(TAG, "start > process fail : getStatusGuardHandler is invalid");
+            return;
+        }
+        Log.i(TAG, "onModuleEvent > 心跳 >开始上报位置 ");
+        getStatusGuardHandler().start(mHeartbeatHandlerMsgFlag);
     }
 
     @Override
     public void stop() {
-        mReportHandler.stop();
-    }
-
-    protected DeviceConfig getDeviceConfig() {
-        return mDeviceConfig;
-    }
-
-    public HeartbeatHandler setDeviceConfig(DeviceConfig config) {
-        mDeviceConfig = config;
-        mReportHandler.setReportLocationFreq(config.getHeartbeatInterval());
-        return HeartbeatHandler.this;
-    }
-
-    protected IHeartbeatReportCallBack getHeartbeatReportCallBack() {
-        return mHeartbeatReportCallBack;
-    }
-
-    protected void onHeartbeatReport() {
-        if (null == getHeartbeatReportCallBack()) {
-            Log.e(TAG, "onHeartbeatReport > process fail : getHeartbeatReportCallBack is null");
+        if (null == getStatusGuardHandler()
+                || -1 == mHeartbeatHandlerMsgFlag) {
+            Log.e(TAG, "stop > process fail : getStatusGuardHandler is invalid");
             return;
         }
-        getHeartbeatReportCallBack().onHeartbeatReport();
+        Log.i(TAG, "onModuleEvent > 心跳 > 停止上报位置 ");
+        getStatusGuardHandler().stop(mHeartbeatHandlerMsgFlag);
     }
 
-    public HeartbeatHandler setHeartbeatReportCallBack(IHeartbeatReportCallBack callback) {
-        mHeartbeatReportCallBack = callback;
-        mReportHandler.setCallBack(callback);
-        return HeartbeatHandler.this;
-    }
-
-    public class ReportHandler extends Handler {
-        public static final int MSG_REPORT = 2;
-
-        private int mReportLocationFreq = 5000;
-        private IHeartbeatReportCallBack mCallBack;
-        private long mReportTime = 0;
-
-        public ReportHandler(Looper looper) {
-            super(looper);
+    protected boolean isStart() {
+        if (null == getStatusGuardHandler()
+                || -1 == mHeartbeatHandlerMsgFlag) {
+            Log.e(TAG, "stop > process fail : getStatusGuardHandler is invalid");
+            return false;
         }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (MSG_REPORT != msg.what)
-                return;
-            removeMessages(msg.what);
-            if (null == mCallBack)
-                mCallBack.onHeartbeatReport();
-            mReportTime += 1;
-            sendEmptyMessageDelayed(MSG_REPORT, getReportLocationFreq());
-        }
-
-        protected IHeartbeatReportCallBack getCallBack() {
-            return mCallBack;
-        }
-
-        public ReportHandler setCallBack(IHeartbeatReportCallBack callBack) {
-            mCallBack = callBack;
-            return ReportHandler.this;
-        }
-
-        public long getReportTime() {
-            return mReportTime;
-        }
-
-        public boolean isStart() {
-            return hasMessages(MSG_REPORT);
-        }
-
-        public ReportHandler start() {
-            removeMessages(MSG_REPORT);
-            sendEmptyMessage(MSG_REPORT);
-            return ReportHandler.this;
-        }
-
-        public void stop() {
-            removeMessages(MSG_REPORT);
-        }
-
-        protected int getReportLocationFreq() {
-            return mReportLocationFreq;
-        }
-
-        public ReportHandler setReportLocationFreq(int val) {
-            mReportLocationFreq = val;
-            return ReportHandler.this;
-        }
+        return getStatusGuardHandler().isStart(mHeartbeatHandlerMsgFlag);
     }
 }

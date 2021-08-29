@@ -40,7 +40,6 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     private HMLocationProvider mLocationProviderFilter;
 
     private int mLocationProviderPolicy = 0;
-    private int mLocationReportFlag = -1;
 
     public LocationHandler initProviderFilter(Application application) {
         if (null != mLocationProvider) {
@@ -48,25 +47,6 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
         }
 
         Context context = application.getApplicationContext();
-
-        //位置上报事件发生器，定期发出位置上报请求
-        registerStatusGuardCallback(new IStatusGuardCallback() {
-            @Override
-            public void onReceiveMessage() {
-                LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
-                        .setMsg(LocationHandler.this.getLocationInfo().getBody()));
-            }
-
-            @Override
-            public void setReceiveMessage(int what) {
-                LocationHandler.this.mLocationReportFlag = what;
-            }
-
-            @Override
-            public void onRemoveMessage() {
-
-            }
-        }, new StatusGuardRequestConfig(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()));
 
         //位置提供器
         if (isEnableFilterByPolicy(ILocationProviderPolicy.POLICY_PROVIDER_AMAP)) {
@@ -159,6 +139,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
 
     @Override
     protected void initHandleEventCodeList() {
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
     }
@@ -166,13 +147,15 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
-                Log.i(TAG, "onModuleEvent > 开始上报位置 ");
-                getStatusGuardHandler().start(mLocationReportFlag);
-                break;
-            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
-                Log.i(TAG, "onModuleEvent > 停止上报位置 ");
-                getStatusGuardHandler().stop(mLocationReportFlag);
+//            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
+//                Log.i(TAG, "onModuleEvent > 开始上报位置 ");
+//                break;
+//            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
+//                Log.i(TAG, "onModuleEvent > 停止上报位置 ");
+//                break;
+            case EventRemoteControl.Code.HEARTBEAT_REPORT:
+                LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
+                        .setMsg(LocationHandler.this.getLocationInfo().getBody()));
                 break;
             default:
                 return false;

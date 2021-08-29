@@ -1,10 +1,10 @@
 package com.kuyou.rc.handler;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.kuyou.rc.handler.platform.HeartbeatHandler;
 import com.kuyou.rc.handler.platform.PlatformConnectManager;
 import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
@@ -17,10 +17,11 @@ import com.kuyou.rc.protocol.jt808extend.item.SicTextMessage;
 import com.kuyou.rc.utils.UploadUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
@@ -34,17 +35,16 @@ import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
 import kuyou.common.ku09.event.rc.EventConnectResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
-import kuyou.common.ku09.event.rc.EventLocationReportStartRequest;
-import kuyou.common.ku09.event.rc.EventLocationReportStopRequest;
+import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
 import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
+import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.action.SocketActionAdapter;
@@ -65,6 +65,21 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     protected boolean isNetworkAvailable = false;
 
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
+    private HeartbeatHandler mHeartbeatHandler;
+
+    protected HeartbeatHandler getHeartbeatHandler() {
+        if (null == mHeartbeatHandler) {
+            mHeartbeatHandler = new HeartbeatHandler();
+        }
+        return mHeartbeatHandler;
+    }
+
+    @Override
+    public List<BasicEventHandler> getSubEventHandlers() {
+        List<BasicEventHandler> handlers = new ArrayList<>();
+        handlers.add(getHeartbeatHandler());
+        return handlers;
+    }
 
     public Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
         if (null == mJt808ExtendProtocolCodec) {
@@ -271,7 +286,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     break;
                 }
                 if (EventResult.ResultCode.DIS == EventConnectResult.getResultCode(event)) {
-                    dispatchEvent(new EventLocationReportStopRequest()
+                    dispatchEvent(new EventHeartbeatRequest()
+                            .setRequestCode(EventRequest.RequestCode.CLOSE)
                             .setRemote(false));
                     Log.w(TAG, "onModuleEvent > 服务器连接断开");
                     break;
@@ -299,7 +315,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
             case EventRemoteControl.Code.AUTHENTICATION_RESULT:
                 if (EventAuthenticationResult.isResultSuccess(event)) {
-                    dispatchEvent(new EventLocationReportStartRequest()
+                    dispatchEvent(new EventHeartbeatRequest()
+                            .setRequestCode(EventRequest.RequestCode.OPEN)
                             .setRemote(false));
                 } else {
                     //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
