@@ -2,6 +2,7 @@ package com.kuyou.rc.protocol.jt808extend.basic;
 
 import java.util.Arrays;
 
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -23,9 +24,10 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
     }
 
     protected JTT808Bean mMsgHeader;
-    protected RemoteControlDeviceConfig mConfig;
+    protected DeviceConfig mConfig;
+    protected RemoteControlDeviceConfig mRemoteControlDeviceConfig;
     private int mBodyConfig = -1;
-    private int mFlowId = -1;
+    private long mFlowId = -1;
 
     public int getBodyConfig() {
         return mBodyConfig;
@@ -90,23 +92,35 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
     }
 
     protected byte[] getPackToJt808(int instruction, byte[] body) {
-        return JTT808Coding.generate808(instruction, getConfig(), body);
+        return JTT808Coding.generate808(instruction, getRemoteControlDeviceConfig(), body);
     }
 
-    public RemoteControlDeviceConfig getConfig() {
+    public RemoteControlDeviceConfig getRemoteControlDeviceConfig() {
+        if (null == mRemoteControlDeviceConfig) {
+            mRemoteControlDeviceConfig = new RemoteControlDeviceConfig() {
+                @Override
+                public String getDevId() {
+                    return SicBasic.this.getConfig().getDevId();
+                }
+            };
+        }
+        return mRemoteControlDeviceConfig;
+    }
+
+    public DeviceConfig getConfig() {
         return mConfig;
     }
 
-    public SicBasic setConfig(RemoteControlDeviceConfig config) {
+    public SicBasic setConfig(DeviceConfig config) {
         mConfig = config;
         return SicBasic.this;
     }
 
-    public int getFlowNumber() {
+    public long getFlowNumber() {
         return mFlowId;
     }
 
-    public SicBasic setFlowNumber(int flowId) {
+    public SicBasic setFlowNumber(long flowId) {
         mFlowId = flowId;
         return SicBasic.this;
     }

@@ -79,7 +79,7 @@ public class SicLocationAlarm extends SicBasic {
         byte[] bcdTime = ByteUtils.str2Bcd(getTime("yyMMddHHmmss"));
 
         //位置信息附加项
-        byte[] additionLocation = getLocation808ItemAddition(getConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy()));
+        byte[] additionLocation = getLocation808ItemAddition(getRemoteControlDeviceConfig().getOrderId(), (int) getAltitude(), String.valueOf(getAccuracy()));
 
         Log.d(TAG, toString());
 

@@ -9,7 +9,7 @@ import android.util.Log;
 import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.common.ku09.config.DeviceConfig;
 
 /**
  * action :位置提供器
@@ -29,7 +29,7 @@ public class HMLocationProvider implements ILocationProvider {
     private SicLocationAlarm mLocationInfo = null;
 
     private HelmetModuleManageServiceManager mHmmsm;
-    private RemoteControlDeviceConfig mRemoteControlDeviceConfig;
+    private DeviceConfig mDeviceConfig;
 
     private IHelmetModuleLocationCallback.Stub mHelmetModuleLocationCallback;
 
@@ -82,8 +82,8 @@ public class HMLocationProvider implements ILocationProvider {
         return HMLocationProvider.this;
     }
 
-    public HMLocationProvider setRemoteControlDeviceConfig(RemoteControlDeviceConfig config) {
-        mRemoteControlDeviceConfig = config;
+    public HMLocationProvider setDeviceConfig(DeviceConfig config) {
+        mDeviceConfig = config;
         return HMLocationProvider.this;
     }
 
@@ -109,8 +109,8 @@ public class HMLocationProvider implements ILocationProvider {
         return mLocationCache;
     }
 
-    protected RemoteControlDeviceConfig getRemoteControlDeviceConfig() {
-        return mRemoteControlDeviceConfig;
+    protected DeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
     }
 
     @Override
@@ -137,12 +137,12 @@ public class HMLocationProvider implements ILocationProvider {
 
     @Override
     public SicLocationAlarm getLocationInfo() {
-        if (null == mRemoteControlDeviceConfig) {
-            throw new NullPointerException("RemoteControlDeviceConfig is null ,please perform method : setRemoteControlDeviceConfig");
+        if (null == mDeviceConfig) {
+            throw new NullPointerException("DeviceConfig is null ,please perform method : setDeviceConfig");
         }
         if (null == mLocationInfo) {
             mLocationInfo = new SicLocationAlarm();
-            mLocationInfo.setConfig(mRemoteControlDeviceConfig);
+            mLocationInfo.setConfig(mDeviceConfig);
         }
         mLocationInfo.setLocation(getLocation());
         return mLocationInfo;

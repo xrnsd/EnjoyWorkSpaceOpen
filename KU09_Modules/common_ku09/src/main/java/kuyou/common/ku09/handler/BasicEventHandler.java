@@ -8,8 +8,12 @@ import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.IModuleManager;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
+import kuyou.common.ku09.handler.basic.IStatusGuard;
+import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
+import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
 
 /**
  * action :业务处理器[抽象]
@@ -25,6 +29,9 @@ public abstract class BasicEventHandler {
     private Context mContext;
     private IModuleManager mModuleManager;
     private IDispatchEventCallback mDispatchEventCallBack;
+    private IStatusGuard mStatusGuardHandler;
+    private DeviceConfig mDeviceConfig;
+
     private List<Integer> mHandleLocalEventCodeList = null;
     private List<Integer> mHandleRemoteEventCodeList = null;
 
@@ -93,6 +100,45 @@ public abstract class BasicEventHandler {
     public BasicEventHandler setModuleManager(IModuleManager moduleManager) {
         mModuleManager = moduleManager;
         return BasicEventHandler.this;
+    }
+
+    List<IStatusGuardCallback> mStatusGuardCallbackToBeRegisteredList = new ArrayList<>();
+    List<StatusGuardRequestConfig> mStatusGuardRequestConfigToBeRegisteredList = new ArrayList<>();
+
+    protected boolean registerStatusGuardCallback(IStatusGuardCallback callback, StatusGuardRequestConfig config) {
+        if (null == getStatusGuardHandler()) {
+            mStatusGuardCallbackToBeRegisteredList.add(callback);
+            mStatusGuardRequestConfigToBeRegisteredList.add(config);
+            return false;
+        }
+        return getStatusGuardHandler().registerStatusGuardCallback(callback, config);
+    }
+
+    public IStatusGuard getStatusGuardHandler() {
+        return mStatusGuardHandler;
+    }
+
+    public void setStatusGuardHandler(IStatusGuard handler) {
+        this.mStatusGuardHandler = handler;
+        synchronized (mStatusGuardCallbackToBeRegisteredList) {
+            if (mStatusGuardCallbackToBeRegisteredList.size() <= 0) {
+                return;
+            }
+            for (int count = mStatusGuardCallbackToBeRegisteredList.size(), i = 0; i < count; i++) {
+                handler.registerStatusGuardCallback(mStatusGuardCallbackToBeRegisteredList.get(i),
+                        mStatusGuardRequestConfigToBeRegisteredList.get(i));
+            }
+            mStatusGuardCallbackToBeRegisteredList.clear();
+            mStatusGuardRequestConfigToBeRegisteredList.clear();
+        }
+    }
+
+    protected DeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
+    }
+
+    public void setDevicesConfig(DeviceConfig config) {
+        mDeviceConfig = config;
     }
 
     protected void dispatchEvent(RemoteEvent event) {

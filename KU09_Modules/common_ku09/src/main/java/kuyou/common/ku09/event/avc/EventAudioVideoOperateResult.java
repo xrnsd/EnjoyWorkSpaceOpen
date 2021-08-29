@@ -30,12 +30,12 @@ public class EventAudioVideoOperateResult extends EventResult {
         return EventAudioVideoOperateResult.this;
     }
 
-    public static int getFlowNumber(RemoteEvent event) {
-        return event.getData().getInt(KEY_EVENT_DATA_FLOW_NUMBER);
+    public static long getFlowNumber(RemoteEvent event) {
+        return event.getData().getLong(KEY_EVENT_DATA_FLOW_NUMBER);
     }
 
-    public EventAudioVideoOperateResult setFlowNumber(int val) {
-        getData().putInt(KEY_EVENT_DATA_FLOW_NUMBER, val);
+    public EventAudioVideoOperateResult setFlowNumber(long val) {
+        getData().putLong(KEY_EVENT_DATA_FLOW_NUMBER, val);
         return EventAudioVideoOperateResult.this;
     }
 }

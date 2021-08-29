@@ -1,8 +1,5 @@
 package com.kuyou.rc;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
@@ -12,7 +9,6 @@ import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 
 /**
  * action :远程控制模块
@@ -23,8 +19,6 @@ import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
  */
 public class ModuleApplication extends BasicModuleApplication {
     private final String TAG = "com.kuyou.rc > ModuleApplication";
-
-    private RemoteControlDeviceConfig mConfig;
 
     private ModuleCommonHandler mModuleCommonHandler;
     private PlatformInteractiveHandler mPlatformInteractiveHandler;
@@ -73,59 +67,6 @@ public class ModuleApplication extends BasicModuleApplication {
         return null;
     }
 
-    public RemoteControlDeviceConfig getConfig() {
-        if (null == mConfig) {
-            //getDevicesConfig() 返回的类型不是RemoteControlDeviceConfig所以需要实例化一个
-            mConfig = new RemoteControlDeviceConfig() {
-                @Override
-                public String getDevId() {
-                    return ModuleApplication.this.getDevicesConfig().getDevId();
-                }
-
-                @Override
-                public String getUwbId() {
-                    return ModuleApplication.this.getDevicesConfig().getUwbId();
-                }
-
-                @Override
-                public String getCollectingEndId() {
-                    return ModuleApplication.this.getDevicesConfig().getCollectingEndId();
-                }
-
-                @Override
-                public int getHeartbeatInterval() {
-                    return ModuleApplication.this.getDevicesConfig().getHeartbeatInterval();
-                }
-
-                @Override
-                public String getRemoteControlServerAddress() {
-                    return ModuleApplication.this.getDevicesConfig().getRemoteControlServerAddress();
-                }
-
-                @Override
-                public int getRemoteControlServerPort() {
-                    return ModuleApplication.this.getDevicesConfig().getRemoteControlServerPort();
-                }
-
-                @Override
-                public String getAuthenticationCode() {
-                    return ModuleApplication.this.getDevicesConfig().getAuthenticationCode();
-                }
-
-                @Override
-                public String getRemotePhotoServerAddress() {
-                    return ModuleApplication.this.getDevicesConfig().getRemotePhotoServerAddress();
-                }
-
-                @Override
-                public String getDirPathStoragePhoto() {
-                    return ModuleApplication.this.getDevicesConfig().getDirPathStoragePhoto();
-                }
-            };
-        }
-        return mConfig;
-    }
-
     public ModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleCommonHandler) {
             mModuleCommonHandler = new ModuleCommonHandler() {
@@ -151,8 +92,7 @@ public class ModuleApplication extends BasicModuleApplication {
             //policy |= ILocationProviderPolicy.POLICY_FILER;
             mLocationHandler = new LocationHandler()
                     .setLocationProviderPolicy(policy)
-                    .initProviderFilter(ModuleApplication.this,
-                            ModuleApplication.this.getHandlerKeepAliveClient().getLooper(), getConfig());
+                    .initProviderFilter(ModuleApplication.this);
         }
         return mLocationHandler;
     }
@@ -174,17 +114,7 @@ public class ModuleApplication extends BasicModuleApplication {
 
     protected PlatformInteractiveHandler getPlatformInteractiveHandler() {
         if (null == mPlatformInteractiveHandler) {
-            mPlatformInteractiveHandler = new PlatformInteractiveHandler(new PlatformInteractiveHandler.IControlHandlerCallback() {
-                @Override
-                public Context getContext() {
-                    return ModuleApplication.this;
-                }
-
-                @Override
-                public RemoteControlDeviceConfig getConfig() {
-                    return ModuleApplication.this.getConfig();
-                }
-            });
+            mPlatformInteractiveHandler = new PlatformInteractiveHandler();
         }
         return mPlatformInteractiveHandler;
     }

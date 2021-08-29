@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.kuyou.rc.handler.location.AMapLocationProvider;
 import com.kuyou.rc.handler.location.HMLocationProvider;
-import com.kuyou.rc.handler.location.LocationReportHandler;
 import com.kuyou.rc.handler.location.NormalFilterLocationProvider;
 import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
@@ -20,7 +19,8 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
+import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
+import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
 
 /**
  * action :协处理器[位置]
@@ -36,13 +36,13 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
 
     protected static final boolean IS_ENABLE_FAKE_LOCATION = true;
 
-    private LocationReportHandler mLocationReportHandler;
     private HMLocationProvider mLocationProvider;
     private HMLocationProvider mLocationProviderFilter;
 
     private int mLocationProviderPolicy = 0;
+    private int mLocationReportFlag = -1;
 
-    public LocationHandler initProviderFilter(Application application, Looper looper, RemoteControlDeviceConfig config) {
+    public LocationHandler initProviderFilter(Application application) {
         if (null != mLocationProvider) {
             return LocationHandler.this;
         }
@@ -50,15 +50,23 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
         Context context = application.getApplicationContext();
 
         //位置上报事件发生器，定期发出位置上报请求
-        mLocationReportHandler = LocationReportHandler.getInstance(looper);
-        mLocationReportHandler.setReportLocationFreq(config.getHeartbeatInterval());
-        mLocationReportHandler.setLocationReportCallBack(new LocationReportHandler.IOnLocationReportCallBack() {
+        registerStatusGuardCallback(new IStatusGuardCallback() {
             @Override
-            public void onLocationReport() {
+            public void onReceiveMessage() {
                 LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
                         .setMsg(LocationHandler.this.getLocationInfo().getBody()));
             }
-        });
+
+            @Override
+            public void setReceiveMessage(int what) {
+                LocationHandler.this.mLocationReportFlag = what;
+            }
+
+            @Override
+            public void onRemoveMessage() {
+
+            }
+        }, new StatusGuardRequestConfig(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()));
 
         //位置提供器
         if (isEnableFilterByPolicy(ILocationProviderPolicy.POLICY_PROVIDER_AMAP)) {
@@ -68,7 +76,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
         } else if (isEnableFilterByPolicy(ILocationProviderPolicy.POLICY_PROVIDER_NORMAL_LOCAL)) {
             mLocationProvider = new HMLocationProvider(context);
         }
-        mLocationProvider.setRemoteControlDeviceConfig(config);
+        mLocationProvider.setDeviceConfig(getDeviceConfig());
         mLocationProvider.setLocationChangeListener(new HMLocationProvider.IOnLocationChangeListener() {
             @Override
             public void onLocationChange(Location location) {
@@ -90,7 +98,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
                         //policy |= IFilterCallBack.POLICY_FILTER_KALMAN;
                         return policy;
                     }
-                }).setRemoteControlDeviceConfig(config);
+                }).setDeviceConfig(getDeviceConfig());
         mLocationProviderFilter.setLocationChangeListener(new HMLocationProvider.IOnLocationChangeListener() {
             @Override
             public void onLocationChange(Location location) {
@@ -160,11 +168,11 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
         switch (event.getCode()) {
             case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
                 Log.i(TAG, "onModuleEvent > 开始上报位置 ");
-                mLocationReportHandler.start();
+                getStatusGuardHandler().start(mLocationReportFlag);
                 break;
             case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
                 Log.i(TAG, "onModuleEvent > 停止上报位置 ");
-                mLocationReportHandler.stop();
+                getStatusGuardHandler().stop(mLocationReportFlag);
                 break;
             default:
                 return false;

@@ -21,47 +21,6 @@ public abstract class RemoteControlDeviceConfig {
      */
     public abstract String getDevId();
 
-    /**
-     * UWB模块_ID
-     */
-    public abstract String getUwbId();
-
-    /**
-     * 多端视频服务SDK配置信息：采集端ID
-     */
-    public abstract String getCollectingEndId();
-
-    /**
-     * 服务器地址
-     */
-    public abstract String getRemoteControlServerAddress();
-
-    /**
-     * 服务器端口
-     */
-    public abstract int getRemoteControlServerPort();
-
-    /**
-     * 图片服务器地址
-     */
-    public abstract String getRemotePhotoServerAddress();
-
-    /**
-     * 图片存放本地目录
-     */
-    public abstract String getDirPathStoragePhoto();
-
-    /**
-     * 本地保存鉴权码的KEY
-     */
-    public abstract String getAuthenticationCode();
-
-
-    /**
-     * 心跳间隔
-     */
-    public abstract int getHeartbeatInterval();
-
     public int getSocketMsgCount() {
         return 0;
     }

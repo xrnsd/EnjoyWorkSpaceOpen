@@ -3,13 +3,9 @@ package kuyou.common.ku09;
 import android.app.Application;
 import android.app.HelmetModuleManageServiceManager;
 import android.app.IHelmetModuleCommonCallback;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -20,8 +16,7 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BuildConfig;
-import kuyou.common.ku09.config.DevicesConfig;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
@@ -29,6 +24,9 @@ import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.HandlerStatusGuard;
+import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
+import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -66,7 +64,6 @@ public abstract class BasicModuleApplication extends Application implements
 
     protected void init() {
         TAG = new StringBuilder(getPackageName()).append(" > ModuleApplication").toString();
-        TAG_THREAD_WATCH_DOG = getApplicationName() + TAG_THREAD_WATCH_DOG;
 
         //模块间IPC框架初始化
         RemoteEventBus.getInstance(getApplicationContext())
@@ -86,6 +83,7 @@ public abstract class BasicModuleApplication extends Application implements
                         return BasicModuleApplication.this;
                     }
                 });
+
         //StrictMode相关
         initStrictModePolicy();
 
@@ -96,9 +94,6 @@ public abstract class BasicModuleApplication extends Application implements
         //初始化模块状态控制系统服务
         initHelmetModuleManageServiceManager();
         initCallBack();
-
-        //初始化模块状态看门狗
-        initKeepAliveConfig();
 
         //初始化按键协处理器
         initKeyHandlers();
@@ -228,71 +223,39 @@ public abstract class BasicModuleApplication extends Application implements
 
     // ============================ 模块状态看门狗 ============================
 
-    protected static final int MSG_WATCHDOG_2_FEED = 1;
-    //public static final int MSG_REPORT_LOCATION = 2;
-    public static final int MSG_IPC_FRAME_INIT_FINISH = 3;
-
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
+    private int mStatusGuardCallbackFlag = -1;
+    private HandlerStatusGuard mHandlerStatusGuard;
 
-    private static final boolean IS_ENABLE_KEEP_ALIVE = true;
-    private String TAG_THREAD_WATCH_DOG = ".HandlerThread.KeepAlive.Client";
-    private HandlerThread mHandlerThreadKeepAliveClient;
-    private Handler mHandlerKeepAliveClient;
-
-    private void initKeepAliveConfig() {
-        if (!isEnableWatchDog()) {
-            Log.d(TAG, "initKeepAliveConfig > watch dog is disable");
-            return;
-        }
-        if (null != mHandlerThreadKeepAliveClient) {
-            Log.w(TAG, "initKeepAliveConfig > mHandlerThreadKeepAliveClient has been initialized");
-            return;
-        }
-        mHandlerThreadKeepAliveClient = new HandlerThread(TAG_THREAD_WATCH_DOG);
-        mHandlerThreadKeepAliveClient.start();
-        mHandlerKeepAliveClient = new Handler(mHandlerThreadKeepAliveClient.getLooper()) {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                mHandlerKeepAliveClient.removeMessages(msg.what);
-                switch (msg.what) {
-                    case MSG_WATCHDOG_2_FEED:
-                        handleMessageAliveClient();
-                        if (isAutoFeedWatchDog())
-                            mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, getFeedTimeLong());
-                        break;
-                    case MSG_IPC_FRAME_INIT_FINISH:
-                        Log.d(TAG, "handleMessage > MSG_IPC_FRAME_INIT_FINISH");
-                        break;
-                    default:
-                        break;
+    protected HandlerStatusGuard getHandlerStatusGuard() {
+        if (null == mHandlerStatusGuard) {
+            mHandlerStatusGuard = HandlerStatusGuard.getSingleton();
+            mHandlerStatusGuard.registerStatusGuardCallback(new IStatusGuardCallback() {
+                @Override
+                public void onReceiveMessage() {
+                    BasicModuleApplication.this.onFeedWatchDog();
                 }
-            }
-        };
-        getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis());
-        if (isAutoFeedWatchDog())
-            mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, getFeedTimeLong());
-    }
 
-    /**
-     * action:模块状态看门狗 > 是否开启
-     */
-    protected boolean isEnableWatchDog() {
-        return IS_ENABLE_KEEP_ALIVE;
-    }
+                @Override
+                public void onRemoveMessage() {
 
-    /**
-     * action:模块状态看门狗 > 相关状态检测的流程是否连续进行
-     */
-    protected boolean isAutoFeedWatchDog() {
-        return true;
+                }
+
+                @Override
+                public void setReceiveMessage(int what) {
+                    BasicModuleApplication.this.mStatusGuardCallbackFlag = what;
+                }
+            }, new StatusGuardRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
+            mHandlerStatusGuard.start(mStatusGuardCallbackFlag);
+        }
+        return mHandlerStatusGuard;
     }
 
     /**
      * action:模块状态看门狗 > 相关状态检测的流程的处理
      */
-    protected void handleMessageAliveClient() {
-        Log.d(TAG, "handleMessageAliveClient > MSG_WATCHDOG_2_FEED ");
+    protected void onFeedWatchDog() {
+        Log.d(TAG, "onFeedWatchDog > MSG_WATCHDOG_2_FEED ");
 
         String status = isReady();
 
@@ -309,16 +272,6 @@ public abstract class BasicModuleApplication extends Application implements
      */
     protected long getFeedTimeLong() {
         return FLAG_FEED_TIME_LONG;
-    }
-
-    /**
-     * action:模块状态看门狗 > 开启相关状态检测的流程
-     */
-    public void sendMsgFeedWatchDog() {
-        if (mHandlerKeepAliveClient.hasMessages(MSG_WATCHDOG_2_FEED))
-            return;
-        Log.d(TAG, " sendMsgFeedWatchDog > 开启模块活动保持 ");
-        mHandlerKeepAliveClient.sendEmptyMessageDelayed(MSG_WATCHDOG_2_FEED, FLAG_FEED_TIME_LONG);
     }
 
     /**
@@ -355,11 +308,6 @@ public abstract class BasicModuleApplication extends Application implements
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
-    public Handler getHandlerKeepAliveClient() {
-        initKeepAliveConfig();
-        return mHandlerKeepAliveClient;
-    }
-
     @Override
     public void reboot(int delayedMillisecond) {
         getHelmetModuleManageServiceManager().rebootModule(
@@ -368,7 +316,7 @@ public abstract class BasicModuleApplication extends Application implements
                 delayedMillisecond);
     }
 
-    // ============================ 模块间IPC，模块与系统服务 ============================
+    // ============================ 模块间IPC，模块与系统服务 ,模块事件的各种协处理器 ============================
 
     private RemoteEventBus.IFrameLiveListener mFrameLiveListener;
 
@@ -392,6 +340,8 @@ public abstract class BasicModuleApplication extends Application implements
             handler.setContext(BasicModuleApplication.this);
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
             handler.setModuleManager(BasicModuleApplication.this);
+            handler.setDevicesConfig(getDeviceConfig());
+            handler.setStatusGuardHandler(getHandlerStatusGuard());
             list.addAll(handler.getHandleRemoteEventCodeList());
         }
         return list;
@@ -461,13 +411,13 @@ public abstract class BasicModuleApplication extends Application implements
 
     protected abstract String getApplicationName();
 
-    private DevicesConfig mDevicesConfig;
+    private DeviceConfig mDeviceConfig;
 
-    public DevicesConfig getDevicesConfig() {
-        if (null == mDevicesConfig) {
-            mDevicesConfig = new DevicesConfig();
+    public DeviceConfig getDeviceConfig() {
+        if (null == mDeviceConfig) {
+            mDeviceConfig = new DeviceConfig();
         }
-        return mDevicesConfig;
+        return mDeviceConfig;
     }
 
     public HelmetModuleManageServiceManager getHelmetModuleManageServiceManager() {

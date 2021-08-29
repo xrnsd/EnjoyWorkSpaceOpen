@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kuyou.common.bytes.ByteUtils;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
@@ -120,7 +121,7 @@ public class Jt808ExtendProtocolCodec {
         return mAutoLoadAllInfoCallBack;
     }
 
-    public boolean load(RemoteControlDeviceConfig config) {
+    public boolean load(DeviceConfig config) {
         try {
             SicBasic instruction;
             for (Class item : ClassUtils.getAllClasses(getAutoLoadAllInfoCallBack().getApplicationContext(),

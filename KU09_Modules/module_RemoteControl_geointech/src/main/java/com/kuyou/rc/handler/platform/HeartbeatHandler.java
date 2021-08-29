@@ -11,10 +11,10 @@ import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 import com.kuyou.rc.handler.platform.basic.IHeartbeatReportCallBack;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 
 /**
  * action :
@@ -33,7 +33,7 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
 
     private IHeartbeatReportCallBack mHeartbeatReportCallBack;
     private ReportHandler mReportHandler;
-    private RemoteControlDeviceConfig RemoteControlDeviceConfig;
+    private DeviceConfig mDeviceConfig;
 
     public HeartbeatHandler(Looper looper) {
         mReportHandler = new ReportHandler(looper);
@@ -85,6 +85,7 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
         }
         boolean result = (2 > Math.abs(mReportHandler.getReportTime() - mHeartbeatReplyFlowId));
         Log.d(TAG, "isHeartbeatConnected > result = " + result);
+        return true;
     }
 
     @Override
@@ -97,12 +98,12 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
         mReportHandler.stop();
     }
 
-    protected RemoteControlDeviceConfig getRemoteControlDeviceConfig() {
-        return RemoteControlDeviceConfig;
+    protected DeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
     }
 
-    public HeartbeatHandler setRemoteControlDeviceConfig(RemoteControlDeviceConfig config) {
-        RemoteControlDeviceConfig = config;
+    public HeartbeatHandler setDeviceConfig(DeviceConfig config) {
+        mDeviceConfig = config;
         mReportHandler.setReportLocationFreq(config.getHeartbeatInterval());
         return HeartbeatHandler.this;
     }

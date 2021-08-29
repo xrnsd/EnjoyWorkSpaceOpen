@@ -20,6 +20,7 @@ import java.io.File;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
@@ -64,23 +65,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     protected boolean isNetworkAvailable = false;
 
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
-
-    private IControlHandlerCallback mControlHandlerCallback;
-
-    public static interface IControlHandlerCallback {
-        public Context getContext();
-
-        public RemoteControlDeviceConfig getConfig();
-    }
-
-    public PlatformInteractiveHandler(IControlHandlerCallback callback) {
-        super();
-        mControlHandlerCallback = callback;
-    }
-
-    public IControlHandlerCallback getControlHandlerCallback() {
-        return mControlHandlerCallback;
-    }
 
     public Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
         if (null == mJt808ExtendProtocolCodec) {
@@ -149,14 +133,14 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     dispatchEvent(new EventPhotoUploadResult()
                             .setResult(instruction.isResultSuccess()));
                 }
-            }).load(PlatformInteractiveHandler.this.getConfig());
+            }).load(PlatformInteractiveHandler.this.getDeviceConfig());
         }
         return mJt808ExtendProtocolCodec;
     }
 
     public String isReady() {
         //联网检测
-        boolean isNetworkAvailableNow = NetworkUtils.isNetworkAvailable(getControlHandlerCallback().getContext());
+        boolean isNetworkAvailableNow = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailableNow) {
             Log.w(TAG, "isReady > 未联网,放弃平台链接状态检查和模块自动重置 ");
             return null;
@@ -186,11 +170,11 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     private PlatformConnectManager getPlatformConnectManager() {
-        return PlatformConnectManager.getInstance(getConfig());
+        return PlatformConnectManager.getInstance(getDeviceConfig());
     }
 
     public void initialConnect() {
-        isNetworkAvailable = NetworkUtils.isNetworkAvailable(getControlHandlerCallback().getContext());
+        isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailable) {
             Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
             return;
@@ -204,7 +188,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             return true;
         }
         try {
-            getPlatformConnectManager().connect(getConfig(), new SocketActionAdapter() {
+            getPlatformConnectManager().connect(getDeviceConfig(), new SocketActionAdapter() {
                 @Override
                 public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
                     PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
@@ -237,14 +221,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             return false;
         }
         return true;
-    }
-
-    protected Context getContext() {
-        return getControlHandlerCallback().getContext().getApplicationContext();
-    }
-
-    protected RemoteControlDeviceConfig getConfig() {
-        return getControlHandlerCallback().getConfig();
     }
 
     // =====================  事件处理 =============================
@@ -314,7 +290,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             return;
                         }
                         SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
-                        authentication.setConfig(PlatformInteractiveHandler.this.getConfig());
+                        authentication.setConfig(PlatformInteractiveHandler.this.getDeviceConfig());
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
                     }
@@ -375,8 +351,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             @Override
                             public UploadUtil.UploadConfig getConfig() {
                                 return new UploadUtil.UploadConfig()
-                                        .setStrDeviceId(PlatformInteractiveHandler.this.getConfig().getDevId())
-                                        .setStrServerUrl(PlatformInteractiveHandler.this.getConfig().getRemotePhotoServerAddress())
+                                        .setStrDeviceId(PlatformInteractiveHandler.this.getDeviceConfig().getDevId())
+                                        .setStrServerUrl(PlatformInteractiveHandler.this.getDeviceConfig().getRemotePhotoServerAddress())
                                         .setFileImageLocal(imgFile);
                             }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +16,7 @@ import java.util.Map;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.config.DevicesConfig;
+import kuyou.common.ku09.config.DeviceConfig;
 
 /**
  * action :协处理器[音视频][抽象]
@@ -33,17 +32,6 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
 
     protected Map<Integer, AVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
-
-    private Handler mHandlerKeepAliveClient;
-    private DevicesConfig mDevicesConfig;
-
-    protected DevicesConfig getDevicesConfig() {
-        return mDevicesConfig;
-    }
-
-    public void setDevicesConfig(DevicesConfig devicesConfig) {
-        mDevicesConfig = devicesConfig;
-    }
 
     @Override
     public Map<Integer, AVCActivity> getOnlineList() {
@@ -78,11 +66,6 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
         return handlerStatus == getHandlerStatus();
     }
 
-    public AudioVideoRequestResultHandler setHandlerKeepAliveClient(Handler handlerKeepAliveClient) {
-        mHandlerKeepAliveClient = handlerKeepAliveClient;
-        return AudioVideoRequestResultHandler.this;
-    }
-
     @Override
     public void onIpcFrameResisterSuccess() {
 
@@ -91,10 +74,6 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
     @Override
     public void onIpcFrameUnResister() {
 
-    }
-
-    protected Handler getHandlerKeepAliveClient() {
-        return mHandlerKeepAliveClient;
     }
 
     @Override

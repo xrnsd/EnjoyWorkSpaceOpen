@@ -70,8 +70,7 @@ public class ModuleApplication extends BasicModuleApplication {
     public AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
         if (null == mAudioVideoRequestHandler) {
             mAudioVideoRequestHandler = new PeergineAudioVideoHandler(getApplicationContext());
-            mAudioVideoRequestHandler.setHandlerKeepAliveClient(getHandlerKeepAliveClient())
-                    .setDevicesConfig(getDevicesConfig());
+            mAudioVideoRequestHandler.setDevicesConfig(getDeviceConfig());
             registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
         }
         return mAudioVideoRequestHandler;

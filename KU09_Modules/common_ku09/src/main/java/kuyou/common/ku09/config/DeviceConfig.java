@@ -12,7 +12,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * date: 21-8-3 <br/>
  * </p>
  */
-public class DevicesConfig {
+public class DeviceConfig {
     protected final String TAG = "kuyou.common.ku09.config > DevicesConfig";
 
     protected final static String KEY_DEV_ID = "persist.dev.id";

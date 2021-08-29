@@ -74,6 +74,9 @@ public class PhotoTakeHandler extends BasicEventHandler
             Log.e(TAG, "isLiveOnlineByType > process fail : AudioVideoRequestCallback is null");
             return false;
         }
+        if (-1 == typeCode) {
+            return getAudioVideoRequestCallback().getOnlineList().size() > 0;
+        }
         return getAudioVideoRequestCallback().getOnlineList().containsKey(typeCode);
     }
 
@@ -95,7 +98,7 @@ public class PhotoTakeHandler extends BasicEventHandler
                 }
 
                 //截图拍照
-                if (isItInHandlerState(IAudioVideoRequestCallback.HS_OPEN)) {
+                if (isLiveOnlineByType(-1)) {
                     int onLineTypeCode = -1;
                     if (isLiveOnlineByType(IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO)) {
                         onLineTypeCode = IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO;

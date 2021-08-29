@@ -41,7 +41,7 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
     public static final double DEFAULT_VEL_FACTOR = 1.0;
     public static final double DEFAULT_POS_FACTOR = 1.0;
 
-    public enum LogMessageType {
+    public enum Interh {
         KALMAN_ALLOC,
         KALMAN_PREDICT,
         KALMAN_UPDATE,
@@ -49,7 +49,6 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
         ABS_ACC_DATA,
         FILTERED_GPS_DATA
     }
-
 
     protected TrackPoint m_lastLocation;
     private GeoHashRTFilter mM_geoHashRTFilter = null;

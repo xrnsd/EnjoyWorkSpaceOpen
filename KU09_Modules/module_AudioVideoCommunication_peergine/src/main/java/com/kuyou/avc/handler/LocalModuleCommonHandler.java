@@ -5,7 +5,6 @@ import android.util.Log;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
 
 /**
