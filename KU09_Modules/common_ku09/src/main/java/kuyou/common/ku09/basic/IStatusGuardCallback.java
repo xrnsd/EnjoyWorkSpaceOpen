@@ -1,4 +1,4 @@
-package kuyou.common.ku09.handler.basic;
+package kuyou.common.ku09.basic;
 
 public interface IStatusGuardCallback {
     /**

@@ -22,7 +22,7 @@ public abstract class MultiCapExter2 extends AVCActivity implements ActivityComp
 
     String m_sDevID = "";
 
-    pgLibLiveMultiCapture m_Live = new pgLibLiveMultiCapture();
+     pgLibLiveMultiCapture m_Live = new pgLibLiveMultiCapture();
     LinearLayout m_View = null;
     CameraView m_CameraView = null;
 
@@ -321,4 +321,12 @@ public abstract class MultiCapExter2 extends AVCActivity implements ActivityComp
             m_Live.AudioStop(0);
         }
     }
+    //@{ added by wgx Usefulness:
+    @Override
+    protected void recover() {
+        if (null!=m_Live) {
+            m_Live.LoginNow(0);
+        }
+    }
+    //}@ end wgx
 }

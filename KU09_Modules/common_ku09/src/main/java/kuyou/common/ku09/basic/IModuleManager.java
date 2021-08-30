@@ -1,4 +1,4 @@
-package kuyou.common.ku09;
+package kuyou.common.ku09.basic;
 
 /**
  * action :接口[安全帽模块生命管理]

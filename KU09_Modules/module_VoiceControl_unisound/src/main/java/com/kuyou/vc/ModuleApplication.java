@@ -6,7 +6,7 @@ import com.kuyou.vc.protocol.basic.VoiceControl;
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.key.KeyConfig;
+import kuyou.common.ku09.config.KeyConfig;
 
 /**
  * action :语音控制模块

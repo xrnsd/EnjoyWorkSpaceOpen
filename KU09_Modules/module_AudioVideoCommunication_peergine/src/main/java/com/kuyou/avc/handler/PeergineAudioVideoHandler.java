@@ -15,7 +15,6 @@ import com.kuyou.avc.BuildConfig;
 import com.kuyou.avc.R;
 import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
 import com.kuyou.avc.handler.basic.CameraLightControl;
-import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import com.kuyou.avc.handler.thermal.ThermalCameraControl;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
@@ -35,10 +34,11 @@ import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
+import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.handler.basic.IStatusGuard;
-import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
-import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusGuard;
+import kuyou.common.ku09.basic.IStatusGuardCallback;
+import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -120,6 +120,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
             case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                 if (!getCacheVal(getContext(), KEY_GROUP_OWNER, false)) {
                     Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组未正常退出,非群主无需处理 ");
+                    saveStatus2Cache(getContext());//重置本地保存的状态
                     return;
                 }
                 Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组不正常 ");
@@ -218,19 +219,19 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     protected String getHandleStatusContent() {
-        if(getHandlerStatus() == HS_NORMAL){
+        if (getHandlerStatus() == HS_NORMAL) {
             return "HandlerStatus() = HS_NORMAL";
         }
-        if(getHandlerStatus() == HS_OPEN){
+        if (getHandlerStatus() == HS_OPEN) {
             return "HandlerStatus() = HS_OPEN";
         }
-        if(getHandlerStatus() == HS_OPEN_HANDLE_BE_EXECUTING){
+        if (getHandlerStatus() == HS_OPEN_HANDLE_BE_EXECUTING) {
             return "HandlerStatus() = HS_OPEN_HANDLE_BE_EXECUTING";
         }
-        if(getHandlerStatus() == HS_OPEN_REQUEST_BE_EXECUTING){
+        if (getHandlerStatus() == HS_OPEN_REQUEST_BE_EXECUTING) {
             return "HandlerStatus() = HS_OPEN_REQUEST_BE_EXECUTING";
         }
-        if(getHandlerStatus() == HS_CLOSE_BE_EXECUTING){
+        if (getHandlerStatus() == HS_CLOSE_BE_EXECUTING) {
             return "HandlerStatus() = HS_CLOSE_BE_EXECUTING";
         }
         return "HandlerStatus() = none";
@@ -308,6 +309,30 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         return 0 > combinationStrResId ? title : getContext().getString(combinationStrResId, title);
     }
 
+    protected void recoverAllLiveItem() {
+        synchronized (mItemListOnline) {
+            if (1 > mItemListOnline.size()) {
+                Log.i(TAG, "recoverAllLiveItem > cancel ");
+                return;
+            }
+            Set<Integer> set = mItemListOnline.keySet();
+            Iterator<Integer> it = set.iterator();
+            AVCActivity activity;
+            while (it.hasNext()) {
+                final int typeCode = it.next();
+                activity = mItemListOnline.get(typeCode);
+                if (null == activity || activity.isDestroyed()) {
+                    continue;
+                }
+                if (-1 != activity.getTypeCode() && IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO == activity.getTypeCode()) {
+                    CameraLightControl.getInstance(getContext()).switchLaserLight(false);
+                }
+                activity.recreate();
+                Log.i(TAG, "recoverAllLiveItem > activity = " + activity);
+            }
+        }
+    }
+
     @Override
     protected void exitAllLiveItem(int eventType) {
         Log.i(TAG, " exitAllLiveItem > size = " + mItemListOnline.size());
@@ -316,7 +341,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
             public void run() {
                 synchronized (mItemListOnline) {
                     if (1 > mItemListOnline.size()) {
-                        Log.i(TAG, "exitAllLiveItem > run > cancel ");
+                        Log.i(TAG, "exitAllLiveItem > cancel ");
                         return;
                     }
                     Set<Integer> set = mItemListOnline.keySet();
@@ -332,7 +357,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                             CameraLightControl.getInstance(getContext()).switchLaserLight(false);
                         }
                         activity.finish();
-                        Log.i(TAG, "getOperateAndTimeoutCallback > activity = " + activity);
+                        Log.i(TAG, "exitAllLiveItem > activity = " + activity);
                     }
                     mItemListOnline.clear();
                 }
@@ -547,6 +572,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     @Override
     protected void initHandleEventCodeList() {
+        registerHandleEvent(EventRemoteControl.Code.LOCAL_DEVICE_STATUS, true);
         registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST, true);
     }
@@ -560,6 +586,15 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 getStatusGuardHandler().stop(HS_OPEN_REQUEST_BE_EXECUTING);
                 setHandleStatus(HS_NORMAL);
                 break;
+            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
+                final int status = EventLocalDeviceStatus.getDeviceStatus(event);
+
+                if (EventLocalDeviceStatus.Status.ON_LINE == status) {
+                    Log.i(TAG, "onModuleEvent > 设备状态 > 设备已上线");
+                    recoverAllLiveItem();
+                }
+                break;
+
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
                 //申请参数失败,或服务器异常
                 if (!EventAudioVideoParametersApplyResult.isResultSuccess(event)) {

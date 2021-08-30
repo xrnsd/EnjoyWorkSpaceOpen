@@ -3,7 +3,6 @@ package com.kuyou.rc.handler;
 import android.app.Application;
 import android.content.Context;
 import android.location.Location;
-import android.os.Looper;
 import android.util.Log;
 
 import com.kuyou.rc.handler.location.AMapLocationProvider;
@@ -16,11 +15,10 @@ import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
-import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
 
 /**
  * action :协处理器[位置]
@@ -140,6 +138,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     @Override
     protected void initHandleEventCodeList() {
         registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
     }
@@ -154,6 +153,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
 //                Log.i(TAG, "onModuleEvent > 停止上报位置 ");
 //                break;
             case EventRemoteControl.Code.HEARTBEAT_REPORT:
+                Log.d(TAG, "onModuleEvent > 心跳");
                 LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
                         .setMsg(LocationHandler.this.getLocationInfo().getBody()));
                 break;

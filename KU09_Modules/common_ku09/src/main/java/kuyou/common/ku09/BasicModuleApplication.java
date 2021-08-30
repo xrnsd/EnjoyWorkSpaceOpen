@@ -16,6 +16,8 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
+import kuyou.common.ku09.BuildConfig;
+import kuyou.common.ku09.basic.IModuleManager;
 import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
@@ -24,9 +26,8 @@ import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.handler.HandlerStatusGuard;
-import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
-import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusGuardCallback;
+import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -225,12 +226,12 @@ public abstract class BasicModuleApplication extends Application implements
 
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
     private int mStatusGuardCallbackFlag = -1;
-    private HandlerStatusGuard mHandlerStatusGuard;
+    private StatusGuardImpl mStatusGuardHandler;
 
-    protected HandlerStatusGuard getHandlerStatusGuard() {
-        if (null == mHandlerStatusGuard) {
-            mHandlerStatusGuard = HandlerStatusGuard.getSingleton();
-            mHandlerStatusGuard.registerStatusGuardCallback(new IStatusGuardCallback() {
+    protected StatusGuardImpl getStatusGuardHandler() {
+        if (null == mStatusGuardHandler) {
+            mStatusGuardHandler = StatusGuardImpl.getSingleton();
+            mStatusGuardHandler.registerStatusGuardCallback(new IStatusGuardCallback() {
                 @Override
                 public void onReceiveMessage() {
                     BasicModuleApplication.this.onFeedWatchDog();
@@ -246,9 +247,9 @@ public abstract class BasicModuleApplication extends Application implements
                     BasicModuleApplication.this.mStatusGuardCallbackFlag = what;
                 }
             }, new StatusGuardRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
-            mHandlerStatusGuard.start(mStatusGuardCallbackFlag);
+            mStatusGuardHandler.start(mStatusGuardCallbackFlag);
         }
-        return mHandlerStatusGuard;
+        return mStatusGuardHandler;
     }
 
     /**
@@ -335,19 +336,30 @@ public abstract class BasicModuleApplication extends Application implements
             Log.e(TAG, "getEventDispatchList > process fail : handlers is null");
             return null;
         }
-        return getEventDispatchListByHandlers(getEventHandlerList());
+        List<BasicEventHandler> subHandlerList = new ArrayList<>();
+        List<Integer> codeList = getEventDispatchListByHandlers(getEventHandlerList(), subHandlerList);
+        if (subHandlerList.size() > 0) {
+            getEventHandlerList().addAll(subHandlerList);
+        }
+//        for (BasicEventHandler handler : getEventHandlerList()) {
+//            Log.d(TAG, "getEventDispatchList > getEventHandlerList() = " + handler.getClass().getSimpleName());
+//        }
+        return codeList;
     }
 
-    private List<Integer> getEventDispatchListByHandlers(List<BasicEventHandler> handlerList) {
+    private List<Integer> getEventDispatchListByHandlers(List<BasicEventHandler> handlerList, List<BasicEventHandler> subHandlerList) {
         List<Integer> codeList = new ArrayList<>();
         for (BasicEventHandler handler : handlerList) {
             handler.setContext(BasicModuleApplication.this);
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
             handler.setModuleManager(BasicModuleApplication.this);
             handler.setDevicesConfig(getDeviceConfig());
-            handler.setStatusGuardHandler(getHandlerStatusGuard());
-            if (null != handler.getSubEventHandlers()) {
-                codeList.addAll(getEventDispatchListByHandlers(handler.getSubEventHandlers()));
+            handler.setStatusGuardHandler(getStatusGuardHandler());
+
+            List<BasicEventHandler> sub = handler.getSubEventHandlers();
+            if (null != sub && sub.size() > 0) {
+                subHandlerList.addAll(sub);
+                codeList.addAll(getEventDispatchListByHandlers(sub, subHandlerList));
             }
             codeList.addAll(handler.getHandleRemoteEventCodeList());
         }
@@ -396,12 +408,11 @@ public abstract class BasicModuleApplication extends Application implements
     @Subscribe
     public void onModuleEvent(RemoteEvent event) {
         for (BasicEventHandler handler : getEventHandlerList()) {
-            handler.onModuleEvent(event);
-//            if (handler.onModuleEvent(event)) {
+            if (handler.onModuleEvent(event)) {
 //                Log.d(TAG, "已消费 event = " + event.getCode());
 //                Log.d(TAG, "EventHandler = " + handler.getClass().getSimpleName());
-//                return;
-//            }
+                return;
+            }
         }
         Log.i(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());
     }

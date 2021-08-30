@@ -1,4 +1,4 @@
-package kuyou.common.ku09.handler;
+package kuyou.common.ku09;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -11,9 +11,9 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import kuyou.common.ku09.handler.basic.IStatusGuard;
-import kuyou.common.ku09.handler.basic.IStatusGuardCallback;
-import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusGuard;
+import kuyou.common.ku09.basic.IStatusGuardCallback;
+import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 
 /**
  * action :模块状态守护
@@ -29,24 +29,24 @@ import kuyou.common.ku09.handler.basic.StatusGuardRequestConfig;
  * 6 按键监听分发 <br/>
  * <p>
  */
-public class HandlerStatusGuard extends Handler implements IStatusGuard {
+public class StatusGuardImpl extends Handler implements IStatusGuard {
     //单例
-    private volatile static HandlerStatusGuard instance; //声明成 volatile
+    private volatile static StatusGuardImpl instance; //声明成 volatile
 
-    public static HandlerStatusGuard getSingleton() {
+    public static StatusGuardImpl getSingleton() {
         if (instance == null) {
-            synchronized (HandlerStatusGuard.class) {
+            synchronized (StatusGuardImpl.class) {
                 if (instance == null) {
                     HandlerThread handlerThreadStatusGuard = new HandlerThread(".HandlerThread.status.guard");
                     handlerThreadStatusGuard.start();
-                    instance = new HandlerStatusGuard(handlerThreadStatusGuard.getLooper());
+                    instance = new StatusGuardImpl(handlerThreadStatusGuard.getLooper());
                 }
             }
         }
         return instance;
     }
 
-    private HandlerStatusGuard(Looper looper) {
+    private StatusGuardImpl(Looper looper) {
         super(looper);
     }
 
@@ -60,8 +60,7 @@ public class HandlerStatusGuard extends Handler implements IStatusGuard {
 
     @Override
     public boolean registerStatusGuardCallback(final IStatusGuardCallback callback, final StatusGuardRequestConfig config) {
-        int msgWhat = applyMessageFlag();
-        callback.setReceiveMessage(msgWhat);
+        final int msgWhat = applyMessageFlag();
         mStatusGuardCallbackList.put(msgWhat, callback);
         mStatusGuardCallbackRunnableList.put(msgWhat, new Runnable() {
             @Override
@@ -70,6 +69,8 @@ public class HandlerStatusGuard extends Handler implements IStatusGuard {
             }
         });
         mStatusGuardCallbackHandlerList.put(msgWhat, new Handler(config.getMessageHandleLooper()));
+        mStatusGuardConfigList.put(msgWhat, config);
+        callback.setReceiveMessage(msgWhat);
         return true;
     }
 
@@ -106,6 +107,7 @@ public class HandlerStatusGuard extends Handler implements IStatusGuard {
     }
 
     public static int applyMessageFlag() {
+        Log.d(TAG, "applyMessageFlag > sMessageFlag = " + sMessageFlag);
         return sMessageFlag++;
     }
 

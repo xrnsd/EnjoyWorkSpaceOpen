@@ -156,6 +156,8 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         exit();
         super.onDestroy();
     }
+    
+    protected abstract void recover();
 
     protected void exit() {
         mTakePhotoByScreenshotResultCallback = null;

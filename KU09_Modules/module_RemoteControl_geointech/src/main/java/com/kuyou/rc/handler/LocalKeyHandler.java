@@ -2,13 +2,13 @@ package com.kuyou.rc.handler;
 
 import android.util.Log;
 
-import kuyou.common.ku09.IPowerStatusListener;
+import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmSos;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.key.KeyConfig;
+import kuyou.common.ku09.config.KeyConfig;
 
 /**
  * action :协处理器[实体按键]

@@ -681,6 +681,13 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
     }
 
     @Override
+    protected void recover() {
+        if (null!=m_Live) {
+            m_Live.LoginNow(0);
+        }
+    }
+
+    @Override
     public void exit() {
         outString(getTransfering() + "" + m_bIsReplying + "");
         if (getTransfering()) {

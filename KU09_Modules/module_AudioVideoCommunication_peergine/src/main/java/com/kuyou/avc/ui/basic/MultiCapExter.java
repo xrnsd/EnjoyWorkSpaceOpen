@@ -815,4 +815,11 @@ public abstract class MultiCapExter extends AVCActivity implements ActivityCompa
             }
         }
     }
+
+    @Override
+    protected void recover() {
+        if (null!=m_Live) {
+            m_Live.LoginNow(0);
+        }
+    }
 }

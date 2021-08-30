@@ -1,4 +1,4 @@
-package kuyou.common.ku09.key;
+package kuyou.common.ku09.config;
 
 import android.view.KeyEvent;
 

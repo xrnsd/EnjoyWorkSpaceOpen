@@ -3,7 +3,7 @@ package kuyou.common.ku09.handler;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.IPowerStatusListener;
+import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.basic.EventCommon;
 

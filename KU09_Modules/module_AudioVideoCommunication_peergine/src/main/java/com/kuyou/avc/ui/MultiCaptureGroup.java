@@ -44,7 +44,8 @@ public class MultiCaptureGroup extends MultiCapture {
     @Override
     protected void onStart() {
         super.onStart();
-        getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 15000);
+        //getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 15*1000);
+        getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 90 * 1000);
         liveStart();
     }
 
@@ -121,7 +122,8 @@ public class MultiCaptureGroup extends MultiCapture {
             getHandlerWaitingForRenderConnectTimeout().removeCallbacks(mRunnableWaitingForRenderConnectTimeout);
         } else if (0 == size) {
             Log.i(TAG, "refreshRenderList > 群组为空，开始倒计时");
-            getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 5000);
+            //getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 5*1000);
+            getHandlerWaitingForRenderConnectTimeout().postDelayed(mRunnableWaitingForRenderConnectTimeout, 30 * 1000);
         }
     }
 }

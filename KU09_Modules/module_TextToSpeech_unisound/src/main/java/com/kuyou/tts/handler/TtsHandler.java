@@ -14,7 +14,7 @@ import java.util.Queue;
 
 import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.IPowerStatusListener;
+import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
@@ -174,6 +174,11 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
 
     protected int getPowerStatus() {
         return mPowerStatus;
+    }
+
+    @Override
+    protected void play(String content) {
+        onRequestTtsPlay(content);
     }
 
     @Override

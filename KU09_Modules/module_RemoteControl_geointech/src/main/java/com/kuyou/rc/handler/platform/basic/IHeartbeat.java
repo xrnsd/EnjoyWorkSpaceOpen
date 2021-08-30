@@ -10,6 +10,7 @@ package com.kuyou.rc.handler.platform.basic;
  */
 public interface IHeartbeat {
     public boolean isHeartbeatConnected();
+    public boolean isStart();
     public void start();
     public void stop();
 }

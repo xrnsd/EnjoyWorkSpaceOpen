@@ -9,7 +9,7 @@ import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.key.KeyConfig;
+import kuyou.common.ku09.config.KeyConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**

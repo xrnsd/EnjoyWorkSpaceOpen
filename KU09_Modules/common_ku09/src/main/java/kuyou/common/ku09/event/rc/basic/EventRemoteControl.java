@@ -46,11 +46,13 @@ public abstract class EventRemoteControl extends RemoteEventCommon {
         public final static int SEND_TO_REMOTE_CONTROL_PLATFORM = FLAG_CODE + 139;
 
         //业务需求相关 512 ~ 2047
-        public final static int PHOTO_UPLOAD_REQUEST = FLAG_CODE + 512;
-        public final static int PHOTO_UPLOAD_RESULT = FLAG_CODE + 513;
+        public final static int LOCAL_DEVICE_STATUS = FLAG_CODE + 512;
+        
+        public final static int PHOTO_UPLOAD_REQUEST = FLAG_CODE + 513;
+        public final static int PHOTO_UPLOAD_RESULT = FLAG_CODE + 514;
 
-        public final static int AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST = FLAG_CODE + 514;
-        public final static int AUDIO_VIDEO_PARAMETERS_APPLY_RESULT = FLAG_CODE + 515;
+        public final static int AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST = FLAG_CODE + 515;
+        public final static int AUDIO_VIDEO_PARAMETERS_APPLY_RESULT = FLAG_CODE + 516;
     }
 
     public EventRemoteControl setPlatformType(int val) {

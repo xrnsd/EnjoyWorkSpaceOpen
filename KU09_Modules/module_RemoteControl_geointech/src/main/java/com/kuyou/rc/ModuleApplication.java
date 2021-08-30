@@ -5,7 +5,6 @@ import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
-import com.kuyou.rc.handler.platform.HeartbeatHandler;
 
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.common.basic.EventCommon;
@@ -92,8 +91,10 @@ public class ModuleApplication extends BasicModuleApplication {
             policy |= ILocationProviderPolicy.POLICY_PROVIDER_AMAP;
             //policy |= ILocationProviderPolicy.POLICY_FILER;
             mLocationHandler = new LocationHandler()
-                    .setLocationProviderPolicy(policy)
-                    .initProviderFilter(ModuleApplication.this);
+                    .setLocationProviderPolicy(policy);
+            mLocationHandler.setDevicesConfig(getDeviceConfig());
+            mLocationHandler.initProviderFilter(ModuleApplication.this);
+
         }
         return mLocationHandler;
     }
