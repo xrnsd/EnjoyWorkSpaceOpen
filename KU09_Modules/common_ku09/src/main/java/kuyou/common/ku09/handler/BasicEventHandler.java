@@ -11,7 +11,7 @@ import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.basic.IStatusBus;
+import kuyou.common.ku09.status.IStatusBus;
 
 /**
  * action :业务处理器[抽象]

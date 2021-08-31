@@ -1,7 +1,7 @@
-package kuyou.common.ku09.basic;
+package kuyou.common.ku09.status;
 
 public interface IStatusBus {
-    public int registerStatusBusProcessCallback(final StatusBusProcessCallback config);
+    public int registerStatusBusProcessCallback(final IStatusBusProcessCallback callback);
 
     public void start(int processFlag);
 

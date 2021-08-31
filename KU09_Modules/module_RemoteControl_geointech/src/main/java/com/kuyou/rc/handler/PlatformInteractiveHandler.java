@@ -45,8 +45,8 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.StatusBusProcessCallback;
+import kuyou.common.ku09.status.IStatusBus;
+import kuyou.common.ku09.status.StatusBusProcessCallback;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -99,7 +99,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                                         .setResult(0 == bean.getReplyResult())
                                         .setRemote(false));
 
-                                PlatformInteractiveHandler.this.getStatusBus().stop(mMsgFlagAuthenticationTimeOut);
+                                PlatformInteractiveHandler.this.getStatusBus().stop(mStaProFlagAuthenticationTimeOut);
                                 break;
                             }
                         case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
@@ -259,7 +259,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
     private boolean isRemoteControlPlatformConnected = false;
     private boolean isAuthenticationSuccess = false;
-    private int mMsgFlagAuthenticationTimeOut = -1;
+    private int mStaProFlagAuthenticationTimeOut = -1;
     private boolean isHeartbeatStartSuccess = false;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
@@ -285,7 +285,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     public void setStatusBusImpl(IStatusBus handler) {
         super.setStatusBusImpl(handler);
 
-        mMsgFlagAuthenticationTimeOut = handler.registerStatusBusProcessCallback(
+        mStaProFlagAuthenticationTimeOut = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 5000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -355,7 +355,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
                         //鉴权失败，超时提示
-                        PlatformInteractiveHandler.this.getStatusBus().start(mMsgFlagAuthenticationTimeOut);
+                        PlatformInteractiveHandler.this.getStatusBus().start(mStaProFlagAuthenticationTimeOut);
                     }
                 }, 500);
                 break;
@@ -367,7 +367,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setRequestCode(EventRequest.RequestCode.OPEN)
                             .setRemote(false));
                     //心跳开始失败，超时提示
-                    getStatusBus().start(mMsgFlagAuthenticationTimeOut);
+                    getStatusBus().start(mStaProFlagAuthenticationTimeOut);
                 } else {
                     //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 }

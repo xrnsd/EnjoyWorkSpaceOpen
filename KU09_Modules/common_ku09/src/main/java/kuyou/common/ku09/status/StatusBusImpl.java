@@ -1,4 +1,4 @@
-package kuyou.common.ku09;
+package kuyou.common.ku09.status;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -10,9 +10,6 @@ import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.StatusBusProcessCallback;
 
 /**
  * action :提供模块状态的物流服务
@@ -48,10 +45,9 @@ public class StatusBusImpl extends Handler implements IStatusBus {
     private int mMarkFlag = 0;
     private final int MARK_STATUS_NONE = -1024;
 
-    protected Map<Integer, StatusBusProcessCallback> mStatusBusCallbackList = new HashMap<Integer, StatusBusProcessCallback>();
+    protected Map<Integer, IStatusBusProcessCallback> mStatusBusCallbackList = new HashMap<Integer, IStatusBusProcessCallback>();
     protected Map<Integer, Handler> mStatusBusCallbackHandlerList = new HashMap<Integer, Handler>();
     protected Map<Integer, Runnable> mStatusBusCallbackRunnableList = new HashMap<Integer, Runnable>();
-    protected Map<Integer, StatusBusProcessCallback> mStatusBusConfigList = new HashMap<Integer, StatusBusProcessCallback>();
 
     protected Map<Integer, Integer> mStatusMarkStatusList = new HashMap<Integer, Integer>();
     protected Map<Integer, String> mStatusMarkTagList = new HashMap<Integer, String>();
@@ -75,7 +71,7 @@ public class StatusBusImpl extends Handler implements IStatusBus {
             Log.e(TAG, "handleMessage > process fail : mStatusBusCallbackList not contains msg = " + flag);
             return;
         }
-        StatusBusProcessCallback config = mStatusBusConfigList.get(flag);
+        IStatusBusProcessCallback config = mStatusBusCallbackList.get(flag);
         if (config.isAutoMessageReceiveCycle()) {
             sendEmptyMessageDelayed(flag, config.getMessageReceiveFreq());
         }
@@ -83,7 +79,7 @@ public class StatusBusImpl extends Handler implements IStatusBus {
     }
 
     @Override
-    public int registerStatusBusProcessCallback(final StatusBusProcessCallback callback) {
+    public int registerStatusBusProcessCallback(final IStatusBusProcessCallback callback) {
         final int flag = applyProcessFlag();
         mStatusBusCallbackList.put(flag, callback);
         mStatusBusCallbackRunnableList.put(flag, new Runnable() {
@@ -93,7 +89,6 @@ public class StatusBusImpl extends Handler implements IStatusBus {
             }
         });
         mStatusBusCallbackHandlerList.put(flag, new Handler(callback.getMessageHandleLooper()));
-        mStatusBusConfigList.put(flag, callback);
         return flag;
     }
 
@@ -103,9 +98,9 @@ public class StatusBusImpl extends Handler implements IStatusBus {
             Log.e(TAG, "start > process fail : mStatusBusCallbackList not contains msg = " + processFlag);
             return;
         }
-        long delayed = mStatusBusConfigList.get(processFlag).getMessageReceiveFreq();
+        long delayed = mStatusBusCallbackList.get(processFlag).getMessageReceiveFreq();
         if (0 < delayed) {
-            sendEmptyMessageDelayed(processFlag, mStatusBusConfigList.get(processFlag).getMessageReceiveFreq());
+            sendEmptyMessageDelayed(processFlag, mStatusBusCallbackList.get(processFlag).getMessageReceiveFreq());
             return;
         }
         sendEmptyMessage(processFlag);

@@ -12,8 +12,8 @@ import java.util.Queue;
 import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IPowerStatusListener;
-import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.StatusBusProcessCallback;
+import kuyou.common.ku09.status.IStatusBus;
+import kuyou.common.ku09.status.StatusBusProcessCallback;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
@@ -32,8 +32,8 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
 
     protected final String TAG = "com.kuyou.tts.handler > TtsHandler";
 
-    private int mMsgFlagPlay = 1;
-    private int mMsgFlagPlayOldReset = 2;
+    private int mStaProFlagPlay = 1;
+    private int mStaProFlagPlayOldReset = 2;
 
     private TtsManager mTTSPlayer;
     private Queue<String> mPendingPlaylist;
@@ -58,8 +58,8 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
             @Override
             public void onInitFinish() {
                 isInitFinish = true;
-                if (mPendingPlaylist.size() > 0 && !getStatusBus().isStart(mMsgFlagPlay)) {
-                    getStatusBus().start(mMsgFlagPlay);
+                if (mPendingPlaylist.size() > 0 && !getStatusBus().isStart(mStaProFlagPlay)) {
+                    getStatusBus().start(mStaProFlagPlay);
                 }
             }
 
@@ -82,8 +82,8 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
                     return;
                 }
                 isPlaying = false;
-                getStatusBus().start(mMsgFlagPlay);
-                getStatusBus().start(mMsgFlagPlayOldReset);
+                getStatusBus().start(mStaProFlagPlay);
+                getStatusBus().start(mStaProFlagPlayOldReset);
             }
         });
     }
@@ -92,7 +92,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public void setStatusBusImpl(IStatusBus handler) {
         super.setStatusBusImpl(handler);
 
-        mMsgFlagPlay = handler.registerStatusBusProcessCallback(
+        mStaProFlagPlay = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -116,7 +116,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
                     }
                 });
 
-        mMsgFlagPlayOldReset = handler.registerStatusBusProcessCallback(
+        mStaProFlagPlayOldReset = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 2 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -170,8 +170,8 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
         }
         if (isInitFinish
                 && !isPlaying
-                && !getStatusBus().isStart(mMsgFlagPlay))
-            getStatusBus().start(mMsgFlagPlay);
+                && !getStatusBus().isStart(mStaProFlagPlay))
+            getStatusBus().start(mStaProFlagPlay);
     }
 
     protected int getPowerStatus() {
@@ -187,9 +187,9 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public void onPowerStatus(int status) {
         if (EventPowerChange.POWER_STATUS.SHUTDOWN == status) {
             synchronized (mPendingPlaylist) {
-                getStatusBus().stop(mMsgFlagPlay);
+                getStatusBus().stop(mStaProFlagPlay);
                 mPendingPlaylist.clear();
-                getStatusBus().stop(mMsgFlagPlayOldReset);
+                getStatusBus().stop(mStaProFlagPlayOldReset);
             }
             mTTSPlayer.play("关机");
         }

@@ -1,8 +1,8 @@
-package kuyou.common.ku09.basic;
+package kuyou.common.ku09.status;
 
 import android.os.Looper;
 
-public abstract class StatusBusProcessCallback {
+public abstract class StatusBusProcessCallback implements IStatusBusProcessCallback {
 
     private boolean isAutoMessageReceiveCycle = false;
     private long mMessageReceiveFreq = -1;
@@ -20,13 +20,6 @@ public abstract class StatusBusProcessCallback {
         mMessageReceiveFreq = val2;
         mMessageHandleLooper = val3;
     }
-
-    /**
-     * action:收到消息
-     *
-     * @param isRemove ，为true表示已主动移除
-     */
-    public abstract void onReceiveMessage(boolean isRemove);
 
     /**
      * action:自动循环收到消息

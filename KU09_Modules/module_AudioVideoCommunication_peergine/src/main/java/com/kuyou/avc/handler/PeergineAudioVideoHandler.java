@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.StatusBusProcessCallback;
+import kuyou.common.ku09.status.IStatusBus;
+import kuyou.common.ku09.status.StatusBusProcessCallback;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
@@ -57,11 +57,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     private final String KEY_MEDIA_TYPE = "MediaType";
     private final String KEY_GROUP_OWNER = "GroupOwner";
 
-    private int mMsgFlagOpenRequestBeExecuting = -1;
-    private int mMsgFlagOpenRequestBeExecutingTimeOut = -1;
-    private int mMsgFlagOpenHandleBeExecuting = -1;
-    private int mMsgFlagCloseBeExecuting = -1;
-    private int mMsgFlagDeviceOffLineTimeOut = -1;
+    private int mStaProFlagOpenRequestBeExecuting = -1;
+    private int mStaProFlagOpenRequestBeExecutingTimeOut = -1;
+    private int mStaProFlagOpenHandleBeExecuting = -1;
+    private int mStaProFlagCloseBeExecuting = -1;
+    private int mStaProFlagDeviceOffLineTimeOut = -1;
 
     //用于群组通话，区分设备是否为采集端,本地和远程分配的相同就是，不同不是
     private String mCollectingEndIdLocal = null,//本地采集端ID
@@ -125,11 +125,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         switch (handleStatusCache) {
             case HS_OPEN:
                 mMediaType = mediaTypCache;
-                getStatusBus().start(mMsgFlagOpenRequestBeExecuting);
+                getStatusBus().start(mStaProFlagOpenRequestBeExecuting);
                 break;
             default:
                 mMediaType = mediaTypCache;
-                getStatusBus().start(mMsgFlagCloseBeExecuting);
+                getStatusBus().start(mStaProFlagCloseBeExecuting);
                 break;
         }
     }
@@ -294,7 +294,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 Log.i(TAG, "recoverAllLiveItem > cancel ");
                 return;
             }
-            getStatusBus().stop(mMsgFlagDeviceOffLineTimeOut);
+            getStatusBus().stop(mStaProFlagDeviceOffLineTimeOut);
             Set<Integer> set = mItemListOnline.keySet();
             Iterator<Integer> it = set.iterator();
             AVCActivity activity;
@@ -408,17 +408,17 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         super.setStatusBusImpl(handler);
 
         //HS_OPEN_REQUEST_BE_EXECUTING
-        mMsgFlagOpenRequestBeExecuting = handler.registerStatusBusProcessCallback(
+        mStaProFlagOpenRequestBeExecuting = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         if (isRemove) {
                             PeergineAudioVideoHandler.this.getStatusBus().stop(
-                                    PeergineAudioVideoHandler.this.mMsgFlagOpenRequestBeExecutingTimeOut);
+                                    PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecutingTimeOut);
                             return;
                         }
                         PeergineAudioVideoHandler.this.getStatusBus().start(
-                                PeergineAudioVideoHandler.this.mMsgFlagOpenRequestBeExecutingTimeOut);
+                                PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecutingTimeOut);
                         Log.i(TAG, "getOperateAndTimeoutCallback > 向平台发出音视频开启请求 > ");
                         PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_REQUEST_BE_EXECUTING);
                         PeergineAudioVideoHandler.this.dispatchEvent(new EventAudioVideoParametersApplyRequest()
@@ -430,7 +430,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT
-        mMsgFlagOpenRequestBeExecutingTimeOut = handler.registerStatusBusProcessCallback(
+        mStaProFlagOpenRequestBeExecutingTimeOut = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 15000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -443,19 +443,19 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_OPEN_HANDLE_BE_EXECUTING_TIME_OUT
-        mMsgFlagOpenHandleBeExecuting = handler.registerStatusBusProcessCallback(
+        mStaProFlagOpenHandleBeExecuting = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         PeergineAudioVideoHandler.this.getStatusBus().stop(
-                                PeergineAudioVideoHandler.this.mMsgFlagOpenRequestBeExecuting);
+                                PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecuting);
                         PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_HANDLE_BE_EXECUTING);
 
                     }
                 });
 
         //HS_CLOSE_BE_EXECUTING
-        mMsgFlagCloseBeExecuting = handler.registerStatusBusProcessCallback(
+        mStaProFlagCloseBeExecuting = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -469,7 +469,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_DEVICE_OFF_LINE_TIME_OUT
-        mMsgFlagDeviceOffLineTimeOut = handler.registerStatusBusProcessCallback(
+        mStaProFlagDeviceOffLineTimeOut = handler.registerStatusBusProcessCallback(
                 new StatusBusProcessCallback(false, 30 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
@@ -577,7 +577,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
             Log.i(TAG, "performOperate > 终端取消,正在申请的通话");
-            getStatusBus().stop(mMsgFlagOpenRequestBeExecuting);
+            getStatusBus().stop(mStaProFlagOpenRequestBeExecuting);
             setHandleStatus(HS_NORMAL);
             play(getTitleByMediaType(mMediaType, R.string.media_request_cancel_request));
             return;
@@ -595,7 +595,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         }
 
         Log.i(TAG, "performOperate > 终端申请，开启通话 : " + getMediaType());
-        getStatusBus().start(mMsgFlagOpenRequestBeExecuting);
+        getStatusBus().start(mStaProFlagOpenRequestBeExecuting);
     }
 
     @Override
@@ -608,7 +608,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 if (isItInHandlerState(HS_OPEN)) {//存在已打开通话
                     if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
                         Log.i(TAG, "onModuleEvent > 设备状态 > 设备已离线，存在已打开通话，开始通话状态恢复超时");
-                        getStatusBus().start(mMsgFlagDeviceOffLineTimeOut);
+                        getStatusBus().start(mStaProFlagDeviceOffLineTimeOut);
                         break;
                     }
 
@@ -623,7 +623,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
                 //申请参数失败,或服务器异常
                 if (!EventAudioVideoParametersApplyResult.isResultSuccess(event)) {
-                    getStatusBus().stop(mMsgFlagOpenRequestBeExecuting);
+                    getStatusBus().stop(mStaProFlagOpenRequestBeExecuting);
                     setHandleStatus(HS_NORMAL);
 
                     //平台未响应,超时处理
@@ -648,7 +648,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 //平台拒绝
                 if (IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType) {
                     if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
-                        getStatusBus().stop(mMsgFlagOpenRequestBeExecuting);
+                        getStatusBus().stop(mStaProFlagOpenRequestBeExecuting);
                         play(getTitleByMediaType(mMediaType, R.string.media_request_open_rejected_title));
                         setHandleStatus(HS_NORMAL);
                         Log.i(TAG, "onModuleEvent > 处理音视频申请 > 平台拒绝通话申请");
@@ -679,13 +679,13 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                         break;
                     }
                     Log.i(TAG, "onModuleEvent > 处理音视频请求 > 关闭通话");
-                    getStatusBus().start(mMsgFlagCloseBeExecuting);
+                    getStatusBus().start(mStaProFlagCloseBeExecuting);
                     break;
                 }
 
                 //开启通话
                 if (!isLiveOnlineByType(-1)) {
-                    getStatusBus().start(mMsgFlagOpenHandleBeExecuting);
+                    getStatusBus().start(mStaProFlagOpenHandleBeExecuting);
 
                     resultStr = openItem(getContext(), event);
                     if (null != resultStr) {
