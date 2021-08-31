@@ -85,7 +85,7 @@ public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
                 }
 
                 if (IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN == getPlatformType()) {
-                    tokenBytes = getConfig().getCollectingEndId().getBytes();
+                    tokenBytes = getDeviceConfig().getCollectingEndId().getBytes();
                 }
 
                 byte[] body = ByteUtils.byteMergerAll(

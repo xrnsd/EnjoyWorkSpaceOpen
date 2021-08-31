@@ -8,7 +8,7 @@ package kuyou.common.ku09.basic;
  * date: 21-7-23 <br/>
  * </p>
  */
-public interface IModuleManager {
+public interface IModuleLiveControlCallback {
     /**
      * action: 重启模块
      */

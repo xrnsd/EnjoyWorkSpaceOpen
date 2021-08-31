@@ -32,7 +32,7 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IStatusBus;
 import kuyou.common.ku09.basic.IStatusBusCallback;
 import kuyou.common.ku09.basic.StatusBusRequestConfig;
-import kuyou.common.ku09.config.DeviceConfig;
+import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
@@ -218,11 +218,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
-    public void setDevicesConfig(DeviceConfig deviceConfig) {
+    public void setDevicesConfig(IDeviceConfig deviceConfig) {
         super.setDevicesConfig(deviceConfig);
-        Log.i(TAG, "setDevicesConfig > 获取设备配置 > ");
         mCollectingEndIdLocal = deviceConfig.getCollectingEndId();
-        Log.i(TAG, "setDevicesConfig > 本地采集端ID = " + mCollectingEndIdLocal);
+        Log.i(TAG, "setDevicesConfig > 获取设备配置 > 本地采集端ID = " + mCollectingEndIdLocal);
     }
 
     @Override
@@ -413,7 +412,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         mMsgFlagOpenRequestBeExecuting = handler.registerStatusBusCallback(new IStatusBusCallback() {
             @Override
             public void onReceiveMessage(boolean isRemove) {
-                if(isRemove){
+                if (isRemove) {
                     PeergineAudioVideoHandler.this.getStatusBus().stop(
                             PeergineAudioVideoHandler.this.mMsgFlagOpenRequestBeExecutingTimeOut);
                     return;

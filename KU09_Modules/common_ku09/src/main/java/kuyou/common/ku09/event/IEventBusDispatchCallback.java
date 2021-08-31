@@ -10,6 +10,6 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-29 <br/>
  * </p>
  */
-public interface IDispatchEventCallback {
+public interface IEventBusDispatchCallback {
     public void dispatchEvent(RemoteEvent event);
 }

@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.IModuleManager;
-import kuyou.common.ku09.config.DeviceConfig;
-import kuyou.common.ku09.event.IDispatchEventCallback;
+import kuyou.common.ku09.basic.IModuleLiveControlCallback;
+import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.basic.IStatusBus;
 
@@ -25,10 +25,11 @@ public abstract class BasicEventHandler {
     protected final String TAG = "kuyou.common.ku09 > BaseHandler";
 
     private Context mContext;
-    private IModuleManager mModuleManager;
-    private IDispatchEventCallback mDispatchEventCallBack;
-    private IStatusBus mStatusGuardHandler;
-    private DeviceConfig mDeviceConfig;
+
+    private IModuleLiveControlCallback mModuleLiveControlCallback;
+    private IEventBusDispatchCallback mEventBusDispatchCallBack;
+    private IStatusBus mStatusBus;
+    private IDeviceConfig mDeviceConfig;
 
     private List<Integer> mHandleLocalEventCodeList = null, mHandleRemoteEventCodeList = null;
 
@@ -44,7 +45,10 @@ public abstract class BasicEventHandler {
 
     protected abstract void initHandleEventCodeList();
 
-    //方便嵌套的协处理器被正确初始化
+    /**
+     * action: 嵌套的协处理器列表 <br/>
+     * remarks: 协处理里面有嵌套的协处理器时请重载此方法，已保证正常初始化
+     */
     public List<BasicEventHandler> getSubEventHandlers() {
         return null;
     }
@@ -90,42 +94,42 @@ public abstract class BasicEventHandler {
         return mHandleRemoteEventCodeList;
     }
 
-    public BasicEventHandler setDispatchEventCallBack(IDispatchEventCallback dispatchEventCallBack) {
-        mDispatchEventCallBack = dispatchEventCallBack;
+    public BasicEventHandler setDispatchEventCallBack(IEventBusDispatchCallback dispatchEventCallBack) {
+        mEventBusDispatchCallBack = dispatchEventCallBack;
         return BasicEventHandler.this;
     }
 
-    protected IDispatchEventCallback getDispatchEventCallBack() {
-        return mDispatchEventCallBack;
+    protected IEventBusDispatchCallback getDispatchEventCallBack() {
+        return mEventBusDispatchCallBack;
     }
 
-    public BasicEventHandler setModuleManager(IModuleManager moduleManager) {
-        mModuleManager = moduleManager;
+    public BasicEventHandler setModuleLiveControlCallback(IModuleLiveControlCallback callback) {
+        mModuleLiveControlCallback = callback;
         return BasicEventHandler.this;
     }
 
     public IStatusBus getStatusBus() {
-        return mStatusGuardHandler;
+        return mStatusBus;
     }
 
     public void setStatusBusImpl(IStatusBus sBus) {
-        mStatusGuardHandler = sBus;
+        mStatusBus = sBus;
     }
 
-    protected DeviceConfig getDeviceConfig() {
+    protected IDeviceConfig getDeviceConfig() {
         return mDeviceConfig;
     }
 
-    public void setDevicesConfig(DeviceConfig config) {
+    public void setDevicesConfig(IDeviceConfig config) {
         mDeviceConfig = config;
     }
 
     protected void dispatchEvent(RemoteEvent event) {
-        if (null == mDispatchEventCallBack) {
+        if (null == mEventBusDispatchCallBack) {
             Log.e(TAG, "dispatchEvent > process fail : mDispatchEventCallBack is null");
             return;
         }
-        mDispatchEventCallBack.dispatchEvent(event);
+        mEventBusDispatchCallBack.dispatchEvent(event);
     }
 
     protected void play(String content) {
@@ -137,10 +141,10 @@ public abstract class BasicEventHandler {
     }
 
     protected void reboot(int delayedMillisecond) {
-        if (null == mModuleManager) {
-            Log.e(TAG, "reboot > process fail : mModuleManager is null");
+        if (null == mModuleLiveControlCallback) {
+            Log.e(TAG, "reboot > process fail : mModuleLiveControlCallback is null");
             return;
         }
-        mModuleManager.reboot(delayedMillisecond);
+        mModuleLiveControlCallback.reboot(delayedMillisecond);
     }
 }

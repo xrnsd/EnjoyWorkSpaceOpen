@@ -222,7 +222,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             return true;
         }
         try {
-            getPlatformConnectManager().connect(getDeviceConfig(), new SocketActionAdapter() {
+            getPlatformConnectManager().connect(new SocketActionAdapter() {
                 @Override
                 public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
                     PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
@@ -351,7 +351,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             return;
                         }
                         SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
-                        authentication.setConfig(PlatformInteractiveHandler.this.getDeviceConfig());
+                        authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
                         //鉴权失败，超时提示

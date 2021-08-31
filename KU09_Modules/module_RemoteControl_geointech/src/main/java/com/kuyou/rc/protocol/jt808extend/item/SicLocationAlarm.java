@@ -4,7 +4,6 @@ import android.location.Location;
 import android.util.Log;
 
 import com.kuyou.rc.BuildConfig;
-import com.kuyou.rc.handler.alarm.ALARM;
 import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 
@@ -290,7 +289,7 @@ public class SicLocationAlarm extends SicBasic {
         String alarmInfo = getAlarmInfo();
         if (alarmInfo.length() > 0)
             sb.append("\n").append(alarmInfo);
-        sb.append("\ndevId = ").append(getConfig().getDevId());
+        sb.append("\ndevId = ").append(getDeviceConfig().getDevId());
         sb.append("\ngetLongitude = ").append(getLongitude());
         sb.append("\ngetLatitude = ").append(getLatitude());
 

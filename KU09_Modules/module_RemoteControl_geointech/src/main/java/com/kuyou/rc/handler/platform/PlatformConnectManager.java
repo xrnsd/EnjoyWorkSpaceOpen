@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import kuyou.common.ku09.config.DeviceConfig;
+import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
 import kuyou.sdk.jt808.basic.protocol.JT808ReaderProtocol;
 import kuyou.sdk.jt808.basic.socketbean.PulseData;
@@ -26,14 +26,14 @@ public class PlatformConnectManager {
     private IConnectionManager mManager;
 
     private SocketActionAdapter mSocketActionAdapter;
-    private DeviceConfig mDeviceConfig;
+    private IDeviceConfig mDeviceConfig;
 
-    public static PlatformConnectManager getInstance(DeviceConfig config) {
+    public static PlatformConnectManager getInstance(IDeviceConfig config) {
         if (INSTANCE == null) {
             synchronized (SingleInstanceLocker) {
                 if (INSTANCE == null) {
                     INSTANCE = new PlatformConnectManager();
-                    INSTANCE.mDeviceConfig = config;
+                    INSTANCE.setDeviceConfig(config);
                 }
             }
         }
@@ -47,7 +47,7 @@ public class PlatformConnectManager {
         info = new ConnectionInfo(ip, prot);
         final Handler handler = new Handler(Looper.getMainLooper());
         OkSocketOptions.Builder builder = new OkSocketOptions.Builder();
-        builder.setPulseFrequency(mDeviceConfig.getHeartbeatInterval()); //心跳间隔
+        builder.setPulseFrequency(getDeviceConfig().getHeartbeatInterval()); //心跳间隔
         builder.setCallbackThreadModeToken(new OkSocketOptions.ThreadModeToken() {
             @Override
             public void handleCallbackEvent(ActionDispatcher.ActionRunnable runnable) {
@@ -67,6 +67,14 @@ public class PlatformConnectManager {
         return mManager;
     }
 
+    protected IDeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
+    }
+
+    public void setDeviceConfig(IDeviceConfig config) {
+        mDeviceConfig = config;
+    }
+
     /**
      * 连接和回调
      * 如果是已连接 ， 则断开连接
@@ -76,8 +84,8 @@ public class PlatformConnectManager {
      * @param adapter
      * @throws
      */
-    public void connect(DeviceConfig config, SocketActionAdapter adapter) throws Exception {
-        connect(config.getRemoteControlServerAddress(), config.getRemoteControlServerPort(), adapter);
+    public void connect(SocketActionAdapter adapter) throws Exception {
+        connect(getDeviceConfig().getRemoteControlServerAddress(), getDeviceConfig().getRemoteControlServerPort(), adapter);
     }
 
     /**

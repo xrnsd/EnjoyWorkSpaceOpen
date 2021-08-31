@@ -42,7 +42,7 @@ public class SicAuthentication extends SicBasic {
 
     @Override
     public byte[] getBody(int config) {
-        byte[] authCode = Base64Util.encrypt(getConfig().getDevId());
+        byte[] authCode = Base64Util.encrypt(getDeviceConfig().getDevId());
         byte[] authCodeMsg = ByteUtils.byteMergerAll(
                 new byte[]{ByteUtils.int2Byte(authCode.length)}, authCode, getItemAddition());
         Log.d(TAG, toString());
@@ -53,15 +53,15 @@ public class SicAuthentication extends SicBasic {
         //UWB模块ID
         byte[] uwbIdType = new byte[2];
         //byte[] uwbIdBytes = ByteUtils.int32ToBytes(getConfig().getUwbId());//协议 V20210406
-        byte[] uwbIdBytes = getConfig().getUwbId().getBytes();//协议 V20210723
+        byte[] uwbIdBytes = getDeviceConfig().getUwbId().getBytes();//协议 V20210723
         uwbIdType[0] = (byte) (0xE1);
         uwbIdType[1] = ByteUtils.int2Byte(uwbIdBytes.length);
 
         //peergine多端视频服务SDK配置信息：采集端ID
         byte[] pceiType = null, pceiBytes = null;
-        if (null != getConfig().getCollectingEndId()) {
+        if (null != getDeviceConfig().getCollectingEndId()) {
             pceiType = new byte[2];
-            pceiBytes = getConfig().getCollectingEndId().getBytes();//协议 V20210723
+            pceiBytes = getDeviceConfig().getCollectingEndId().getBytes();//协议 V20210723
             pceiType[0] = (byte) (0xE2);
             pceiType[1] = ByteUtils.int2Byte(pceiBytes.length);
         } else {
@@ -80,9 +80,9 @@ public class SicAuthentication extends SicBasic {
     public String toString() {
         StringBuilder sb = new StringBuilder(1024);
         sb.append("\nAuthenticationInfo: ");
-        sb.append("\ndevId = ").append(getConfig().getDevId());
-        sb.append("\nuwbId = ").append(getConfig().getUwbId());
-        sb.append("\npeergine 多端视频服务SDK的采集端ID = ").append(getConfig().getCollectingEndId());
+        sb.append("\ndevId = ").append(getDeviceConfig().getDevId());
+        sb.append("\nuwbId = ").append(getDeviceConfig().getUwbId());
+        sb.append("\npeergine 多端视频服务SDK的采集端ID = ").append(getDeviceConfig().getCollectingEndId());
         return sb.toString();
     }
     

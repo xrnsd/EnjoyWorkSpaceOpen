@@ -12,7 +12,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * date: 21-8-3 <br/>
  * </p>
  */
-public class DeviceConfig {
+public class DeviceConfigImpl implements IDeviceConfig {
     protected final String TAG = "kuyou.common.ku09.config > DevicesConfig";
 
     protected final static String KEY_DEV_ID = "persist.dev.id";
@@ -33,6 +33,7 @@ public class DeviceConfig {
     private String mCollectingEndId = null;
     private int mHeartbeatInterval = -1;
 
+    @Override
     public String getDevId() {
         if (null == mDevId) {
             mDevId = SystemPropertiesUtils.get(KEY_DEV_ID, "015651821852");
@@ -45,6 +46,7 @@ public class DeviceConfig {
         kuyou.common.utils.SystemPropertiesUtils.set(KEY_DEV_ID, devId);
     }
 
+    @Override
     public String getUwbId() {
         if (null == mUwbId) {
             mUwbId = SystemPropertiesUtils.get(KEY_UWB_ID, "12345678");
@@ -57,6 +59,7 @@ public class DeviceConfig {
         kuyou.common.utils.SystemPropertiesUtils.set(KEY_DEV_ID, val);
     }
 
+    @Override
     public String getCollectingEndId() {
         if (null == mCollectingEndId) {
             mCollectingEndId = SystemPropertiesUtils.get(KEY_COLLECTING_END_CODE, "hzjy070609");
@@ -68,6 +71,7 @@ public class DeviceConfig {
         kuyou.common.utils.SystemPropertiesUtils.set(KEY_COLLECTING_END_CODE, val);
     }
 
+    @Override
     public String getAuthenticationCode() {
         if (null == mAuthenticationCode) {
             mAuthenticationCode = SystemPropertiesUtils.get(KEY_AUTHENTICATION_CODE, "SP_JT808AUTHCODE");
@@ -75,6 +79,7 @@ public class DeviceConfig {
         return mAuthenticationCode;
     }
 
+    @Override
     public String getRemoteControlServerAddress() {
         if (null == mRemoteServerAddress) {
             mRemoteServerAddress = SystemPropertiesUtils.get(KEY_SERVER_ADDRESS, "centos40.geointech.cn");
@@ -82,7 +87,7 @@ public class DeviceConfig {
         return mRemoteServerAddress;
     }
 
-
+    @Override
     public int getRemoteControlServerPort() {
         if (-1 == mRemoteServerPort) {
             try {
@@ -95,7 +100,7 @@ public class DeviceConfig {
         return mRemoteServerPort;
     }
 
-
+    @Override
     public String getRemotePhotoServerAddress() {
         if (null == mRemoteServerAddressPhoto) {
             mRemoteServerAddressPhoto = SystemPropertiesUtils.get(KEY_SERVER_ADDRESS_PHOTO,
@@ -104,7 +109,7 @@ public class DeviceConfig {
         return mRemoteServerAddressPhoto;
     }
 
-
+    @Override
     public int getHeartbeatInterval() {
         if (-1 == mHeartbeatInterval) {
             try {
@@ -117,7 +122,7 @@ public class DeviceConfig {
         return 5000;
     }
 
-
+    @Override
     public String getDirPathStoragePhoto() {
         return "/sdcard/kuyou/img/";
     }

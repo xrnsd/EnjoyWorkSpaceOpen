@@ -16,7 +16,6 @@ import java.util.Map;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.config.DeviceConfig;
 
 /**
  * action :协处理器[音视频][抽象]

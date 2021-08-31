@@ -9,7 +9,7 @@ import android.util.Log;
 import com.kuyou.rc.handler.location.basic.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
-import kuyou.common.ku09.config.DeviceConfig;
+import kuyou.common.ku09.config.IDeviceConfig;
 
 /**
  * action :位置提供器
@@ -29,7 +29,7 @@ public class HMLocationProvider implements ILocationProvider {
     private SicLocationAlarm mLocationInfo = null;
 
     private HelmetModuleManageServiceManager mHmmsm;
-    private DeviceConfig mDeviceConfig;
+    private IDeviceConfig mDeviceConfig;
 
     private IHelmetModuleLocationCallback.Stub mHelmetModuleLocationCallback;
 
@@ -82,7 +82,7 @@ public class HMLocationProvider implements ILocationProvider {
         return HMLocationProvider.this;
     }
 
-    public HMLocationProvider setDeviceConfig(DeviceConfig config) {
+    public HMLocationProvider setDeviceConfig(IDeviceConfig config) {
         mDeviceConfig = config;
         return HMLocationProvider.this;
     }
@@ -109,7 +109,7 @@ public class HMLocationProvider implements ILocationProvider {
         return mLocationCache;
     }
 
-    protected DeviceConfig getDeviceConfig() {
+    protected IDeviceConfig getDeviceConfig() {
         return mDeviceConfig;
     }
 
@@ -142,7 +142,7 @@ public class HMLocationProvider implements ILocationProvider {
         }
         if (null == mLocationInfo) {
             mLocationInfo = new SicLocationAlarm();
-            mLocationInfo.setConfig(mDeviceConfig);
+            mLocationInfo.setDeviceConfig(mDeviceConfig);
         }
         mLocationInfo.setLocation(getLocation());
         return mLocationInfo;

@@ -6,7 +6,7 @@ import com.kuyou.avc.R;
 import com.kuyou.avc.handler.thermal.PeergineThermalCameraCaptureHandler;
 import com.kuyou.avc.ui.basic.MultiCapExter2;
 
-import kuyou.common.ku09.event.IDispatchEventCallback;
+import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -34,7 +34,7 @@ public class MultiCaptureThermal extends MultiCapExter2 {
     }
 
     @Override
-    public void setDispatchEventCallback(IDispatchEventCallback dispatchEventCallback) {
+    public void setDispatchEventCallback(IEventBusDispatchCallback dispatchEventCallback) {
         getPeergineThermalCameraCaptureHandler().setDispatchEventCallBack(dispatchEventCallback);
         super.setDispatchEventCallback(dispatchEventCallback);
     }

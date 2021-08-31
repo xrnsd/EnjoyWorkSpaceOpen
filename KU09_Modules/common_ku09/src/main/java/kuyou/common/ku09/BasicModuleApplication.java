@@ -16,11 +16,12 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.basic.IModuleManager;
+import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.basic.IStatusBusCallback;
 import kuyou.common.ku09.basic.StatusBusRequestConfig;
-import kuyou.common.ku09.config.DeviceConfig;
-import kuyou.common.ku09.event.IDispatchEventCallback;
+import kuyou.common.ku09.config.DeviceConfigImpl;
+import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
@@ -47,8 +48,8 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * <p>
  */
 public abstract class BasicModuleApplication extends Application implements
-        IDispatchEventCallback,
-        IModuleManager {
+        IEventBusDispatchCallback,
+        IModuleLiveControlCallback {
 
     protected String TAG = "kuyou.common.ku09 > BasicModuleApplication";
 
@@ -347,7 +348,7 @@ public abstract class BasicModuleApplication extends Application implements
         for (BasicEventHandler handler : handlerList) {
             handler.setContext(BasicModuleApplication.this);
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
-            handler.setModuleManager(BasicModuleApplication.this);
+            handler.setModuleLiveControlCallback(BasicModuleApplication.this);
             handler.setDevicesConfig(getDeviceConfig());
             handler.setStatusBusImpl(getStatusGuardHandler());
 
@@ -424,11 +425,11 @@ public abstract class BasicModuleApplication extends Application implements
 
     protected abstract String getApplicationName();
 
-    private DeviceConfig mDeviceConfig;
+    private IDeviceConfig mDeviceConfig;
 
-    public DeviceConfig getDeviceConfig() {
+    public IDeviceConfig getDeviceConfig() {
         if (null == mDeviceConfig) {
-            mDeviceConfig = new DeviceConfig();
+            mDeviceConfig = new DeviceConfigImpl();
         }
         return mDeviceConfig;
     }

@@ -2,7 +2,7 @@ package com.kuyou.rc.protocol.jt808extend.basic;
 
 import java.util.Arrays;
 
-import kuyou.common.ku09.config.DeviceConfig;
+import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -24,7 +24,7 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
     }
 
     protected JTT808Bean mMsgHeader;
-    protected DeviceConfig mConfig;
+    protected IDeviceConfig mDeviceConfig;
     protected RemoteControlDeviceConfig mRemoteControlDeviceConfig;
     private int mBodyConfig = -1;
     private long mFlowId = -1;
@@ -100,19 +100,19 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
             mRemoteControlDeviceConfig = new RemoteControlDeviceConfig() {
                 @Override
                 public String getDevId() {
-                    return SicBasic.this.getConfig().getDevId();
+                    return SicBasic.this.getDeviceConfig().getDevId();
                 }
             };
         }
         return mRemoteControlDeviceConfig;
     }
 
-    public DeviceConfig getConfig() {
-        return mConfig;
+    public IDeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
     }
 
-    public SicBasic setConfig(DeviceConfig config) {
-        mConfig = config;
+    public SicBasic setDeviceConfig(IDeviceConfig config) {
+        mDeviceConfig = config;
         return SicBasic.this;
     }
 

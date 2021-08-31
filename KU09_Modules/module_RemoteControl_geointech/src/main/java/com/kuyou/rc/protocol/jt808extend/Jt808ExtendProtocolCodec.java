@@ -10,10 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kuyou.common.bytes.ByteUtils;
-import kuyou.common.ku09.config.DeviceConfig;
+import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
-import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
@@ -121,13 +120,13 @@ public class Jt808ExtendProtocolCodec {
         return mAutoLoadAllInfoCallBack;
     }
 
-    public boolean load(DeviceConfig config) {
+    public boolean load(IDeviceConfig config) {
         try {
             SicBasic instruction;
             for (Class item : ClassUtils.getAllClasses(getAutoLoadAllInfoCallBack().getApplicationContext(),
                     getAutoLoadAllInfoCallBack().getInfoClass())) {
                 instruction = (SicBasic) item.newInstance();
-                instruction.setConfig(config);
+                instruction.setDeviceConfig(config);
                 if (instruction.getMatchEventCode() > 0) {
                     mResultBodyList.put(instruction.getMatchEventCode(), instruction);
                 } else {

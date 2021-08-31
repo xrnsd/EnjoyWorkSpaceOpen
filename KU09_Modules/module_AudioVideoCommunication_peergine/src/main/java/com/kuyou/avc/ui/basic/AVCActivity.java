@@ -7,7 +7,7 @@ import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.IDispatchEventCallback;
+import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
@@ -33,11 +33,11 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
     private int mResult = -1;
     private ITakePhotoByScreenshotResultCallback mTakePhotoByScreenshotResultCallback;
     private IAudioVideoRequestCallback mAudioVideoRequestCallback;
-    private IDispatchEventCallback mDispatchEventCallback;
+    private IEventBusDispatchCallback mDispatchEventCallback;
 
     public abstract int getTypeCode();
 
-    public void setDispatchEventCallback(IDispatchEventCallback dispatchEventCallback) {
+    public void setDispatchEventCallback(IEventBusDispatchCallback dispatchEventCallback) {
         mDispatchEventCallback = dispatchEventCallback;
     }
 
@@ -54,7 +54,7 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         return -1024;
     }
 
-    protected IDispatchEventCallback getDispatchEventCallback() {
+    protected IEventBusDispatchCallback getDispatchEventCallback() {
         return mDispatchEventCallback;
     }
 
