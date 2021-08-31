@@ -18,6 +18,8 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.basic.IModuleManager;
+import kuyou.common.ku09.basic.IStatusGuardCallback;
+import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
@@ -26,8 +28,6 @@ import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.basic.IStatusGuardCallback;
-import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -248,6 +248,11 @@ public abstract class BasicModuleApplication extends Application implements
                 }
             }, new StatusGuardRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
             mStatusGuardHandler.start(mStatusGuardCallbackFlag);
+            if (null != getHelmetModuleManageServiceManager()) {
+                getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis());
+            } else {
+                Log.e(TAG, "getStatusGuardHandler > process fail : 马上启动看门狗失败，安全帽模块服务未获取");
+            }
         }
         return mStatusGuardHandler;
     }

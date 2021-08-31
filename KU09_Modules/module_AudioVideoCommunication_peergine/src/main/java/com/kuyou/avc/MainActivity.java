@@ -21,9 +21,10 @@ public class MainActivity extends BasicPermissionsHandlerActivity {
     @Override
     protected String[] getPermissions() {
         return new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                , Manifest.permission.READ_EXTERNAL_STORAGE
-                , Manifest.permission.READ_PHONE_STATE
+                Manifest.permission.WRITE_SETTINGS,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
         };
     }
 

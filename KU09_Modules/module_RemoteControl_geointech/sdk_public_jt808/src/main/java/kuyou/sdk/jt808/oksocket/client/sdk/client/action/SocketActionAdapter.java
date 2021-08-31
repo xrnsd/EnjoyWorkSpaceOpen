@@ -82,7 +82,7 @@ public abstract class SocketActionAdapter implements ISocketActionListener {
      */
     @Override
     public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-        Log.d(TAG, "onSocketConnectionSuccess > 连接失败");
+        Log.d(TAG, "onSocketConnectionFailed > 连接失败");
         if (null != e && e.toString().length() > 0)
             Log.e(TAG, Log.getStackTraceString(e));
     }

@@ -162,6 +162,7 @@ public class PlatformConnectManager {
     }
 
     public void disconnect() {
+        Log.d(TAG, "disconnect > ");
         mManager.unRegisterReceiver(mSocketActionAdapter);
         mManager.disconnect();
     }

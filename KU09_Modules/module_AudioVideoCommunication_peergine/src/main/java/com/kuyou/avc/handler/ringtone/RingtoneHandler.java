@@ -1,9 +1,10 @@
-package com.kuyou.avc.handler;
+package com.kuyou.avc.handler.ringtone;
 
 import android.content.Context;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * action :协处理器[铃声][抽象]
@@ -38,10 +39,12 @@ public class RingtoneHandler {
     }
     
     public void play(){
+        Log.d(TAG, "play > 开始播放铃声");
         mRingtone.play();
     }
     
     public void stop(){
+        Log.d(TAG, "stop > 停止播放铃声");
         mRingtone.stop();
     }
     

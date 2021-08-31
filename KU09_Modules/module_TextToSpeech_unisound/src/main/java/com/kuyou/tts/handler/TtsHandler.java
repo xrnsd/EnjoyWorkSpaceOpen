@@ -1,11 +1,8 @@
 package com.kuyou.tts.handler;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
+import android.os.Looper;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.kuyou.tts.basic.TtsManager;
 
@@ -15,6 +12,9 @@ import java.util.Queue;
 import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IPowerStatusListener;
+import kuyou.common.ku09.basic.IStatusGuard;
+import kuyou.common.ku09.basic.IStatusGuardCallback;
+import kuyou.common.ku09.basic.StatusGuardRequestConfig;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
@@ -33,14 +33,13 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
 
     protected final String TAG = "com.kuyou.tts.handler > TtsHandler";
 
-    private final static int MSG_PLAY = 1;
-    private final static int MSG_RESET = 2;
+    private static int MSG_PLAY = 1;
+    private static int MSG_RESET = 2;
 
-    private Context mContext;
     private TtsManager mTTSPlayer;
-    private Handler mHandlerPlay;
     private Queue<String> mPendingPlaylist;
 
+    private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
     private boolean isInitFinish = false, isPlaying = false;
     private String mPlayText = null, mPlayTextOld = null;
 
@@ -49,52 +48,19 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     }
 
     public void initTts() {
-        if (null != mHandlerPlay)
+        if (null != mPendingPlaylist)
             return;
         Context context = getContext();
         Log.d(TAG, "initTts");
         mPendingPlaylist = new LinkedList<>();
-        mHandlerPlay = new Handler() {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    case MSG_PLAY:
-                        mHandlerPlay.removeMessages(MSG_PLAY);
-                        if (!isInitFinish
-                                || getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
-                            break;
-                        }
-                        mPlayText = null;
-                        synchronized (mPendingPlaylist) {
-                            if (mPendingPlaylist.size() > 0)
-                                mPlayText = mPendingPlaylist.poll();
-                        }
-                        if (null == mPlayText) {
-                            break;
-                        }
-                        if (null != mTTSPlayer) {
-                            isPlaying = true;
-                            mTTSPlayer.play(mPlayText);
-                            Log.i(TAG, "handleMessage > MSG_PLAY > text = " + mPlayText);
-                        }
-                        break;
-                    case MSG_RESET:
-                        mPlayTextOld = null;
-                        Log.d(TAG, "handleMessage > MSG_RESET");
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
+
         // 初始化语音合成对象
         mTTSPlayer = TtsManager.getInstance(context, new TtsManager.ISynthesizerListener() {
             @Override
             public void onInitFinish() {
                 isInitFinish = true;
-                if (mPendingPlaylist.size() > 0 && !mHandlerPlay.hasMessages(MSG_PLAY)) {
-                    mHandlerPlay.sendEmptyMessage(MSG_PLAY);
+                if (mPendingPlaylist.size() > 0 && !getStatusGuardHandler().isStart(MSG_PLAY)) {
+                    getStatusGuardHandler().start(MSG_PLAY);
                 }
             }
 
@@ -117,10 +83,66 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
                     return;
                 }
                 isPlaying = false;
-                mHandlerPlay.sendEmptyMessage(MSG_PLAY);
-                mHandlerPlay.sendEmptyMessageDelayed(MSG_RESET, 2000);
+                getStatusGuardHandler().start(MSG_PLAY);
+                getStatusGuardHandler().start(MSG_RESET);
             }
         });
+    }
+
+    @Override
+    public void setStatusGuardHandler(IStatusGuard handler) {
+        super.setStatusGuardHandler(handler);
+
+        registerStatusGuardCallback(new IStatusGuardCallback() {
+            @Override
+            public void onReceiveMessage() {
+                if (!isInitFinish
+                        || getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
+                    return;
+                }
+                mPlayText = null;
+                synchronized (mPendingPlaylist) {
+                    if (mPendingPlaylist.size() > 0)
+                        mPlayText = mPendingPlaylist.poll();
+                }
+                if (null == mPlayText) {
+                    return;
+                }
+                if (null != mTTSPlayer) {
+                    isPlaying = true;
+                    mTTSPlayer.play(mPlayText);
+                    Log.i(TAG, "onReceiveMessage > MSG_PLAY > text = " + mPlayText);
+                }
+            }
+
+            @Override
+            public void onRemoveMessage() {
+
+            }
+
+            @Override
+            public void setReceiveMessage(int what) {
+                MSG_PLAY = what;
+            }
+        }, new StatusGuardRequestConfig(false, 0, Looper.getMainLooper()));
+
+        registerStatusGuardCallback(new IStatusGuardCallback() {
+            @Override
+            public void onReceiveMessage() {
+                mPlayTextOld = null;
+                Log.d(TAG, "onReceiveMessage > MSG_RESET");
+            }
+
+            @Override
+            public void onRemoveMessage() {
+
+            }
+
+            @Override
+            public void setReceiveMessage(int what) {
+                MSG_RESET = what;
+            }
+        }, new StatusGuardRequestConfig(false, 2 * 1000, Looper.getMainLooper()));
     }
 
     public boolean isReady() {
@@ -132,6 +154,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
      * TTS模块重载
      */
     public void onRequestTtsPlay(String text) {
+        Log.d(TAG, "onRequestTtsPlay > text = " + text);
         if (null == text || text.length() <= 0) {
             Log.w(TAG, "onRequestTtsPlay > text is null ");
             return;
@@ -166,11 +189,9 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
         }
         if (isInitFinish
                 && !isPlaying
-                && !mHandlerPlay.hasMessages(MSG_PLAY))
-            mHandlerPlay.sendEmptyMessage(MSG_PLAY);
+                && !getStatusGuardHandler().isStart(MSG_PLAY))
+            getStatusGuardHandler().start(MSG_PLAY);
     }
-
-    private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
     protected int getPowerStatus() {
         return mPowerStatus;
@@ -185,9 +206,9 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public void onPowerStatus(int status) {
         if (EventPowerChange.POWER_STATUS.SHUTDOWN == status) {
             synchronized (mPendingPlaylist) {
-                mHandlerPlay.removeMessages(MSG_PLAY);
+                getStatusGuardHandler().stop(MSG_PLAY);
                 mPendingPlaylist.clear();
-                mHandlerPlay.removeMessages(MSG_RESET);
+                getStatusGuardHandler().stop(MSG_RESET);
             }
             mTTSPlayer.play("关机");
         }
@@ -204,6 +225,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
             case EventTextToSpeech.Code.TEXT_PLAY:
+                Log.d(TAG, "onModuleEvent > text_play = " + EventTextToSpeechPlayRequest.getPlayContent(event));
                 onRequestTtsPlay(EventTextToSpeechPlayRequest.getPlayContent(event));
                 break;
             case EventTextToSpeech.Code.MODULE_INIT_REQUEST:

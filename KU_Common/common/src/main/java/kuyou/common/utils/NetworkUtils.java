@@ -22,11 +22,15 @@ public class NetworkUtils {
 
     /**
      * action: 判断网络是否可用
-     *
-     * */
+     */
     public static boolean isNetworkAvailable(Context context) {
-        if (null == sConnectivityManager)
-            sConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        try {
+            if (null == sConnectivityManager)
+                sConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+            return false;
+        }
         if (sConnectivityManager == null) {
             Log.e(TAG, " isNetworkAvailable > ConnectivityManager is null");
             return false;
@@ -43,7 +47,6 @@ public class NetworkUtils {
      *
      * @param ip
      * @return
-     *
      */
     public int[] getIntIPValue(String ip) throws Exception {
         String[] sip = ip.split("[.]");
@@ -60,7 +63,6 @@ public class NetworkUtils {
      *
      * @param address
      * @return
-     *
      */
     public String getStringIPValue(byte[] address) throws Exception {
         int first = ByteUtils.byte2Int(address[0]);

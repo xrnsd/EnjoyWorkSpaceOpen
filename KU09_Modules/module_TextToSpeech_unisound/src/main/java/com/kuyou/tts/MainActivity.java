@@ -35,6 +35,7 @@ public class MainActivity extends BasicPermissionsHandlerActivity {
 
     @Override
     protected void play(String content) {
+        Log.d(TAG, "play > content = " + content);
         dispatchEvent(new EventTextToSpeechPlayRequest(content).setRemote(false));
     }
 
