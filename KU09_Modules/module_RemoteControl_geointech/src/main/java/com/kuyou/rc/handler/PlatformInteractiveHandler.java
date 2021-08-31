@@ -46,8 +46,7 @@ import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.IStatusBusCallback;
-import kuyou.common.ku09.basic.StatusBusRequestConfig;
+import kuyou.common.ku09.basic.StatusBusProcessCallback;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -286,14 +285,15 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     public void setStatusBusImpl(IStatusBus handler) {
         super.setStatusBusImpl(handler);
 
-        mMsgFlagAuthenticationTimeOut = handler.registerStatusBusCallback(new IStatusBusCallback() {
-            @Override
-            public void onReceiveMessage(boolean isRemove) {
-                Log.e(TAG, "onReceiveMessage > process fail : 鉴权失败，请重新尝试");
-                PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
-                PlatformInteractiveHandler.this.play("设备上线失败");
-            }
-        }, new StatusBusRequestConfig(false, 5000, Looper.getMainLooper()));
+        mMsgFlagAuthenticationTimeOut = handler.registerStatusBusProcessCallback(
+                new StatusBusProcessCallback(false, 5000, Looper.getMainLooper()) {
+                    @Override
+                    public void onReceiveMessage(boolean isRemove) {
+                        Log.e(TAG, "onReceiveMessage > process fail : 鉴权失败，请重新尝试");
+                        PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
+                        PlatformInteractiveHandler.this.play("设备上线失败");
+                    }
+                });
     }
 
     @Override

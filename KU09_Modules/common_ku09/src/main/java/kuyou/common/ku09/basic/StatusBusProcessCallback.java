@@ -2,7 +2,7 @@ package kuyou.common.ku09.basic;
 
 import android.os.Looper;
 
-public class StatusBusRequestConfig {
+public abstract class StatusBusProcessCallback {
 
     private boolean isAutoMessageReceiveCycle = false;
     private long mMessageReceiveFreq = -1;
@@ -15,11 +15,18 @@ public class StatusBusRequestConfig {
      * @param val2 ，val1为true时，自动循环收到消息的周期
      * @param val3 ，设定消息处理线程
      * */
-    public StatusBusRequestConfig(boolean val1, long val2, Looper val3) {
+    public StatusBusProcessCallback(boolean val1, long val2, Looper val3) {
         isAutoMessageReceiveCycle = val1;
         mMessageReceiveFreq = val2;
         mMessageHandleLooper = val3;
     }
+
+    /**
+     * action:收到消息
+     *
+     * @param isRemove ，为true表示已主动移除
+     */
+    public abstract void onReceiveMessage(boolean isRemove);
 
     /**
      * action:自动循环收到消息

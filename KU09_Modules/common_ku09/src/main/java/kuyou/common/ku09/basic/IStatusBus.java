@@ -1,11 +1,19 @@
 package kuyou.common.ku09.basic;
 
 public interface IStatusBus {
-    public int registerStatusBusCallback(final IStatusBusCallback callback, final StatusBusRequestConfig config);
+    public int registerStatusBusProcessCallback(final StatusBusProcessCallback config);
 
-    public void start(int msgWhat);
+    public void start(int processFlag);
 
-    public void stop(int msgWhat);
+    public void stop(int processFlag);
 
-    public boolean isStart(int msgWhat);
+    public boolean isStart(int processFlag);
+
+    public int registerStatusBusMark(String markTag);
+
+    public void setMarkStatus(int markFlag,int status);
+
+    public int getMarkStatus(int markFlag);
+
+    public boolean isExistsMarkStatus(int markFlag,int status);
 }

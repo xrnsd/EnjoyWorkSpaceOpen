@@ -52,11 +52,17 @@ public abstract class AudioVideoRequestResultHandler extends BasicEventHandler i
      */
     protected abstract boolean isLiveOnlineByType(int typeCode);
 
+    /**
+     * action:对应模式的通信是否开启
+     */
     @Override
     public int getHandlerStatus() {
         return mHandlerStatus;
     }
 
+    /**
+     * action:对应模式模块状态
+     */
     public void setHandleStatus(int handlerStatus) {
         mHandlerStatus = handlerStatus;
     }

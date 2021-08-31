@@ -17,8 +17,7 @@ import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
-import kuyou.common.ku09.basic.IStatusBusCallback;
-import kuyou.common.ku09.basic.StatusBusRequestConfig;
+import kuyou.common.ku09.basic.StatusBusProcessCallback;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.IEventBusDispatchCallback;
@@ -231,12 +230,13 @@ public abstract class BasicModuleApplication extends Application implements
     protected StatusBusImpl getStatusGuardHandler() {
         if (null == mStatusGuardHandler) {
             mStatusGuardHandler = StatusBusImpl.getInstance();
-            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusBusCallback(new IStatusBusCallback() {
-                @Override
-                public void onReceiveMessage(boolean isRemove) {
-                    BasicModuleApplication.this.onFeedWatchDog();
-                }
-            }, new StatusBusRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
+            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusBusProcessCallback(
+                    new StatusBusProcessCallback(true, getFeedTimeLong(), Looper.getMainLooper()) {
+                        @Override
+                        public void onReceiveMessage(boolean isRemove) {
+                            BasicModuleApplication.this.onFeedWatchDog();
+                        }
+                    });
             mStatusGuardHandler.start(mStatusGuardCallbackFlag);
 
             if (null != getHelmetModuleManageServiceManager()) {

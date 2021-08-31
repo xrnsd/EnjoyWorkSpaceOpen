@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.IStatusBusCallback;
-import kuyou.common.ku09.basic.StatusBusRequestConfig;
+import kuyou.common.ku09.basic.StatusBusProcessCallback;
 
 /**
  * action :提供模块状态的物流服务
@@ -27,6 +26,7 @@ public class StatusBusImpl extends Handler implements IStatusBus {
     protected static final String TAG = "com.kuyou.rc.handler.platform > HandlerStatusGuard";
 
     private volatile static StatusBusImpl instance;
+
     public static StatusBusImpl getInstance() {
         if (instance == null) {
             synchronized (StatusBusImpl.class) {
@@ -44,78 +44,127 @@ public class StatusBusImpl extends Handler implements IStatusBus {
         super(looper);
     }
 
-    private int mMessageFlag = 0;
+    private int mProcessFlag = 0;
+    private int mMarkFlag = 0;
+    private final int MARK_STATUS_NONE = -1024;
 
-    protected Map<Integer, IStatusBusCallback> mStatusGuardCallbackList = new HashMap<Integer, IStatusBusCallback>();
-    protected Map<Integer, Handler> mStatusGuardCallbackHandlerList = new HashMap<Integer, Handler>();
-    protected Map<Integer, Runnable> mStatusGuardCallbackRunnableList = new HashMap<Integer, Runnable>();
-    protected Map<Integer, StatusBusRequestConfig> mStatusGuardConfigList = new HashMap<Integer, StatusBusRequestConfig>();
+    protected Map<Integer, StatusBusProcessCallback> mStatusBusCallbackList = new HashMap<Integer, StatusBusProcessCallback>();
+    protected Map<Integer, Handler> mStatusBusCallbackHandlerList = new HashMap<Integer, Handler>();
+    protected Map<Integer, Runnable> mStatusBusCallbackRunnableList = new HashMap<Integer, Runnable>();
+    protected Map<Integer, StatusBusProcessCallback> mStatusBusConfigList = new HashMap<Integer, StatusBusProcessCallback>();
 
-    public int applyMessageFlag() {
-        Log.d(TAG, "applyMessageFlag > basic flag = " + mMessageFlag);
-        return mMessageFlag++;
+    protected Map<Integer, Integer> mStatusMarkStatusList = new HashMap<Integer, Integer>();
+    protected Map<Integer, String> mStatusMarkTagList = new HashMap<Integer, String>();
+
+    public int applyProcessFlag() {
+        Log.d(TAG, "applyProcessFlag > basic flag = " + mProcessFlag);
+        return mProcessFlag++;
     }
 
-    @Override
-    public int registerStatusBusCallback(final IStatusBusCallback callback, final StatusBusRequestConfig config) {
-        final int msgWhat = applyMessageFlag();
-        mStatusGuardCallbackList.put(msgWhat, callback);
-        mStatusGuardCallbackRunnableList.put(msgWhat, new Runnable() {
-            @Override
-            public void run() {
-                callback.onReceiveMessage(false);
-            }
-        });
-        mStatusGuardCallbackHandlerList.put(msgWhat, new Handler(config.getMessageHandleLooper()));
-        mStatusGuardConfigList.put(msgWhat, config);
-        return msgWhat;
-    }
-
-    @Override
-    public void start(int msgWhat) {
-        if (!mStatusGuardCallbackList.containsKey(msgWhat)) {
-            Log.e(TAG, "start > process fail : mStatusGuardCallbackList not contains msg = " + msgWhat);
-            return;
-        }
-        long delayed = mStatusGuardConfigList.get(msgWhat).getMessageReceiveFreq();
-        if (0 < delayed) {
-            sendEmptyMessageDelayed(msgWhat, mStatusGuardConfigList.get(msgWhat).getMessageReceiveFreq());
-            return;
-        }
-        sendEmptyMessage(msgWhat);
-    }
-
-    @Override
-    public void stop(int msgWhat) {
-        if (!mStatusGuardCallbackList.containsKey(msgWhat)) {
-            Log.e(TAG, "stop > process fail : mStatusGuardCallbackList not contains msg = " + msgWhat);
-            return;
-        }
-        if (hasMessages(msgWhat)) {
-            removeMessages(msgWhat);
-            return;
-        }
-        mStatusGuardCallbackList.get(msgWhat).onReceiveMessage(true);
-    }
-
-    @Override
-    public boolean isStart(int msgWhat) {
-        return hasMessages(msgWhat);
+    public int applyMarkFlag() {
+        Log.d(TAG, "applyMarkFlag > basic flag = " + mMarkFlag);
+        return mMarkFlag++;
     }
 
     @Override
     public void handleMessage(@NonNull Message msg) {
         super.handleMessage(msg);
-        int msgWhat = msg.what;
-        removeMessages(msgWhat);
-        if (!mStatusGuardCallbackList.containsKey(msgWhat)) {
-            Log.e(TAG, "handleMessage > process fail : mStatusGuardCallbackList not contains msg = " + msgWhat);
+        int flag = msg.what;
+        removeMessages(flag);
+        if (!mStatusBusCallbackList.containsKey(flag)) {
+            Log.e(TAG, "handleMessage > process fail : mStatusBusCallbackList not contains msg = " + flag);
             return;
         }
-        StatusBusRequestConfig config = mStatusGuardConfigList.get(msgWhat);
+        StatusBusProcessCallback config = mStatusBusConfigList.get(flag);
         if (config.isAutoMessageReceiveCycle()) {
-            sendEmptyMessageDelayed(msgWhat, config.getMessageReceiveFreq());
+            sendEmptyMessageDelayed(flag, config.getMessageReceiveFreq());
         }
-        mStatusGuardCallbackHandlerList.get(msgWhat).post(mStatusGuardCallbackRunnableList.get(msgWhat));
+        mStatusBusCallbackHandlerList.get(flag).post(mStatusBusCallbackRunnableList.get(flag));
+    }
+
+    @Override
+    public int registerStatusBusProcessCallback(final StatusBusProcessCallback callback) {
+        final int flag = applyProcessFlag();
+        mStatusBusCallbackList.put(flag, callback);
+        mStatusBusCallbackRunnableList.put(flag, new Runnable() {
+            @Override
+            public void run() {
+                callback.onReceiveMessage(false);
+            }
+        });
+        mStatusBusCallbackHandlerList.put(flag, new Handler(callback.getMessageHandleLooper()));
+        mStatusBusConfigList.put(flag, callback);
+        return flag;
+    }
+
+    @Override
+    public void start(int processFlag) {
+        if (!mStatusBusCallbackList.containsKey(processFlag)) {
+            Log.e(TAG, "start > process fail : mStatusBusCallbackList not contains msg = " + processFlag);
+            return;
+        }
+        long delayed = mStatusBusConfigList.get(processFlag).getMessageReceiveFreq();
+        if (0 < delayed) {
+            sendEmptyMessageDelayed(processFlag, mStatusBusConfigList.get(processFlag).getMessageReceiveFreq());
+            return;
+        }
+        sendEmptyMessage(processFlag);
+    }
+
+    @Override
+    public void stop(int processFlag) {
+        if (!mStatusBusCallbackList.containsKey(processFlag)) {
+            Log.e(TAG, "stop > process fail : mStatusBusCallbackList not contains msg = " + processFlag);
+            return;
+        }
+        if (hasMessages(processFlag)) {
+            removeMessages(processFlag);
+            return;
+        }
+        mStatusBusCallbackList.get(processFlag).onReceiveMessage(true);
+    }
+
+    @Override
+    public boolean isStart(int processFlag) {
+        return hasMessages(processFlag);
+    }
+
+    @Override
+    public int registerStatusBusMark(String markTag) {
+        final int flag = applyMarkFlag();
+        mStatusMarkTagList.put(flag, markTag);
+        mStatusMarkStatusList.put(flag, MARK_STATUS_NONE);
+        return 0;
+    }
+
+    @Override
+    public void setMarkStatus(int markFlag, int status) {
+        Log.d(TAG, new StringBuilder("setMarkStatus >")
+                .append("\nmarkTag = ").append(mStatusMarkTagList.get(markFlag))
+                .append("\nmarkFlag = ").append(markFlag)
+                .append("\nstatus = ").append(status)
+                .toString());
+        mStatusMarkStatusList.put(markFlag, status);
+    }
+
+    @Override
+    public int getMarkStatus(int markFlag) {
+        final Integer flag = Integer.valueOf(markFlag);
+        final int statusLocal = mStatusMarkStatusList.get(flag);
+        if (MARK_STATUS_NONE == statusLocal) {
+            Log.w(TAG, "getMarkStatus > process fail : mark not exists status = " + mStatusMarkTagList.get(flag));
+        }
+        return statusLocal;
+    }
+
+    @Override
+    public boolean isExistsMarkStatus(int markFlag, int status) {
+        final Integer flag = Integer.valueOf(markFlag);
+        final int statusLocal = mStatusMarkStatusList.get(flag);
+        if (MARK_STATUS_NONE == statusLocal) {
+            Log.w(TAG, "isExistsMarkStatus > process fail : mark not exists status = " + mStatusMarkTagList.get(flag));
+            return false;
+        }
+        return statusLocal == status;
     }
 }

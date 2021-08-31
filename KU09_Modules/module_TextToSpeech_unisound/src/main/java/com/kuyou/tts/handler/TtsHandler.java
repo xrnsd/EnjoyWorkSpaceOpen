@@ -13,8 +13,7 @@ import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.basic.IStatusBus;
-import kuyou.common.ku09.basic.IStatusBusCallback;
-import kuyou.common.ku09.basic.StatusBusRequestConfig;
+import kuyou.common.ku09.basic.StatusBusProcessCallback;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
@@ -93,36 +92,38 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public void setStatusBusImpl(IStatusBus handler) {
         super.setStatusBusImpl(handler);
 
-        mMsgFlagPlay = handler.registerStatusBusCallback(new IStatusBusCallback() {
-            @Override
-            public void onReceiveMessage(boolean isRemove) {
-                if (!isInitFinish
-                        || getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
-                    return;
-                }
-                mPlayText = null;
-                synchronized (mPendingPlaylist) {
-                    if (mPendingPlaylist.size() > 0)
-                        mPlayText = mPendingPlaylist.poll();
-                }
-                if (null == mPlayText) {
-                    return;
-                }
-                if (null != mTTSPlayer) {
-                    isPlaying = true;
-                    mTTSPlayer.play(mPlayText);
-                    Log.i(TAG, "onReceiveMessage > MSG_PLAY > text = " + mPlayText);
-                }
-            }
-        }, new StatusBusRequestConfig(false, 0, Looper.getMainLooper()));
+        mMsgFlagPlay = handler.registerStatusBusProcessCallback(
+                new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
+                    @Override
+                    public void onReceiveMessage(boolean isRemove) {
+                        if (!isInitFinish
+                                || getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
+                            return;
+                        }
+                        mPlayText = null;
+                        synchronized (mPendingPlaylist) {
+                            if (mPendingPlaylist.size() > 0)
+                                mPlayText = mPendingPlaylist.poll();
+                        }
+                        if (null == mPlayText) {
+                            return;
+                        }
+                        if (null != mTTSPlayer) {
+                            isPlaying = true;
+                            mTTSPlayer.play(mPlayText);
+                            Log.i(TAG, "onReceiveMessage > MSG_PLAY > text = " + mPlayText);
+                        }
+                    }
+                });
 
-        mMsgFlagPlayOldReset = handler.registerStatusBusCallback(new IStatusBusCallback() {
-            @Override
-            public void onReceiveMessage(boolean isRemove) {
-                mPlayTextOld = null;
-                Log.d(TAG, "onReceiveMessage > MSG_RESET");
-            }
-        }, new StatusBusRequestConfig(false, 2 * 1000, Looper.getMainLooper()));
+        mMsgFlagPlayOldReset = handler.registerStatusBusProcessCallback(
+                new StatusBusProcessCallback(false, 2 * 1000, Looper.getMainLooper()) {
+                    @Override
+                    public void onReceiveMessage(boolean isRemove) {
+                        mPlayTextOld = null;
+                        Log.d(TAG, "onReceiveMessage > MSG_RESET");
+                    }
+                });
     }
 
     public boolean isReady() {
