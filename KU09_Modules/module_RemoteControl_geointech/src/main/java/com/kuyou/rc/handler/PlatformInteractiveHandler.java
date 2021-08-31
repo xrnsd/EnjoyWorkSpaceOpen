@@ -45,9 +45,9 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.basic.IStatusGuard;
-import kuyou.common.ku09.basic.IStatusGuardCallback;
-import kuyou.common.ku09.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusBus;
+import kuyou.common.ku09.basic.IStatusBusCallback;
+import kuyou.common.ku09.basic.StatusBusRequestConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -100,7 +100,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                                         .setResult(0 == bean.getReplyResult())
                                         .setRemote(false));
 
-                                PlatformInteractiveHandler.this.getStatusGuardHandler().stop(mAuthenticationTimeOutMsgFlag);
+                                PlatformInteractiveHandler.this.getStatusBus().stop(mMsgFlagAuthenticationTimeOut);
                                 break;
                             }
                         case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
@@ -260,7 +260,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
     private boolean isRemoteControlPlatformConnected = false;
     private boolean isAuthenticationSuccess = false;
-    private int mAuthenticationTimeOutMsgFlag = -1;
+    private int mMsgFlagAuthenticationTimeOut = -1;
     private boolean isHeartbeatStartSuccess = false;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
@@ -283,27 +283,17 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     @Override
-    public void setStatusGuardHandler(IStatusGuard handler) {
-        super.setStatusGuardHandler(handler);
+    public void setStatusBusImpl(IStatusBus handler) {
+        super.setStatusBusImpl(handler);
 
-        registerStatusGuardCallback(new IStatusGuardCallback() {
+        mMsgFlagAuthenticationTimeOut = handler.registerStatusBusCallback(new IStatusBusCallback() {
             @Override
-            public void onReceiveMessage() {
+            public void onReceiveMessage(boolean isRemove) {
                 Log.e(TAG, "onReceiveMessage > process fail : 鉴权失败，请重新尝试");
                 PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
                 PlatformInteractiveHandler.this.play("设备上线失败");
             }
-
-            @Override
-            public void onRemoveMessage() {
-
-            }
-
-            @Override
-            public void setReceiveMessage(int what) {
-                PlatformInteractiveHandler.this.mAuthenticationTimeOutMsgFlag = what;
-            }
-        }, new StatusGuardRequestConfig(false, 5000, Looper.getMainLooper()));
+        }, new StatusBusRequestConfig(false, 5000, Looper.getMainLooper()));
     }
 
     @Override
@@ -365,7 +355,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
                         //鉴权失败，超时提示
-                        PlatformInteractiveHandler.this.getStatusGuardHandler().start(mAuthenticationTimeOutMsgFlag);
+                        PlatformInteractiveHandler.this.getStatusBus().start(mMsgFlagAuthenticationTimeOut);
                     }
                 }, 500);
                 break;
@@ -377,7 +367,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setRequestCode(EventRequest.RequestCode.OPEN)
                             .setRemote(false));
                     //心跳开始失败，超时提示
-                    getStatusGuardHandler().start(mAuthenticationTimeOutMsgFlag);
+                    getStatusBus().start(mMsgFlagAuthenticationTimeOut);
                 } else {
                     //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 }

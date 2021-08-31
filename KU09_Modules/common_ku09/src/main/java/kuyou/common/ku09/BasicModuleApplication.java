@@ -16,10 +16,9 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.basic.IModuleManager;
-import kuyou.common.ku09.basic.IStatusGuardCallback;
-import kuyou.common.ku09.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusBusCallback;
+import kuyou.common.ku09.basic.StatusBusRequestConfig;
 import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
@@ -226,28 +225,19 @@ public abstract class BasicModuleApplication extends Application implements
 
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
     private int mStatusGuardCallbackFlag = -1;
-    private StatusGuardImpl mStatusGuardHandler;
+    private StatusBusImpl mStatusGuardHandler;
 
-    protected StatusGuardImpl getStatusGuardHandler() {
+    protected StatusBusImpl getStatusGuardHandler() {
         if (null == mStatusGuardHandler) {
-            mStatusGuardHandler = StatusGuardImpl.getSingleton();
-            mStatusGuardHandler.registerStatusGuardCallback(new IStatusGuardCallback() {
+            mStatusGuardHandler = StatusBusImpl.getInstance();
+            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusBusCallback(new IStatusBusCallback() {
                 @Override
-                public void onReceiveMessage() {
+                public void onReceiveMessage(boolean isRemove) {
                     BasicModuleApplication.this.onFeedWatchDog();
                 }
-
-                @Override
-                public void onRemoveMessage() {
-
-                }
-
-                @Override
-                public void setReceiveMessage(int what) {
-                    BasicModuleApplication.this.mStatusGuardCallbackFlag = what;
-                }
-            }, new StatusGuardRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
+            }, new StatusBusRequestConfig(true, getFeedTimeLong(), Looper.getMainLooper()));
             mStatusGuardHandler.start(mStatusGuardCallbackFlag);
+
             if (null != getHelmetModuleManageServiceManager()) {
                 getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis());
             } else {
@@ -359,7 +349,7 @@ public abstract class BasicModuleApplication extends Application implements
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
             handler.setModuleManager(BasicModuleApplication.this);
             handler.setDevicesConfig(getDeviceConfig());
-            handler.setStatusGuardHandler(getStatusGuardHandler());
+            handler.setStatusBusImpl(getStatusGuardHandler());
 
             List<BasicEventHandler> sub = handler.getSubEventHandlers();
             if (null != sub && sub.size() > 0) {

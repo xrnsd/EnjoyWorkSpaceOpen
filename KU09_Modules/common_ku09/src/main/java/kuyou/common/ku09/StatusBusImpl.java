@@ -11,67 +11,64 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import kuyou.common.ku09.basic.IStatusGuard;
-import kuyou.common.ku09.basic.IStatusGuardCallback;
-import kuyou.common.ku09.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusBus;
+import kuyou.common.ku09.basic.IStatusBusCallback;
+import kuyou.common.ku09.basic.StatusBusRequestConfig;
 
 /**
- * action :模块状态守护
+ * action :提供模块状态的物流服务
  * <p>
  * author: wuguoxian <br/>
- * date: 20-11-4 <br/>
- * 已实现列表：<br/>
- * 1 IPC框架配置 <br/>
- * 2 log保存 <br/>
- * 3 模块活动保持 <br/>
- * 4 设备基础配置 <br/>
- * 5 设备部分状态监听 <br/>
- * 6 按键监听分发 <br/>
+ * date: 21-08-24 <br/>
  * <p>
  */
-public class StatusGuardImpl extends Handler implements IStatusGuard {
-    //单例
-    private volatile static StatusGuardImpl instance; //声明成 volatile
+public class StatusBusImpl extends Handler implements IStatusBus {
 
-    public static StatusGuardImpl getSingleton() {
+    protected static final String TAG = "com.kuyou.rc.handler.platform > HandlerStatusGuard";
+
+    private volatile static StatusBusImpl instance;
+    public static StatusBusImpl getInstance() {
         if (instance == null) {
-            synchronized (StatusGuardImpl.class) {
+            synchronized (StatusBusImpl.class) {
                 if (instance == null) {
                     HandlerThread handlerThreadStatusGuard = new HandlerThread(".HandlerThread.status.guard");
                     handlerThreadStatusGuard.start();
-                    instance = new StatusGuardImpl(handlerThreadStatusGuard.getLooper());
+                    instance = new StatusBusImpl(handlerThreadStatusGuard.getLooper());
                 }
             }
         }
         return instance;
     }
 
-    private StatusGuardImpl(Looper looper) {
+    private StatusBusImpl(Looper looper) {
         super(looper);
     }
 
-    protected static final String TAG = "com.kuyou.rc.handler.platform > HandlerStatusGuard";
-    private static int sMessageFlag = 0;
+    private int mMessageFlag = 0;
 
-    protected Map<Integer, IStatusGuardCallback> mStatusGuardCallbackList = new HashMap<Integer, IStatusGuardCallback>();
+    protected Map<Integer, IStatusBusCallback> mStatusGuardCallbackList = new HashMap<Integer, IStatusBusCallback>();
     protected Map<Integer, Handler> mStatusGuardCallbackHandlerList = new HashMap<Integer, Handler>();
     protected Map<Integer, Runnable> mStatusGuardCallbackRunnableList = new HashMap<Integer, Runnable>();
-    protected Map<Integer, StatusGuardRequestConfig> mStatusGuardConfigList = new HashMap<Integer, StatusGuardRequestConfig>();
+    protected Map<Integer, StatusBusRequestConfig> mStatusGuardConfigList = new HashMap<Integer, StatusBusRequestConfig>();
+
+    public int applyMessageFlag() {
+        Log.d(TAG, "applyMessageFlag > basic flag = " + mMessageFlag);
+        return mMessageFlag++;
+    }
 
     @Override
-    public boolean registerStatusGuardCallback(final IStatusGuardCallback callback, final StatusGuardRequestConfig config) {
+    public int registerStatusBusCallback(final IStatusBusCallback callback, final StatusBusRequestConfig config) {
         final int msgWhat = applyMessageFlag();
         mStatusGuardCallbackList.put(msgWhat, callback);
         mStatusGuardCallbackRunnableList.put(msgWhat, new Runnable() {
             @Override
             public void run() {
-                callback.onReceiveMessage();
+                callback.onReceiveMessage(false);
             }
         });
         mStatusGuardCallbackHandlerList.put(msgWhat, new Handler(config.getMessageHandleLooper()));
         mStatusGuardConfigList.put(msgWhat, config);
-        callback.setReceiveMessage(msgWhat);
-        return true;
+        return msgWhat;
     }
 
     @Override
@@ -98,17 +95,12 @@ public class StatusGuardImpl extends Handler implements IStatusGuard {
             removeMessages(msgWhat);
             return;
         }
-        mStatusGuardCallbackList.get(msgWhat).onRemoveMessage();
+        mStatusGuardCallbackList.get(msgWhat).onReceiveMessage(true);
     }
 
     @Override
     public boolean isStart(int msgWhat) {
         return hasMessages(msgWhat);
-    }
-
-    public static int applyMessageFlag() {
-        Log.d(TAG, "applyMessageFlag > sMessageFlag = " + sMessageFlag);
-        return sMessageFlag++;
     }
 
     @Override
@@ -120,7 +112,7 @@ public class StatusGuardImpl extends Handler implements IStatusGuard {
             Log.e(TAG, "handleMessage > process fail : mStatusGuardCallbackList not contains msg = " + msgWhat);
             return;
         }
-        StatusGuardRequestConfig config = mStatusGuardConfigList.get(msgWhat);
+        StatusBusRequestConfig config = mStatusGuardConfigList.get(msgWhat);
         if (config.isAutoMessageReceiveCycle()) {
             sendEmptyMessageDelayed(msgWhat, config.getMessageReceiveFreq());
         }

@@ -2,15 +2,20 @@ package kuyou.common.ku09.basic;
 
 import android.os.Looper;
 
-public class StatusGuardRequestConfig {
+public class StatusBusRequestConfig {
 
-    boolean isAutoMessageReceiveCycle = false;
+    private boolean isAutoMessageReceiveCycle = false;
+    private long mMessageReceiveFreq = -1;
+    private Looper mMessageHandleLooper = null;
 
-    long mMessageReceiveFreq = -1;
-
-    Looper mMessageHandleLooper = null;
-
-    public StatusGuardRequestConfig(boolean val1, long val2, Looper val3) {
+    /**
+     * action:自动循环收到消息
+     *
+     * @param val1 ，为true表示开启，自动循环收到消息
+     * @param val2 ，val1为true时，自动循环收到消息的周期
+     * @param val3 ，设定消息处理线程
+     * */
+    public StatusBusRequestConfig(boolean val1, long val2, Looper val3) {
         isAutoMessageReceiveCycle = val1;
         mMessageReceiveFreq = val2;
         mMessageHandleLooper = val3;

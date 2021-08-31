@@ -11,9 +11,7 @@ import kuyou.common.ku09.basic.IModuleManager;
 import kuyou.common.ku09.config.DeviceConfig;
 import kuyou.common.ku09.event.IDispatchEventCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.basic.IStatusGuard;
-import kuyou.common.ku09.basic.IStatusGuardCallback;
-import kuyou.common.ku09.basic.StatusGuardRequestConfig;
+import kuyou.common.ku09.basic.IStatusBus;
 
 /**
  * action :业务处理器[抽象]
@@ -29,12 +27,10 @@ public abstract class BasicEventHandler {
     private Context mContext;
     private IModuleManager mModuleManager;
     private IDispatchEventCallback mDispatchEventCallBack;
-    private IStatusGuard mStatusGuardHandler;
+    private IStatusBus mStatusGuardHandler;
     private DeviceConfig mDeviceConfig;
 
     private List<Integer> mHandleLocalEventCodeList = null, mHandleRemoteEventCodeList = null;
-    private List<IStatusGuardCallback> mStatusGuardCallbackToBeRegisteredList = new ArrayList<>();
-    private List<StatusGuardRequestConfig> mStatusGuardRequestConfigToBeRegisteredList = new ArrayList<>();
 
     protected Context getContext() {
         return mContext;
@@ -108,32 +104,12 @@ public abstract class BasicEventHandler {
         return BasicEventHandler.this;
     }
 
-    protected boolean registerStatusGuardCallback(IStatusGuardCallback callback, StatusGuardRequestConfig config) {
-        if (null == getStatusGuardHandler()) {
-            mStatusGuardCallbackToBeRegisteredList.add(callback);
-            mStatusGuardRequestConfigToBeRegisteredList.add(config);
-            return false;
-        }
-        return getStatusGuardHandler().registerStatusGuardCallback(callback, config);
-    }
-
-    public IStatusGuard getStatusGuardHandler() {
+    public IStatusBus getStatusBus() {
         return mStatusGuardHandler;
     }
 
-    public void setStatusGuardHandler(IStatusGuard handler) {
-        mStatusGuardHandler = handler;
-        synchronized (mStatusGuardCallbackToBeRegisteredList) {
-            if (mStatusGuardCallbackToBeRegisteredList.size() <= 0) {
-                return;
-            }
-            for (int count = mStatusGuardCallbackToBeRegisteredList.size(), i = 0; i < count; i++) {
-                getStatusGuardHandler().registerStatusGuardCallback(mStatusGuardCallbackToBeRegisteredList.get(i),
-                        mStatusGuardRequestConfigToBeRegisteredList.get(i));
-            }
-            mStatusGuardCallbackToBeRegisteredList.clear();
-            mStatusGuardRequestConfigToBeRegisteredList.clear();
-        }
+    public void setStatusBusImpl(IStatusBus sBus) {
+        mStatusGuardHandler = sBus;
     }
 
     protected DeviceConfig getDeviceConfig() {
