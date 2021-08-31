@@ -7,7 +7,7 @@ import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.status.IStatusBus;
-import kuyou.common.ku09.status.StatusBusProcessCallback;
+import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatReport;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
@@ -96,7 +96,7 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
         super.setStatusBusImpl(handler);
 
         mStaProFlagHeartbeatReport = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         HeartbeatHandler.this.mHeartbeatReportFlowId += 1;
@@ -105,7 +105,7 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
                 });
 
         mStaProFlagHeartbeatReportStartTimeOut = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 5000, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 5000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         Log.e(TAG, "onReceiveMessage > process fail : 心跳提交失败，请重新尝试");
@@ -113,7 +113,7 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
                     }
                 });
 
-        mStaProFlagDeviceOffline = handler.registerStatusBusProcessCallback(new StatusBusProcessCallback(false, 5000, Looper.getMainLooper()) {
+        mStaProFlagDeviceOffline = handler.registerStatusBusProcessCallback(new StatusBusProcessCallbackImpl(false, 5000, Looper.getMainLooper()) {
             @Override
             public void onReceiveMessage(boolean isRemove) {
                 Log.e(TAG, "onReceiveMessage > 设备已离线");

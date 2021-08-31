@@ -30,7 +30,7 @@ import java.util.Set;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.status.IStatusBus;
-import kuyou.common.ku09.status.StatusBusProcessCallback;
+import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
@@ -409,7 +409,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //HS_OPEN_REQUEST_BE_EXECUTING
         mStaProFlagOpenRequestBeExecuting = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         if (isRemove) {
@@ -431,7 +431,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //HS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT
         mStaProFlagOpenRequestBeExecutingTimeOut = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 15000, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 15000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         Log.i(TAG, "getOperateAndTimeoutCallback > 向平台发出音视频开启请求 > 失败：未响应");
@@ -444,7 +444,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //HS_OPEN_HANDLE_BE_EXECUTING_TIME_OUT
         mStaProFlagOpenHandleBeExecuting = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         PeergineAudioVideoHandler.this.getStatusBus().stop(
@@ -456,7 +456,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //HS_CLOSE_BE_EXECUTING
         mStaProFlagCloseBeExecuting = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         Log.i(TAG, "getOperateAndTimeoutCallback > 开始关闭音视频 > ");
@@ -470,7 +470,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         //HS_DEVICE_OFF_LINE_TIME_OUT
         mStaProFlagDeviceOffLineTimeOut = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 30 * 1000, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 30 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         Log.i(TAG, "OperateTimeoutCallback > 设备离线后，超时没有上线,开始关闭音视频");

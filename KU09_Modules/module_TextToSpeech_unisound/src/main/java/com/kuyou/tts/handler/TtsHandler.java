@@ -13,7 +13,7 @@ import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.status.IStatusBus;
-import kuyou.common.ku09.status.StatusBusProcessCallback;
+import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
@@ -93,7 +93,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
         super.setStatusBusImpl(handler);
 
         mStaProFlagPlay = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 0, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         if (!isInitFinish
@@ -117,7 +117,7 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
                 });
 
         mStaProFlagPlayOldReset = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallback(false, 2 * 1000, Looper.getMainLooper()) {
+                new StatusBusProcessCallbackImpl(false, 2 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveMessage(boolean isRemove) {
                         mPlayTextOld = null;
