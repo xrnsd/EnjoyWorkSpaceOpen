@@ -6,7 +6,7 @@ import com.kuyou.vc.protocol.basic.VoiceControl;
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.KeyConfig;
+import kuyou.common.ku09.config.IKeyConfig;
 
 /**
  * action :语音控制模块
@@ -61,7 +61,7 @@ public class ModuleApplication extends BasicModuleApplication {
                 @Override
                 protected void onKeyLongClick(int keyCode) {
                     super.onKeyLongClick(keyCode);
-                    if (KeyConfig.VOICE_CONTROL == keyCode) {
+                    if (IKeyConfig.VOICE_CONTROL == keyCode) {
                         dispatchEvent(new EventVoiceWakeupRequest()
                                 .setRemote(false));
                     }

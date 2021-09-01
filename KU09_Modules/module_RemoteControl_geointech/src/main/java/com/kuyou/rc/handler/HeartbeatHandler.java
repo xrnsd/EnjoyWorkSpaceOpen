@@ -98,37 +98,28 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
     public void setStatusProcessBus(IStatusProcessBus handler) {
         super.setStatusProcessBus(handler);
 
-        mStaProFlagHeartbeatReport = handler.registerStatusBusProcessCallback(
+        mStaProFlagHeartbeatReport = handler.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         HeartbeatHandler.this.mHeartbeatReportFlowId += 1;
                         HeartbeatHandler.this.dispatchEvent(new EventHeartbeatReport().setRemote(false));
                     }
                 });
 
-        mStaProFlagHeartbeatReportStartTimeOut = handler.registerStatusBusProcessCallback(
+        mStaProFlagHeartbeatReportStartTimeOut = handler.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         Log.e(TAG, "onReceiveStatusNotice > process fail : 心跳提交失败，请重新尝试");
                         HeartbeatHandler.this.getStatusProcessBus().stop(mStaProFlagDeviceOffline);
                         HeartbeatHandler.this.play("设备上线失败,错误2");
                     }
                 });
 
-        mStaProFlagDeviceOffline = handler.registerStatusBusProcessCallback(new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()) {
+        mStaProFlagDeviceOffline = handler.registerStatusProcessBusProcessCallback(new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()) {
             @Override
             public void onReceiveStatusNotice(boolean isRemove) {
-                if (isRemove) {
-                    return;
-                }
                 Log.e(TAG, "onReceiveStatusNotice > 设备已离线");
                 HeartbeatHandler.this.play("设备已离线");
                 HeartbeatHandler.this.dispatchEvent(new EventLocalDeviceStatus()

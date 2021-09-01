@@ -43,9 +43,9 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
 
     private int mProcessFlag = 0;
 
-    protected Map<Integer, IStatusProcessBusCallback> mStatusBusCallbackList = new HashMap<Integer, IStatusProcessBusCallback>();
-    protected Map<Integer, Handler> mStatusBusCallbackHandlerList = new HashMap<Integer, Handler>();
-    protected Map<Integer, Runnable> mStatusBusCallbackRunnableList = new HashMap<Integer, Runnable>();
+    protected Map<Integer, IStatusProcessBusCallback> mStatusProcessBusCallbackList = new HashMap<Integer, IStatusProcessBusCallback>();
+    protected Map<Integer, Handler> mStatusProcessBusCallbackHandlerList = new HashMap<Integer, Handler>();
+    protected Map<Integer, Runnable> mStatusProcessBusCallbackRunnableList = new HashMap<Integer, Runnable>();
 
     public int applyProcessFlag() {
         Log.d(TAG, "applyProcessFlag > basic flag = " + mProcessFlag);
@@ -57,39 +57,39 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
         super.handleMessage(msg);
         int flag = msg.what;
         removeMessages(flag);
-        if (!mStatusBusCallbackList.containsKey(flag)) {
-            Log.e(TAG, "handleMessage > process fail : mStatusBusCallbackList not contains msg = " + flag);
+        if (!mStatusProcessBusCallbackList.containsKey(flag)) {
+            Log.e(TAG, "handleMessage > process fail : mStatusProcessBusCallbackList not contains msg = " + flag);
             return;
         }
-        IStatusProcessBusCallback config = mStatusBusCallbackList.get(flag);
+        IStatusProcessBusCallback config = mStatusProcessBusCallbackList.get(flag);
         if (config.isAutoNoticeReceiveCycle()) {
             sendEmptyMessageDelayed(flag, config.getNoticeReceiveFreq());
         }
-        mStatusBusCallbackHandlerList.get(flag).post(mStatusBusCallbackRunnableList.get(flag));
+        mStatusProcessBusCallbackHandlerList.get(flag).post(mStatusProcessBusCallbackRunnableList.get(flag));
     }
 
     @Override
-    public int registerStatusBusProcessCallback(final IStatusProcessBusCallback callback) {
+    public int registerStatusProcessBusProcessCallback(final IStatusProcessBusCallback callback) {
         final int flag = applyProcessFlag();
-        mStatusBusCallbackList.put(flag, callback);
-        mStatusBusCallbackRunnableList.put(flag, new Runnable() {
+        mStatusProcessBusCallbackList.put(flag, callback);
+        mStatusProcessBusCallbackRunnableList.put(flag, new Runnable() {
             @Override
             public void run() {
                 callback.onReceiveStatusNotice(false);
             }
         });
-        mStatusBusCallbackHandlerList.put(flag, new Handler(callback.getNoticeHandleLooper()));
+        mStatusProcessBusCallbackHandlerList.put(flag, new Handler(callback.getNoticeHandleLooper()));
         return flag;
     }
 
     @Override
     public void start(int processFlag) {
-        if (!mStatusBusCallbackList.containsKey(processFlag)) {
-            Log.e(TAG, "start > process fail : mStatusBusCallbackList not contains msg = " + processFlag);
+        if (!mStatusProcessBusCallbackList.containsKey(processFlag)) {
+            Log.e(TAG, "start > process fail : mStatusProcessBusCallbackList not contains msg = " + processFlag);
             return;
         }
         removeMessages(processFlag);
-        long delayed = mStatusBusCallbackList.get(processFlag).getNoticeReceiveFreq();
+        long delayed = mStatusProcessBusCallbackList.get(processFlag).getNoticeReceiveFreq();
         if (0 < delayed) {
             sendEmptyMessageDelayed(processFlag, delayed);
             return;
@@ -99,15 +99,18 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
 
     @Override
     public void stop(int processFlag) {
-        if (!mStatusBusCallbackList.containsKey(processFlag)) {
-            Log.e(TAG, "stop > process fail : mStatusBusCallbackList not contains msg = " + processFlag);
+        if (!mStatusProcessBusCallbackList.containsKey(processFlag)) {
+            Log.e(TAG, "stop > process fail : mStatusProcessBusCallbackList not contains msg = " + processFlag);
             return;
         }
         if (hasMessages(processFlag)) {
             removeMessages(processFlag);
             return;
         }
-        mStatusBusCallbackList.get(processFlag).onReceiveStatusNotice(true);
+        if (!mStatusProcessBusCallbackList.get(processFlag).isEnableReceiveRemoveNotice()) {
+            return;
+        }
+        mStatusProcessBusCallbackList.get(processFlag).onReceiveStatusNotice(true);
     }
 
     @Override

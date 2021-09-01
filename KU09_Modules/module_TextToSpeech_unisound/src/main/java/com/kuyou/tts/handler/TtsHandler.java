@@ -92,13 +92,10 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
     public void setStatusProcessBus(IStatusProcessBus handler) {
         super.setStatusProcessBus(handler);
 
-        mStaProFlagPlay = handler.registerStatusBusProcessCallback(
+        mStaProFlagPlay = handler.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         if (!isInitFinish
                                 || getPowerStatus() == EventPowerChange.POWER_STATUS.SHUTDOWN) {
                             return;
@@ -119,13 +116,10 @@ public class TtsHandler extends BasicEventHandler implements IPowerStatusListene
                     }
                 });
 
-        mStaProFlagPlayOldReset = handler.registerStatusBusProcessCallback(
+        mStaProFlagPlayOldReset = handler.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 2 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         mPlayTextOld = null;
                         Log.d(TAG, "onReceiveStatusNotice > MSG_RESET");
                     }

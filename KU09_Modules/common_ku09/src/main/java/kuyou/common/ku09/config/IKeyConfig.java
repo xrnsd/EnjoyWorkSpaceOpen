@@ -10,7 +10,7 @@ import android.view.KeyEvent;
  * date: 21-3-23 <br/>
  * </p>
  */
-public interface KeyConfig {
+public interface IKeyConfig {
     //实体按键
     public final static int CALL = KeyEvent.KEYCODE_ALT_LEFT;
     public final static int VOICE_CONTROL = KeyEvent.KEYCODE_SHIFT_LEFT;

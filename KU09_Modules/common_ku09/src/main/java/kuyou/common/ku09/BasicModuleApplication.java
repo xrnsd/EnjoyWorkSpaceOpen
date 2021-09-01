@@ -16,7 +16,6 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
@@ -44,8 +43,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 2 log保存 <br/>
  * 3 模块活动保持 <br/>
  * 4 设备基础配置 <br/>
- * 5 设备部分状态监听 <br/>
- * 6 按键监听分发 <br/>
+ * 5 业务协处理器实现 <br/>
  * <p>
  */
 public abstract class BasicModuleApplication extends Application implements
@@ -95,7 +93,7 @@ public abstract class BasicModuleApplication extends Application implements
 
         //初始化模块状态控制系统服务
         initHelmetModuleManageServiceManager();
-        initCallBack();
+        initModuleSystemServiceCallBack();
 
         //初始化按键协处理器
         initKeyHandlers();
@@ -141,7 +139,7 @@ public abstract class BasicModuleApplication extends Application implements
             Log.d(TAG, "initExceptionLogLocal > exception info auto save is disable");
             return;
         }
-        UncaughtExceptionManager uem = UncaughtExceptionManager
+        UncaughtExceptionManager
                 .getInstance(new IGlobalExceptionControl() {
                     @Override
                     public Application getApplication() {
@@ -155,17 +153,13 @@ public abstract class BasicModuleApplication extends Application implements
                         flags |= IGlobalExceptionControl.POLICY_ENABLE_CRASH_PROMPT;
                         return flags;
                     }
-                })
-                .setSaveExceptionLogDirPath(new StringBuilder()
-                        .append("/kuyou/logcat/")
-                        .append(getApplicationName())
-                        .toString());
+                }).setSaveExceptionLogDirPath("/kuyou/logcat/" + getApplicationName());
     }
 
     /**
-     * action:初始化模块服务回调
+     * action:初始化模块系统服务回调
      */
-    protected void initCallBack() {
+    protected void initModuleSystemServiceCallBack() {
 
         StringBuilder statusInfo = new StringBuilder().append("======================================================\n    ");
 
@@ -232,13 +226,10 @@ public abstract class BasicModuleApplication extends Application implements
     protected StatusProcessBusImpl getStatusGuardHandler() {
         if (null == mStatusGuardHandler) {
             mStatusGuardHandler = StatusProcessBusImpl.getInstance();
-            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusBusProcessCallback(
+            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusProcessBusProcessCallback(
                     new StatusProcessBusCallbackImpl(true, getFeedTimeLong(), Looper.getMainLooper()) {
                         @Override
                         public void onReceiveStatusNotice(boolean isRemove) {
-                            if (isRemove) {
-                                return;
-                            }
                             BasicModuleApplication.this.onFeedWatchDog();
                         }
                     });
@@ -342,9 +333,6 @@ public abstract class BasicModuleApplication extends Application implements
         if (subHandlerList.size() > 0) {
             getEventHandlerList().addAll(subHandlerList);
         }
-//        for (BasicEventHandler handler : getEventHandlerList()) {
-//            Log.d(TAG, "getEventDispatchList > getEventHandlerList() = " + handler.getClass().getSimpleName());
-//        }
         return codeList;
     }
 

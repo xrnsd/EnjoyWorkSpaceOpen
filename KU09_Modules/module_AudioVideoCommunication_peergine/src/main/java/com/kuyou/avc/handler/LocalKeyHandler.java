@@ -9,7 +9,7 @@ import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.KeyConfig;
+import kuyou.common.ku09.config.IKeyConfig;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 /**
@@ -43,15 +43,15 @@ public class LocalKeyHandler extends KeyHandler {
     @Override
     public void onKeyClick(int keyCode) {
         switch (keyCode) {
-            case KeyConfig.CALL:
+            case IKeyConfig.CALL:
                 mAudioVideoHandler.performOperate();
                 break;
-            case KeyConfig.FLASHLIGHT:
+            case IKeyConfig.FLASHLIGHT:
                 dispatchEvent(new EventFlashlightRequest()
                         .setSwitch(!CameraLightControl.getInstance(mContext).isFlashLightOn())
                         .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE));
                 break;
-            case KeyConfig.CAMERA:
+            case IKeyConfig.CAMERA:
                 dispatchEvent(new EventPhotoTakeRequest()
                         .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                         .setRemote(false));
@@ -65,7 +65,7 @@ public class LocalKeyHandler extends KeyHandler {
     @Override
     public void onKeyDoubleClick(int keyCode) {
         switch (keyCode) {
-            case KeyConfig.VOICE_CONTROL:
+            case IKeyConfig.VOICE_CONTROL:
                 mAudioVideoHandler.switchMediaType();
                 break;
             default:

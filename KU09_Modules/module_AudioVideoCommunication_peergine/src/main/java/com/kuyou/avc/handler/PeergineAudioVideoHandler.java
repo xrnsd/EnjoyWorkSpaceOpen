@@ -413,7 +413,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         super.setStatusProcessBus(bus);
 
         //HS_OPEN_REQUEST_BE_EXECUTING
-        mStaProFlagOpenRequestBeExecuting = bus.registerStatusBusProcessCallback(
+        mStaProFlagOpenRequestBeExecuting = bus.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
@@ -432,16 +432,13 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                                 .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
                                 .setRemote(true));
                     }
-                });
+                }.setEnableReceiveRemoveNotice(true));
 
         //HS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT
-        mStaProFlagOpenRequestBeExecutingTimeOut = bus.registerStatusBusProcessCallback(
+        mStaProFlagOpenRequestBeExecutingTimeOut = bus.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 15 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         Log.i(TAG, "getOperateAndTimeoutCallback > 向平台发出音视频开启请求 > 失败：未响应");
                         PeergineAudioVideoHandler.this.onModuleEvent(new EventAudioVideoParametersApplyResult()
                                 .setResult(false)
@@ -451,13 +448,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_OPEN_HANDLE_BE_EXECUTING_TIME_OUT
-        mStaProFlagOpenHandleBeExecuting = bus.registerStatusBusProcessCallback(
+        mStaProFlagOpenHandleBeExecuting = bus.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         PeergineAudioVideoHandler.this.getStatusProcessBus().stop(
                                 PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecuting);
                         PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_HANDLE_BE_EXECUTING);
@@ -466,13 +460,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_CLOSE_BE_EXECUTING
-        mStaProFlagCloseBeExecuting = bus.registerStatusBusProcessCallback(
+        mStaProFlagCloseBeExecuting = bus.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         Log.i(TAG, "getOperateAndTimeoutCallback > 开始关闭音视频 > ");
                         if (!PeergineAudioVideoHandler.this.isLiveOnlineByType(-1)) {
                             PeergineAudioVideoHandler.this.setHandleStatus(HS_NORMAL);
@@ -483,13 +474,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 });
 
         //HS_DEVICE_OFF_LINE_TIME_OUT
-        mStaProFlagDeviceOffLineTimeOut = bus.registerStatusBusProcessCallback(
+        mStaProFlagDeviceOffLineTimeOut = bus.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 30 * 1000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         Log.i(TAG, "OperateTimeoutCallback > 设备离线后，超时没有上线,开始关闭音视频");
                         //由于离线30秒后服务器会清除通话状态，所以设备无需发送关闭指令
                         PeergineAudioVideoHandler.this.exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE);

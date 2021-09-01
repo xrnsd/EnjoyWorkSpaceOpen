@@ -284,13 +284,10 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     public void setStatusProcessBus(IStatusProcessBus handler) {
         super.setStatusProcessBus(handler);
 
-        mStaProFlagAuthenticationTimeOut = handler.registerStatusBusProcessCallback(
+        mStaProFlagAuthenticationTimeOut = handler.registerStatusProcessBusProcessCallback(
                 new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()) {
                     @Override
                     public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            return;
-                        }
                         Log.e(TAG, "onReceiveStatusNotice > process fail : 鉴权失败，请重新尝试");
                         PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
                         PlatformInteractiveHandler.this.play("设备上线失败,错误1");

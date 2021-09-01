@@ -8,7 +8,7 @@ import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmSos;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.KeyConfig;
+import kuyou.common.ku09.config.IKeyConfig;
 
 /**
  * action :协处理器[实体按键]
@@ -26,7 +26,7 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
     @Override
     public void onKeyClick(int keyCode) {
         switch (keyCode) {
-            case KeyConfig.ALARM_NEAR_POWER:
+            case IKeyConfig.ALARM_NEAR_POWER:
                 if (!isEnableNearPowerAlarm) {
                     Log.w(TAG, "onKeyClick > 充电中取消近电报警");
                     return;
@@ -34,11 +34,11 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
                 dispatchEvent(new EventAlarmNearPower()
                         .setRemote(false));
                 break;
-            case KeyConfig.ALARM_GAS:
+            case IKeyConfig.ALARM_GAS:
                 dispatchEvent(new EventAlarmGas()
                         .setRemote(false));
                 break;
-            case KeyConfig.ALARM_GAS_OFF:
+            case IKeyConfig.ALARM_GAS_OFF:
                 dispatchEvent(new EventAlarmGas().setSwitch(false)
                         .setRemote(false));
                 break;
@@ -56,7 +56,7 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
     @Override
     public void onKeyLongClick(int keyCode) {
         switch (keyCode) {
-            case KeyConfig.CALL:
+            case IKeyConfig.CALL:
                 dispatchEvent(new EventAlarmSos()
                         .setRemote(false));
                 break;

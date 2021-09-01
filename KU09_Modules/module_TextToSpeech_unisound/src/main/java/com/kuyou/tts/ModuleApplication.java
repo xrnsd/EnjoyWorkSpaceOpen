@@ -2,14 +2,11 @@ package com.kuyou.tts;
 
 import android.app.IHelmetModuleTTSCallback;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.kuyou.tts.handler.LocalModuleCommonHandler;
 import com.kuyou.tts.handler.TtsHandler;
 
-import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 
 /**
  * action :语音合成模块
@@ -36,8 +33,8 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected void initCallBack() {
-        super.initCallBack();
+    protected void initModuleSystemServiceCallBack() {
+        super.initModuleSystemServiceCallBack();
         mHelmetModuleManageServiceManager.registerHelmetModuleTTSCallback(new IHelmetModuleTTSCallback.Stub() {
             @Override
             public void onRequestTtsPlay(String text) throws RemoteException {
