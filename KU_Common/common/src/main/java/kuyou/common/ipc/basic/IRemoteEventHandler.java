@@ -1,4 +1,4 @@
-package kuyou.common.ipc.base;
+package kuyou.common.ipc.basic;
 
 import android.os.Bundle;
 

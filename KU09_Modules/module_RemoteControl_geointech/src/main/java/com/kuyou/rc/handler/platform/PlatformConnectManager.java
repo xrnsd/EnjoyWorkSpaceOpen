@@ -170,7 +170,7 @@ public class PlatformConnectManager {
     }
 
     public void disconnect() {
-        Log.d(TAG, "disconnect > ");
+        Log.d(TAG, "disconnect > 主动断开服务器连接 ----------------------------- ");
         mManager.unRegisterReceiver(mSocketActionAdapter);
         mManager.disconnect();
     }

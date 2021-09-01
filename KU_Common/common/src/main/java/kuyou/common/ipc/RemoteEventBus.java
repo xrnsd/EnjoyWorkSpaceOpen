@@ -13,8 +13,8 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import kuyou.common.ipc.base.IRemoteConfig;
-import kuyou.common.ipc.base.IRemoteEventHandler;
+import kuyou.common.ipc.basic.IRemoteConfig;
+import kuyou.common.ipc.basic.IRemoteEventHandler;
 
 /**
  * action :事件远程分发器
@@ -25,46 +25,46 @@ import kuyou.common.ipc.base.IRemoteEventHandler;
  * </p>
  */
 public class RemoteEventBus implements IRemoteConfig {
+    private volatile static RemoteEventBus sInstance;
+
+    public static RemoteEventBus getInstance(Context context) {
+        if (sInstance == null) {
+            synchronized (RemoteEventBus.class) {
+                if (sInstance == null) {
+                    sInstance = new RemoteEventBus(context);
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    public static RemoteEventBus getInstance() {
+        if (null == sInstance) {
+            throw new NullPointerException("RemoteEventBus is null\nplease perform method \"RemoteEventBus.getInstance(Context context)\"");
+        }
+        if (null == sInstance.mContext) {
+            throw new NullPointerException("context is null");
+        }
+        return sInstance;
+    }
 
     protected String mTagLog = "kuyou.common.ipc > RemoteEventBus";
 
     private Context mContext;
-    private static RemoteEventBus sMain;
+
     private IRemoteEventHandler mRemoteEventHandler;
     private FrameEventHandler mFrameEventHandler;
-
-    private boolean mIsBound = false;
-    private IRemoteService mService = null;
-    private ServiceConnection mConnection = null;
+    private IFrameLiveListener mFrameLiveListener = null;
+    private IRemoteService mEventDispatchService = null;
+    private ServiceConnection mEventDispatchServiceConnection = null;
 
     private RemoteEventBus(Context context) {
         mContext = context.getApplicationContext();
         mFrameEventHandler = FrameEventHandler.getInstance();
     }
 
-    public static RemoteEventBus getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new RemoteEventBus(context);
-        }
-        return sMain;
-    }
-
-    public static RemoteEventBus getInstance() {
-        if (null == sMain) {
-            throw new NullPointerException("RemoteEventBus is null\nplease perform method \"RemoteEventBus.getInstance(Context context)\"");
-        }
-        if (null == sMain.mContext) {
-            throw new NullPointerException("context is null");
-        }
-        return sMain;
-    }
-
     protected Context getContext() {
         return mContext;
-    }
-
-    public IRemoteEventHandler getRemoteEventHandler() {
-        return mRemoteEventHandler;
     }
 
     public RemoteEventBus register(IRegisterConfig config) {
@@ -96,11 +96,11 @@ public class RemoteEventBus implements IRemoteConfig {
         return RemoteEventBus.this;
     }
 
-    private void dispatchRemoteEventFrameStatus(int code) {
+    protected void dispatchRemoteEventFrameStatus(int code) {
         mFrameEventHandler.dispatchFrameStatus(code);
     }
 
-    private void startIPCDaemon(Context context) {
+    protected void startIPCDaemon(Context context) {
         Intent intent = new Intent();
         intent.setAction(ACTION_FLAG_FRAME_EVENT);
         intent.setPackage("com.kuyou.ipc");
@@ -109,15 +109,14 @@ public class RemoteEventBus implements IRemoteConfig {
     }
 
     private void bindIPCService(Context context) {
-        mConnection = new ServiceConnection() {
+        mEventDispatchServiceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder service) {
                 Log.d(mTagLog, "onServiceConnected: ");
                 dispatchRemoteEventFrameStatus(Code.BIND_IPC_SERVICE_SUCCESS);
-                mIsBound = true;
-                mService = IRemoteService.Stub.asInterface(service);
+                mEventDispatchService = IRemoteService.Stub.asInterface(service);
 
                 try {
-                    mService.registerCallback(mContext.getApplicationContext().getPackageName(),
+                    mEventDispatchService.registerCallback(mContext.getApplicationContext().getPackageName(),
                             new IRemoteServiceCallBack.Stub() {
                                 @Override
                                 public void onReceiveEvent(Bundle data) {
@@ -140,8 +139,7 @@ public class RemoteEventBus implements IRemoteConfig {
             public void onServiceDisconnected(ComponentName className) {
                 dispatchRemoteEventFrameStatus(Code.UNBIND_IPC_SERVICE);
                 Log.d(mTagLog, "onServiceDisconnected: ");
-                mIsBound = false;
-                mService = null;
+                mEventDispatchService = null;
                 RemoteEventBus.this.onUnResister();
             }
         };
@@ -149,13 +147,13 @@ public class RemoteEventBus implements IRemoteConfig {
         Intent intent = new Intent();
         intent.setPackage("com.kuyou.ipc");
         intent.setAction("kuyou.common.ipc.FrameRemoteService");
-        context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        context.bindService(intent, mEventDispatchServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public boolean isRegister(String packageName) {
-        if (null != mService) {
+        if (null != mEventDispatchService) {
             try {
-                return mService.getRegisterModules().contains(packageName);
+                return mEventDispatchService.getRegisterModules().contains(packageName);
             } catch (Exception e) {
                 Log.e(mTagLog, Log.getStackTraceString(e));
             }
@@ -164,25 +162,25 @@ public class RemoteEventBus implements IRemoteConfig {
     }
 
     public void dispatch(RemoteEvent event) {
-        if (!event.isRemote()) {
-            EventBus.getDefault().post(event);
-            //Log.d(mTagLog, "dispatch > is not remote ");
-            return;
+        if (event.isRemote()) {
+            if (null == mEventDispatchService) {
+                Log.e(mTagLog, "dispatch > IPC service is not bind");
+                return;
+            }
+            try {
+                //Log.d(mTagLog, "dispatch > event " + event.getCode());
+                mEventDispatchService.sendEvent(event.getData());
+            } catch (Exception e) {
+                //Log.e(mTagLog, Log.getStackTraceString(e));
+                Log.e(mTagLog, "dispatch > process fail : event = " + event.getCode());
+            }
+            if (!event.isDispatch2Myself()) {
+                //Log.d(mTagLog, "dispatch > cancel send to myself event = " + event.getCode());
+                return;
+            }
         }
-        if (mService == null) {
-            //Log.e(mTagLog, "dispatch > IPC service is not bind");
-            return;
-        }
-        try {
-            //Log.d(mTagLog, "dispatch > event " + event.getCode());
-            mService.sendEvent(event.getData());
-        } catch (Exception e) {
-            //Log.e(mTagLog, Log.getStackTraceString(e));
-            Log.e(mTagLog, "dispatch > process fail : event = " + event.getCode());
-        }
+        EventBus.getDefault().post(event);
     }
-
-    private IFrameLiveListener mFrameLiveListener;
 
     public RemoteEventBus setFrameLiveListener(IFrameLiveListener frameLiveListener) {
         mFrameLiveListener = frameLiveListener;

@@ -349,7 +349,7 @@ public abstract class BasicModuleApplication extends Application implements
     }
 
     private List<Integer> getEventDispatchListByHandlers(List<BasicEventHandler> handlerList, List<BasicEventHandler> subHandlerList) {
-        List<Integer> codeList = new ArrayList<>();
+        List<Integer> remoteEventCodeList = new ArrayList<>();
         for (BasicEventHandler handler : handlerList) {
             handler.setContext(BasicModuleApplication.this);
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
@@ -360,11 +360,11 @@ public abstract class BasicModuleApplication extends Application implements
             List<BasicEventHandler> sub = handler.getSubEventHandlers();
             if (null != sub && sub.size() > 0) {
                 subHandlerList.addAll(sub);
-                codeList.addAll(getEventDispatchListByHandlers(sub, subHandlerList));
+                remoteEventCodeList.addAll(getEventDispatchListByHandlers(sub, subHandlerList));
             }
-            codeList.addAll(handler.getHandleRemoteEventCodeList());
+            remoteEventCodeList.addAll(handler.getHandleRemoteEventCodeList());
         }
-        return codeList;
+        return remoteEventCodeList;
     }
 
     /**
@@ -402,6 +402,7 @@ public abstract class BasicModuleApplication extends Application implements
 
     @Override
     public void dispatchEvent(RemoteEvent event) {
+
         RemoteEventBus.getInstance().dispatch(event);
     }
 
@@ -412,7 +413,9 @@ public abstract class BasicModuleApplication extends Application implements
             if (handler.onModuleEvent(event)) {
 //                Log.d(TAG, "已消费 event = " + event.getCode());
 //                Log.d(TAG, "EventHandler = " + handler.getClass().getSimpleName());
-                return;
+                if (event.isEnableConsumeSeparately()) {
+                    return;
+                }
             }
         }
         Log.i(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());

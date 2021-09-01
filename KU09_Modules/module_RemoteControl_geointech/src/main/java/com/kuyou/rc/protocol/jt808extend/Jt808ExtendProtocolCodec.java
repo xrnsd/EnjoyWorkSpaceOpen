@@ -31,17 +31,22 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
 public class Jt808ExtendProtocolCodec {
     protected static final String TAG = "com.kuyou.rc.protocol > Jt808ExtendProtocolCodec";
 
-    private static Jt808ExtendProtocolCodec sMain;
+    private volatile static Jt808ExtendProtocolCodec sInstance;
 
     private Jt808ExtendProtocolCodec() {
+
     }
 
     public static Jt808ExtendProtocolCodec getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new Jt808ExtendProtocolCodec();
-            sMain.mContext = context.getApplicationContext();
+        if (sInstance == null) {
+            synchronized (Jt808ExtendProtocolCodec.class) {
+                if (sInstance == null) {
+                    sInstance = new Jt808ExtendProtocolCodec();
+                    sInstance.mContext = context.getApplicationContext();
+                }
+            }
         }
-        return sMain;
+        return sInstance;
     }
 
     private Context mContext;

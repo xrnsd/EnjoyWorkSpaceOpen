@@ -1,4 +1,4 @@
-package com.kuyou.rc.utils;
+package com.kuyou.rc.handler.photo;
 
 import android.util.Log;
 

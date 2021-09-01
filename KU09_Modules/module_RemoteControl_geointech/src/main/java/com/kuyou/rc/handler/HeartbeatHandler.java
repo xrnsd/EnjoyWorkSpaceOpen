@@ -73,6 +73,8 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
                     if (isHeartbeatReply) {
                         dispatchEvent(new EventLocalDeviceStatus()
                                 .setDeviceStatus(EventLocalDeviceStatus.Status.ON_LINE)
+                                .setPolicyDispatch2Myself(true)
+                                .setEnableConsumeSeparately(false)
                                 .setRemote(true));
                         play("设备上线成功");
                     } else {
@@ -131,6 +133,8 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
                 HeartbeatHandler.this.play("设备已离线");
                 HeartbeatHandler.this.dispatchEvent(new EventLocalDeviceStatus()
                         .setDeviceStatus(EventLocalDeviceStatus.Status.OFF_LINE)
+                        .setEnableConsumeSeparately(false)
+                        .setPolicyDispatch2Myself(true)
                         .setRemote(true));
             }
         });

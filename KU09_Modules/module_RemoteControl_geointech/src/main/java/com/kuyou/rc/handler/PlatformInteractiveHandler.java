@@ -14,19 +14,15 @@ import com.kuyou.rc.protocol.jt808extend.item.SicAuthentication;
 import com.kuyou.rc.protocol.jt808extend.item.SicPhotoTake;
 import com.kuyou.rc.protocol.jt808extend.item.SicPhotoUploadReply;
 import com.kuyou.rc.protocol.jt808extend.item.SicTextMessage;
-import com.kuyou.rc.utils.UploadUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
-import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.EventNetworkConnect;
 import kuyou.common.ku09.event.common.EventNetworkDisconnect;
@@ -39,7 +35,6 @@ import kuyou.common.ku09.event.rc.EventConnectResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
-import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
 import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
@@ -86,7 +81,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         return handlers;
     }
 
-    public Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
+    protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
         if (null == mJt808ExtendProtocolCodec) {
             mJt808ExtendProtocolCodec = Jt808ExtendProtocolCodec.getInstance(getContext());
             mJt808ExtendProtocolCodec.setInstructionParserListener(new InstructionParserListener() {
@@ -271,7 +266,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
-        SicBasic SingleInstructionParser = null;
         if (null == event) {
             Log.e(TAG, "getSicByEventCode > process fail : event is null");
             return null;
@@ -310,12 +304,9 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
         registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_RESULT, false);
         registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
-        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT, false);
 
-        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST, true);
         registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT, true);
-        registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT, true);
     }
 
     @Override
@@ -328,6 +319,17 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     getHeartbeatHandler().stop();
                 }
                 break;
+
+            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
+                final int status = EventLocalDeviceStatus.getDeviceStatus(event);
+
+                if (EventLocalDeviceStatus.Status.OFF_LINE == status
+                        && getPlatformConnectManager().isConnect()) {
+                    Log.d(TAG, "onModuleEvent > 设备离线，断开后台连接");
+                    getPlatformConnectManager().disconnect();
+                }
+                break;
+
             case EventRemoteControl.Code.CONNECT_RESULT:
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
@@ -345,15 +347,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     break;
                 }
                 Log.w(TAG, "onModuleEvent > 连接服务器失败");
-                break;
-
-            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
-                final int status = EventLocalDeviceStatus.getDeviceStatus(event);
-
-                if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
-                    Log.d(TAG, "onModuleEvent > 设备离线，断开后台连接");
-                    getPlatformConnectManager().disconnect();
-                }
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
@@ -389,88 +382,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
                 sendToRemoteControlPlatform(EventSendToRemoteControlPlatformRequest.getMsg(event));
-                break;
-
-            case EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT:
-                Log.i(TAG, "onModuleEvent > 拍照状态上传");
-                if (!EventPhotoTakeResult.isResultSuccess(event)) {
-                    SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
-                    if (null == singleInstructionParser) {
-                        break;
-                    }
-                    byte[] msg = ((SicPhotoTake) singleInstructionParser)
-                            .setEventType(EventPhotoTakeResult.getEventType(event))
-                            .setResult(SicPhotoTake.ResultCode.LOCAL_DEVICE_SHOOT_FAIL)
-                            .getBody(SicBasic.BodyConfig.RESULT);
-                    sendToRemoteControlPlatform(msg);
-                }
-                break;
-
-            case EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST:
-                Log.i(TAG, "onModuleEvent > 开始上传照片");
-                final String filePath = EventPhotoUploadRequest.getImgFilePath(event);
-                File imgFile = new File(filePath);
-
-                boolean isUploadReady = true;
-                if (!imgFile.exists()) {
-                    isUploadReady = false;
-                    Log.e(TAG, "onModuleEvent > 开始上传照片 > process fail : 照片不存在 = " + filePath);
-                }
-                if (!isRemoteControlPlatformConnected) {
-                    Log.w(TAG, "onModuleEvent > 开始上传照片 > process fail : 未联网");
-                    play("上传失败，请检查网络链接");
-                }
-                if (!isUploadReady) {
-                    dispatchEvent(new EventPhotoUploadResult()
-                            .setResult(false)
-                            .setEventType(EventPhotoUploadRequest.getEventType(event))
-                            .setRemote(false));
-                    break;
-                }
-                UploadUtil.getInstance()
-                        .setOnUploadCallBack(new UploadUtil.OnUploadCallBack() {
-                            @Override
-                            public UploadUtil.UploadConfig getConfig() {
-                                return new UploadUtil.UploadConfig()
-                                        .setStrDeviceId(PlatformInteractiveHandler.this.getDeviceConfig().getDevId())
-                                        .setStrServerUrl(PlatformInteractiveHandler.this.getDeviceConfig().getRemotePhotoServerAddress())
-                                        .setFileImageLocal(imgFile);
-                            }
-
-                            @Override
-                            public void onUploadFinish(int resultCode) {
-                                boolean isUploadSuccess = UploadUtil.ResultCode.UPLOAD_SUCCESS == resultCode;
-                                Log.i(TAG, "onModuleEvent > onUploadFinish > " + (isUploadSuccess ? "上传成功" : "上传失败"));
-                                dispatchEvent(new EventPhotoUploadResult()
-                                        .setResult(isUploadSuccess)
-                                        .setEventType(EventPhotoUploadRequest.getEventType(event))
-                                        .setRemote(false));
-                            }
-                        })
-                        .uploadImageBySubThread();
-                break;
-
-            case EventRemoteControl.Code.PHOTO_UPLOAD_RESULT:
-                boolean isUploadSuccess = EventPhotoUploadResult.isResultSuccess(event);
-                if (isUploadSuccess) {
-                    Log.i(TAG, "onModuleEvent > 照片上传成功");
-                } else {
-                    Log.w(TAG, "onModuleEvent > 照片上传失败");
-                }
-                if (!isRemoteControlPlatformConnected) {
-                    break;
-                }
-                SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
-                if (null == singleInstructionParser) {
-                    break;
-                }
-                byte[] msg = ((SicPhotoUploadReply) singleInstructionParser)
-                        .setEventType(EventPhotoUploadRequest.getEventType(event))
-                        .setResult(isUploadSuccess ? SicPhotoUploadReply.ResultCode.SUCCESS :
-                                SicPhotoUploadReply.ResultCode.LOCAL_DEVICE_UPLOAD_FAIL)
-                        .getBody(SicBasic.BodyConfig.RESULT);
-                sendToRemoteControlPlatform(msg);
-
                 break;
 
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:

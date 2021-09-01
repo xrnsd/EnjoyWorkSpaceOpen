@@ -3,6 +3,7 @@ package com.kuyou.rc;
 import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
+import com.kuyou.rc.handler.PhotoUploadHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 
@@ -26,6 +27,7 @@ public class ModuleApplication extends BasicModuleApplication {
     private LocationHandler mLocationHandler;
     private AlarmHandler mAlarmHandler;
     private LocalKeyHandler mLocalKeyHandler;
+    private PhotoUploadHandler mPhotoUploadHandler;
 
     @Override
     protected String getApplicationName() {
@@ -37,6 +39,7 @@ public class ModuleApplication extends BasicModuleApplication {
         registerEventHandler(getModuleBasicEventHandler());
         registerEventHandler(getLocalKeyHandler());
         registerEventHandler(getPlatformInteractiveHandler());
+        registerEventHandler(getPhotoUploadHandler());
         registerEventHandler(getAlarmHandler());
         registerEventHandler(getLocationHandler());
     }
@@ -127,5 +130,12 @@ public class ModuleApplication extends BasicModuleApplication {
             mPlatformInteractiveHandler = new PlatformInteractiveHandler();
         }
         return mPlatformInteractiveHandler;
+    }
+
+    public PhotoUploadHandler getPhotoUploadHandler() {
+        if (null == mPhotoUploadHandler) {
+            mPhotoUploadHandler = new PhotoUploadHandler();
+        }
+        return mPhotoUploadHandler;
     }
 }

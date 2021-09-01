@@ -5,7 +5,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ipc.base.IRemoteEventFrameStatusListener;
+import kuyou.common.ipc.basic.IRemoteEventFrameStatusListener;
 
 /**
  * action :IPC框架内部事件处理器
