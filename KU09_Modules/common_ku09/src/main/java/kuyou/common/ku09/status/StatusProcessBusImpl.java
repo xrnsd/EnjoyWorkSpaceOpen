@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
 
-    protected static final String TAG = "com.kuyou.rc.handler.platform > HandlerStatusGuard";
+    protected static final String TAG = "ckuyou.common.ku09.status > StatusProcessBusImpl";
 
     private volatile static StatusProcessBusImpl instance;
 
@@ -28,7 +28,7 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
         if (instance == null) {
             synchronized (StatusProcessBusImpl.class) {
                 if (instance == null) {
-                    HandlerThread handlerThreadStatusGuard = new HandlerThread(".HandlerThread.status.guard");
+                    HandlerThread handlerThreadStatusGuard = new HandlerThread(".HandlerThread.StatusProcessBus");
                     handlerThreadStatusGuard.start();
                     instance = new StatusProcessBusImpl(handlerThreadStatusGuard.getLooper());
                 }

@@ -15,6 +15,7 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
 /**
  * action :远程控制模块
  * <p>
+ * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 20-10-24 <br/>
  * <p>
@@ -47,7 +48,6 @@ public class ModuleApplication extends BasicModuleApplication {
     @Override
     protected void init() {
         super.init();
-
         getPlatformInteractiveHandler().initialConnect();
     }
 

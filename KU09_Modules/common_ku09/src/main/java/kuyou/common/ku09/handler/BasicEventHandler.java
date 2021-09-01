@@ -9,7 +9,7 @@ import java.util.List;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.IDeviceConfig;
-import kuyou.common.ku09.event.IEventBusDispatchCallback;
+import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.status.IStatusProcessBus;
 

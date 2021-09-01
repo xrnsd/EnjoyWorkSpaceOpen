@@ -7,7 +7,7 @@ import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.IEventBusDispatchCallback;
+import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.avc.EventAVCModuleLiveExit;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;

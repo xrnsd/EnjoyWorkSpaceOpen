@@ -1,4 +1,4 @@
-package kuyou.common.ku09.event;
+package kuyou.common.ku09.event.common.basic;
 
 import kuyou.common.ipc.RemoteEvent;
 

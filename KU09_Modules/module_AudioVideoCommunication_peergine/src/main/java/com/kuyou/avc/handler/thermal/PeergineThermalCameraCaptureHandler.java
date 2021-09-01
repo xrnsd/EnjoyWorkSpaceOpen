@@ -8,7 +8,7 @@ import com.kuyou.avc.handler.thermal.basic.IPeergineCameraCaptureHandler;
 import com.peergine.plugin.android.pgDevVideoIn;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.IEventBusDispatchCallback;
+import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.handler.BasicEventHandler;
 
 /**

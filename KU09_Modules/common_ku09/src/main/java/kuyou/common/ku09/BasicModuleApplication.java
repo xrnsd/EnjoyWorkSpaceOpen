@@ -19,7 +19,7 @@ import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
-import kuyou.common.ku09.event.IEventBusDispatchCallback;
+import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
@@ -46,9 +46,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 5 业务协处理器实现 <br/>
  * <p>
  */
-public abstract class BasicModuleApplication extends Application implements
-        IEventBusDispatchCallback,
-        IModuleLiveControlCallback {
+public abstract class BasicModuleApplication extends Application implements IEventBusDispatchCallback, IModuleLiveControlCallback {
 
     protected String TAG = "kuyou.common.ku09 > BasicModuleApplication";
 
