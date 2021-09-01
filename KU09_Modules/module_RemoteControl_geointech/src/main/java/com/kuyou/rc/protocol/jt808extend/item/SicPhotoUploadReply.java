@@ -34,8 +34,8 @@ public class SicPhotoUploadReply extends SicPhoto {
     }
 
     @Override
-    public int getMatchEventCode() {
-        return EventRemoteControl.Code.PHOTO_UPLOAD_RESULT;
+    public boolean isMatchEventCode(int eventCode) {
+        return eventCode == EventRemoteControl.Code.PHOTO_UPLOAD_RESULT;
     }
 
     @Override

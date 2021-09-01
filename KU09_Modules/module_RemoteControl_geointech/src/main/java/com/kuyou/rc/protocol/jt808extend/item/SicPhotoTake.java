@@ -27,8 +27,8 @@ public class SicPhotoTake extends SicPhoto {
     }
 
     @Override
-    public int getMatchEventCode() {
-        return EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT;
+    public boolean isMatchEventCode(int eventCode) {
+        return eventCode == EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT;
     }
 
     @Override

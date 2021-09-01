@@ -817,7 +817,8 @@ public abstract class MultiCapExter extends AVCActivity implements ActivityCompa
     }
 
     @Override
-    protected void recover() {
+    public void recover() {
+        super.recover();
         if (null!=m_Live) {
             m_Live.LoginNow(0);
         }

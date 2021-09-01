@@ -1,5 +1,14 @@
 package kuyou.sdk.jt808.oksocket.client.impl.client;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.security.SecureRandom;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
 import kuyou.sdk.jt808.oksocket.client.impl.client.action.ActionHandler;
 import kuyou.sdk.jt808.oksocket.client.impl.client.iothreads.IOThreadManager;
 import kuyou.sdk.jt808.oksocket.client.impl.exceptions.ManuallyDisconnectException;
@@ -15,15 +24,6 @@ import kuyou.sdk.jt808.oksocket.core.utils.SLog;
 import kuyou.sdk.jt808.oksocket.interfaces.common_interfacies.IIOManager;
 import kuyou.sdk.jt808.oksocket.interfaces.default_protocol.DefaultX509ProtocolTrustManager;
 import kuyou.sdk.jt808.oksocket.interfaces.utils.TextUtils;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.security.SecureRandom;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 /**
  * Created by xuhao on 2017/5/16.

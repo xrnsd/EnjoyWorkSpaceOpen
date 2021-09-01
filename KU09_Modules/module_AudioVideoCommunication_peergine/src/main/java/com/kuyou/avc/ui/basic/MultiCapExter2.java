@@ -323,7 +323,8 @@ public abstract class MultiCapExter2 extends AVCActivity implements ActivityComp
     }
     //@{ added by wgx Usefulness:
     @Override
-    protected void recover() {
+    public void recover() {
+        super.recover();
         if (null!=m_Live) {
             m_Live.LoginNow(0);
         }

@@ -8,6 +8,7 @@ import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import java.util.Arrays;
 
 import kuyou.common.bytes.ByteUtils;
+import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
@@ -42,8 +43,10 @@ public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
     }
 
     @Override
-    public int getMatchEventCode() {
-        return EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST;
+    public boolean isMatchEventCode(int eventCode) {
+        return eventCode == EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST
+                || eventCode == EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT
+                || eventCode == EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT;
     }
 
     @Override

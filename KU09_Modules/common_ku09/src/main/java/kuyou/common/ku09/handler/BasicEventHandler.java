@@ -11,7 +11,7 @@ import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.status.IStatusBus;
+import kuyou.common.ku09.status.IStatusProcessBus;
 
 /**
  * action :业务处理器[抽象]
@@ -28,7 +28,7 @@ public abstract class BasicEventHandler {
 
     private IModuleLiveControlCallback mModuleLiveControlCallback;
     private IEventBusDispatchCallback mEventBusDispatchCallBack;
-    private IStatusBus mStatusBus;
+    private IStatusProcessBus mStatusProcessBus;
     private IDeviceConfig mDeviceConfig;
 
     private List<Integer> mHandleLocalEventCodeList = null, mHandleRemoteEventCodeList = null;
@@ -108,12 +108,12 @@ public abstract class BasicEventHandler {
         return BasicEventHandler.this;
     }
 
-    public IStatusBus getStatusBus() {
-        return mStatusBus;
+    public IStatusProcessBus getStatusProcessBus() {
+        return mStatusProcessBus;
     }
 
-    public void setStatusBusImpl(IStatusBus sBus) {
-        mStatusBus = sBus;
+    public void setStatusProcessBus(IStatusProcessBus spb) {
+        mStatusProcessBus = spb;
     }
 
     protected IDeviceConfig getDeviceConfig() {

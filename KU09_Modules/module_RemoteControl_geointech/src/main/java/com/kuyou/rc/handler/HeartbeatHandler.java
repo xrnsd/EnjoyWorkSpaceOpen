@@ -1,4 +1,4 @@
-package com.kuyou.rc.handler.platform;
+package com.kuyou.rc.handler;
 
 import android.os.Looper;
 import android.util.Log;
@@ -6,14 +6,14 @@ import android.util.Log;
 import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.status.IStatusBus;
-import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatReport;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.status.IStatusProcessBus;
+import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 
 /**
  * action :
@@ -56,28 +56,29 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
                     Log.e(TAG, "onModuleEvent > process fail : EventHeartbeatRequest is invalid");
                 }
                 break;
-//            case EventRemoteControl.Code.HEARTBEAT_REPORT:
-//                onHeartbeatReport();
-//                break;
+            case EventRemoteControl.Code.HEARTBEAT_REPORT:
+                getStatusProcessBus().start(mStaProFlagDeviceOffline);
+                return false;
             case EventRemoteControl.Code.HEARTBEAT_REPLY:
-
+                Log.i(TAG, "onModuleEvent > 心跳回复 ");
                 mHeartbeatReplyFlowId = EventHeartbeatReply.getFlowNumber(event);
                 isHeartbeatReply = EventHeartbeatReply.isResultSuccess(event);
 
-                if (getStatusBus().isStart(mStaProFlagHeartbeatReportStartTimeOut)) {
-                    play(isHeartbeatReply ? "设备上线成功" : "设备上线失败");
-                    getStatusBus().stop(mStaProFlagHeartbeatReportStartTimeOut);
+                if (isHeartbeatReply) {
+                    getStatusProcessBus().stop(mStaProFlagDeviceOffline);
+                }
 
+                if (getStatusProcessBus().isStart(mStaProFlagHeartbeatReportStartTimeOut)) {
+                    getStatusProcessBus().stop(mStaProFlagHeartbeatReportStartTimeOut);
                     if (isHeartbeatReply) {
-                        play("设备上线成功");
                         dispatchEvent(new EventLocalDeviceStatus()
                                 .setDeviceStatus(EventLocalDeviceStatus.Status.ON_LINE)
                                 .setRemote(true));
+                        play("设备上线成功");
                     } else {
-                        play("设备上线失败");
+                        play("设备上线失败,错误3");
                     }
                 }
-                getStatusBus().stop(mStaProFlagDeviceOffline);
 
                 Log.i(TAG, new StringBuilder(256)
                         .append("<<<<<<<<<<  流水号：").append(mHeartbeatReplyFlowId)
@@ -92,31 +93,41 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
     }
 
     @Override
-    public void setStatusBusImpl(IStatusBus handler) {
-        super.setStatusBusImpl(handler);
+    public void setStatusProcessBus(IStatusProcessBus handler) {
+        super.setStatusProcessBus(handler);
 
         mStaProFlagHeartbeatReport = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallbackImpl(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()) {
+                new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()) {
                     @Override
-                    public void onReceiveMessage(boolean isRemove) {
+                    public void onReceiveStatusNotice(boolean isRemove) {
+                        if (isRemove) {
+                            return;
+                        }
                         HeartbeatHandler.this.mHeartbeatReportFlowId += 1;
                         HeartbeatHandler.this.dispatchEvent(new EventHeartbeatReport().setRemote(false));
                     }
                 });
 
         mStaProFlagHeartbeatReportStartTimeOut = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallbackImpl(false, 5000, Looper.getMainLooper()) {
+                new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()) {
                     @Override
-                    public void onReceiveMessage(boolean isRemove) {
-                        Log.e(TAG, "onReceiveMessage > process fail : 心跳提交失败，请重新尝试");
-                        HeartbeatHandler.this.play("设备上线失败");
+                    public void onReceiveStatusNotice(boolean isRemove) {
+                        if (isRemove) {
+                            return;
+                        }
+                        Log.e(TAG, "onReceiveStatusNotice > process fail : 心跳提交失败，请重新尝试");
+                        HeartbeatHandler.this.getStatusProcessBus().stop(mStaProFlagDeviceOffline);
+                        HeartbeatHandler.this.play("设备上线失败,错误2");
                     }
                 });
 
-        mStaProFlagDeviceOffline = handler.registerStatusBusProcessCallback(new StatusBusProcessCallbackImpl(false, 5000, Looper.getMainLooper()) {
+        mStaProFlagDeviceOffline = handler.registerStatusBusProcessCallback(new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()) {
             @Override
-            public void onReceiveMessage(boolean isRemove) {
-                Log.e(TAG, "onReceiveMessage > 设备已离线");
+            public void onReceiveStatusNotice(boolean isRemove) {
+                if (isRemove) {
+                    return;
+                }
+                Log.e(TAG, "onReceiveStatusNotice > 设备已离线");
                 HeartbeatHandler.this.play("设备已离线");
                 HeartbeatHandler.this.dispatchEvent(new EventLocalDeviceStatus()
                         .setDeviceStatus(EventLocalDeviceStatus.Status.OFF_LINE)
@@ -152,8 +163,8 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
         }
         Log.i(TAG, "start > 心跳开始  ");
         HeartbeatHandler.this.dispatchEvent(new EventHeartbeatReport().setRemote(false));
-        getStatusBus().start(mStaProFlagHeartbeatReport);
-        getStatusBus().start(mStaProFlagHeartbeatReportStartTimeOut);
+        getStatusProcessBus().start(mStaProFlagHeartbeatReport);
+        getStatusProcessBus().start(mStaProFlagHeartbeatReportStartTimeOut);
     }
 
     @Override
@@ -163,18 +174,18 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
             return;
         }
         Log.i(TAG, "stop > 心跳停止 ");
-        getStatusBus().stop(mStaProFlagHeartbeatReport);
-        getStatusBus().stop(mStaProFlagHeartbeatReportStartTimeOut);
-        getStatusBus().start(mStaProFlagDeviceOffline);
+        getStatusProcessBus().stop(mStaProFlagHeartbeatReport);
+        getStatusProcessBus().stop(mStaProFlagHeartbeatReportStartTimeOut);
+        getStatusProcessBus().start(mStaProFlagDeviceOffline);
     }
 
     @Override
     public boolean isStart() {
-        if (null == getStatusBus()
+        if (null == getStatusProcessBus()
                 || -1 == mStaProFlagHeartbeatReport) {
             Log.e(TAG, "isStart > process fail : getStatusGuardHandler is invalid");
             return false;
         }
-        return getStatusBus().isStart(mStaProFlagHeartbeatReport);
+        return getStatusProcessBus().isStart(mStaProFlagHeartbeatReport);
     }
 }

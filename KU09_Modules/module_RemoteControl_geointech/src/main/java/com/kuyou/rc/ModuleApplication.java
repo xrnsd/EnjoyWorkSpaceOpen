@@ -6,6 +6,7 @@ import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 
+import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
@@ -70,6 +71,13 @@ public class ModuleApplication extends BasicModuleApplication {
     protected ModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleCommonHandler) {
             mModuleCommonHandler = new ModuleCommonHandler() {
+
+                @Override
+                public boolean onModuleEvent(RemoteEvent event) {
+                    super.onModuleEvent(event);
+                    return false;
+                }
+
                 @Override
                 protected void initHandleEventCodeList() {
                     super.initHandleEventCodeList();

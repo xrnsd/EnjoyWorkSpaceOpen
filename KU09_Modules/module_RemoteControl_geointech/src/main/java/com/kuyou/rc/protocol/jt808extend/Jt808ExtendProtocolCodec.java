@@ -6,7 +6,9 @@ import android.util.Log;
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kuyou.common.bytes.ByteUtils;
@@ -46,7 +48,7 @@ public class Jt808ExtendProtocolCodec {
 
     private Map<Integer, SicBasic> mRequestParserList = new HashMap<Integer, SicBasic>();
 
-    private Map<Integer, SicBasic> mResultBodyList = new HashMap<Integer, SicBasic>();
+    private List<SicBasic> mSicBasicList = new ArrayList<>();
 
     private InstructionParserListener mInstructionParserListener;
 
@@ -60,8 +62,8 @@ public class Jt808ExtendProtocolCodec {
         return mRequestParserList;
     }
 
-    public Map<Integer, SicBasic> getResultBodyList() {
-        return mResultBodyList;
+    public List<SicBasic> getSicBasicList() {
+        return mSicBasicList;
     }
 
     public InstructionParserListener getInstructionParserListener() {
@@ -127,11 +129,7 @@ public class Jt808ExtendProtocolCodec {
                     getAutoLoadAllInfoCallBack().getInfoClass())) {
                 instruction = (SicBasic) item.newInstance();
                 instruction.setDeviceConfig(config);
-                if (instruction.getMatchEventCode() > 0) {
-                    mResultBodyList.put(instruction.getMatchEventCode(), instruction);
-                } else {
-                    //Log.d(TAG, "load > get up event instruction = " + item);
-                }
+                mSicBasicList.add(instruction);
                 if (instruction.getFlag() > 0) {
                     mRequestParserList.put(instruction.getFlag(), instruction);
                 } else {

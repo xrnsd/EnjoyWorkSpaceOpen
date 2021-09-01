@@ -38,8 +38,8 @@ public abstract class SicBasic extends kuyou.common.protocol.Info<InstructionPar
         return SicBasic.this;
     }
 
-    public int getMatchEventCode() {
-        return -1;
+    public boolean isMatchEventCode(int eventCode) {
+        return false;
     }
 
     public abstract byte[] getBody(final int config);

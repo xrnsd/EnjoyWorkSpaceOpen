@@ -19,9 +19,7 @@ public class LocalModuleCommonHandler extends ModuleCommonHandler {
 
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
-        if (super.onModuleEvent(event)) {
-            return true;
-        }
+        super.onModuleEvent(event);
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.MODULE_EXIT:
                 if (EventAVCModuleLiveExit.isReboot(event)) {

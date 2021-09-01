@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.kuyou.rc.handler.platform.HeartbeatHandler;
 import com.kuyou.rc.handler.platform.PlatformConnectManager;
 import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
@@ -23,6 +22,7 @@ import java.util.List;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
@@ -30,6 +30,7 @@ import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.EventNetworkConnect;
 import kuyou.common.ku09.event.common.EventNetworkDisconnect;
+import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
@@ -45,9 +46,9 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
-import kuyou.common.ku09.status.IStatusBus;
-import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.status.IStatusProcessBus;
+import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;
@@ -98,8 +99,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                                         .setFlowNumber(bean.getReplyFlowNumber())
                                         .setResult(0 == bean.getReplyResult())
                                         .setRemote(false));
-
-                                PlatformInteractiveHandler.this.getStatusBus().stop(mStaProFlagAuthenticationTimeOut);
                                 break;
                             }
                         case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
@@ -273,25 +272,34 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
     protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
         SicBasic SingleInstructionParser = null;
-        if (null != event)
-            SingleInstructionParser = getJt808ExtendProtocolCodec().getResultBodyList().get(event.getCode());
-        if (null == SingleInstructionParser) {
-            Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + event.getCode());
+        if (null == event) {
+            Log.e(TAG, "getSicByEventCode > process fail : event is null");
+            return null;
         }
-        return SingleInstructionParser;
+        final int eventCode = event.getCode();
+        for (SicBasic singleInstructionParse : getJt808ExtendProtocolCodec().getSicBasicList()) {
+            if (singleInstructionParse.isMatchEventCode(eventCode)) {
+                return singleInstructionParse;
+            }
+        }
+        Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + eventCode);
+        return null;
     }
 
     @Override
-    public void setStatusBusImpl(IStatusBus handler) {
-        super.setStatusBusImpl(handler);
+    public void setStatusProcessBus(IStatusProcessBus handler) {
+        super.setStatusProcessBus(handler);
 
         mStaProFlagAuthenticationTimeOut = handler.registerStatusBusProcessCallback(
-                new StatusBusProcessCallbackImpl(false, 5000, Looper.getMainLooper()) {
+                new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()) {
                     @Override
-                    public void onReceiveMessage(boolean isRemove) {
-                        Log.e(TAG, "onReceiveMessage > process fail : 鉴权失败，请重新尝试");
+                    public void onReceiveStatusNotice(boolean isRemove) {
+                        if (isRemove) {
+                            return;
+                        }
+                        Log.e(TAG, "onReceiveStatusNotice > process fail : 鉴权失败，请重新尝试");
                         PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
-                        PlatformInteractiveHandler.this.play("设备上线失败");
+                        PlatformInteractiveHandler.this.play("设备上线失败,错误1");
                     }
                 });
     }
@@ -313,6 +321,13 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     @Override
     public boolean onModuleEvent(RemoteEvent event) {
         switch (event.getCode()) {
+            case EventPowerChange.Code.POWER_CHANGE:
+                //关机时主动关闭心跳
+                if (EventPowerChange.POWER_STATUS.SHUTDOWN == EventPowerChange.getPowerStatus(event)) {
+                    getPlatformConnectManager().disconnect();
+                    getHeartbeatHandler().stop();
+                }
+                break;
             case EventRemoteControl.Code.CONNECT_RESULT:
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
@@ -355,7 +370,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
                         //鉴权失败，超时提示
-                        PlatformInteractiveHandler.this.getStatusBus().start(mStaProFlagAuthenticationTimeOut);
+                        PlatformInteractiveHandler.this.getStatusProcessBus().start(mStaProFlagAuthenticationTimeOut);
                     }
                 }, 500);
                 break;
@@ -366,8 +381,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                     dispatchEvent(new EventHeartbeatRequest()
                             .setRequestCode(EventRequest.RequestCode.OPEN)
                             .setRemote(false));
-                    //心跳开始失败，超时提示
-                    getStatusBus().start(mStaProFlagAuthenticationTimeOut);
+                    getStatusProcessBus().stop(mStaProFlagAuthenticationTimeOut);
                 } else {
                     //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
                 }
@@ -492,17 +506,18 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 break;
 
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT:
-                Log.w(TAG, "onModuleEvent > 返回平台音视频参数下发的请求处理结果");
+                Log.w(TAG, "onModuleEvent > 平台音视频参数请求处理结果 > 回复给平台");
 
                 SicBasic singleInstructionParserAVOR = getSingleInstructionParserByEventCode(event);
                 if (null == singleInstructionParserAVOR) {
+                    Log.e(TAG, "onModuleEvent > 返回平台音视频参数下发的请求处理结果 > process fail : singleInstructionParserAVOR is null");
                     break;
                 }
                 byte[] LocalDeviceHandleAVCResultMsg = ((SicAudioVideo) singleInstructionParserAVOR)
                         .setToken(EventAudioVideoOperateResult.getToken(event))
                         .setResult(EventAudioVideoOperateResult.getResult(event))
                         .setFlowNumber(EventAudioVideoOperateResult.getFlowNumber(event))
-                        .getBody();
+                        .getBody(SicBasic.BodyConfig.RESULT);
                 sendToRemoteControlPlatform(LocalDeviceHandleAVCResultMsg);
                 break;
             default:

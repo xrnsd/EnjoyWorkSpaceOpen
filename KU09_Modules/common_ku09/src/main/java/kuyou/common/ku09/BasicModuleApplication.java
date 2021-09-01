@@ -16,9 +16,8 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
+import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
-import kuyou.common.ku09.status.StatusBusImpl;
-import kuyou.common.ku09.status.StatusBusProcessCallbackImpl;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.IEventBusDispatchCallback;
@@ -28,6 +27,8 @@ import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
+import kuyou.common.ku09.status.StatusProcessBusImpl;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -226,15 +227,18 @@ public abstract class BasicModuleApplication extends Application implements
 
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
     private int mStatusGuardCallbackFlag = -1;
-    private StatusBusImpl mStatusGuardHandler;
+    private StatusProcessBusImpl mStatusGuardHandler;
 
-    protected StatusBusImpl getStatusGuardHandler() {
+    protected StatusProcessBusImpl getStatusGuardHandler() {
         if (null == mStatusGuardHandler) {
-            mStatusGuardHandler = StatusBusImpl.getInstance();
+            mStatusGuardHandler = StatusProcessBusImpl.getInstance();
             mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusBusProcessCallback(
-                    new StatusBusProcessCallbackImpl(true, getFeedTimeLong(), Looper.getMainLooper()) {
+                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong(), Looper.getMainLooper()) {
                         @Override
-                        public void onReceiveMessage(boolean isRemove) {
+                        public void onReceiveStatusNotice(boolean isRemove) {
+                            if (isRemove) {
+                                return;
+                            }
                             BasicModuleApplication.this.onFeedWatchDog();
                         }
                     });
@@ -351,7 +355,7 @@ public abstract class BasicModuleApplication extends Application implements
             handler.setDispatchEventCallBack(BasicModuleApplication.this);
             handler.setModuleLiveControlCallback(BasicModuleApplication.this);
             handler.setDevicesConfig(getDeviceConfig());
-            handler.setStatusBusImpl(getStatusGuardHandler());
+            handler.setStatusProcessBus(getStatusGuardHandler());
 
             List<BasicEventHandler> sub = handler.getSubEventHandlers();
             if (null != sub && sub.size() > 0) {

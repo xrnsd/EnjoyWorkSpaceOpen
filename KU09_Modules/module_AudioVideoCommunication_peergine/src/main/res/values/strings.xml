@@ -35,6 +35,6 @@
     <string name="media_request_exit_group_exception">群组操作异常</string>
     <string name="key_switch_mode_cancel_title">请先单击通话键关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
     <string name="key_switch_mode_success_title"><xliff:g id="query" example="device_id">%1$s</xliff:g>模式</string>
-    <string name="media_handle_fail_already_open"><xliff:g id="query" example="device_id">%1$s</xliff:g>打开失败，<xliff:g id="query" example="device_id">%1$s</xliff:g>已打开，请先关闭</string>
-
+    <string name="media_handle_fail_already_open_head"><xliff:g id="query" example="device_id">%1$s</xliff:g>打开失败</string>
+    <string name="media_handle_fail_already_open_tail">,请先关闭<xliff:g id="query" example="device_id">%1$s</xliff:g></string>
 </resources>

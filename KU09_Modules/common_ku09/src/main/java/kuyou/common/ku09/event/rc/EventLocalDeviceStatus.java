@@ -32,13 +32,6 @@ public class EventLocalDeviceStatus extends EventRequest {
         return event.getData().getInt(KEY_EVENT_DATA_DEVICE_STATUS);
     }
 
-    public static int getDeviceStatus(Bundle data) {
-        if (null == data) {
-            return -1;
-        }
-        return data.getInt(KEY_EVENT_DATA_DEVICE_STATUS);
-    }
-
     public EventLocalDeviceStatus setDeviceStatus(int val) {
         getData().putInt(KEY_EVENT_DATA_DEVICE_STATUS, val);
         return EventLocalDeviceStatus.this;

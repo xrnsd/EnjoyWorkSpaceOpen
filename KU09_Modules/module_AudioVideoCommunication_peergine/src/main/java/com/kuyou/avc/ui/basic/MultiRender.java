@@ -605,7 +605,8 @@ public abstract class MultiRender extends AVCActivity implements ActivityCompat.
     //@{ added by wgx Usefulness: 
     
     @Override
-    protected void recover() {
+    public void recover() {
+        super.recover();
         if (null!=m_Live) {
             m_Live.LoginNow(0);
         }

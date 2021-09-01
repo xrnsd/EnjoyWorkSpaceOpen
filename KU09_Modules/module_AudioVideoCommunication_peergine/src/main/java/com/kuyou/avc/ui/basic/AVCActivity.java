@@ -34,6 +34,7 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
     private ITakePhotoByScreenshotResultCallback mTakePhotoByScreenshotResultCallback;
     private IAudioVideoRequestCallback mAudioVideoRequestCallback;
     private IEventBusDispatchCallback mDispatchEventCallback;
+    private boolean isLoginSuccess = false, isRecovering = false;
 
     public abstract int getTypeCode();
 
@@ -102,7 +103,9 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
             return;
         }
 
-        playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
+        if (!isRecovering && !isLoginSuccess) {
+            playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
+        }
 
         dispatchEvent(new EventAudioVideoOperateResult()
                 .setFlowNumber(EventAudioVideoOperateRequest.getFlowNumber(getIntent().getExtras()))
@@ -115,11 +118,6 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
 
             String token = EventAudioVideoOperateRequest.getToken(getIntent().getExtras());
             String channel = EventAudioVideoOperateRequest.getChannelId(getIntent().getExtras());
-
-//            if (null == token) {
-//                token = "hzjy070607";
-//                channel = "1111";
-//            }
 
             if (null == token) {
                 Log.w(TAG, "getConfig > token is null");
@@ -144,6 +142,24 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
     }
 
     protected boolean onPeergineEvent(String sAct, String sData, String sRenID) {
+        if (sAct.equals("Login")) {
+            if (sData.equals("0")) {
+                onResult(IJT808ExtensionProtocol.RESULT_SUCCESS);
+                isLoginSuccess = true;
+            } else {
+                if ("8".equals(sData)) {//用户无效，也有可能是授权到期
+                    onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
+                }
+                if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
+                    if (!isLoginSuccess) {//false表示没登录成功过，不是重新登录
+                        onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
+                    }
+                } else {
+                    onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
+                }
+            }
+            return true;
+        }
         return false;
     }
 
@@ -156,8 +172,11 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         exit();
         super.onDestroy();
     }
-    
-    protected abstract void recover();
+
+    public void recover() {
+        isLoginSuccess = false;
+        isRecovering = true;
+    }
 
     protected void exit() {
         mTakePhotoByScreenshotResultCallback = null;
