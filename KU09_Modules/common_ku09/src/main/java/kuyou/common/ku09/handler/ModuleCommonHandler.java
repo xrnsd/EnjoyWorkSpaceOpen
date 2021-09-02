@@ -53,7 +53,7 @@ public class ModuleCommonHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventPowerChange.Code.POWER_CHANGE:
                 final int val = EventPowerChange.getPowerStatus(event);

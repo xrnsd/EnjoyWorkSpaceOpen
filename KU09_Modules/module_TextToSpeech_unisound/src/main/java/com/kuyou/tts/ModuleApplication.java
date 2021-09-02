@@ -4,7 +4,7 @@ import android.app.IHelmetModuleTTSCallback;
 import android.os.RemoteException;
 
 import com.kuyou.tts.handler.LocalModuleCommonHandler;
-import com.kuyou.tts.handler.TtsHandler;
+import com.kuyou.tts.handler.TTSHandler;
 
 import kuyou.common.ku09.BasicModuleApplication;
 
@@ -20,7 +20,7 @@ public class ModuleApplication extends BasicModuleApplication {
     private final String TAG = "com.kuyou.tts > ModuleApplication";
 
     private LocalModuleCommonHandler mLocalModuleCommonHandler;
-    private TtsHandler mTtsHandler;
+    private TTSHandler mTTSHandler;
 
     @Override
     protected String getApplicationName() {
@@ -29,7 +29,7 @@ public class ModuleApplication extends BasicModuleApplication {
 
     @Override
     protected void initRegisterEventHandlers() {
-        registerEventHandler(getTtsHandler());
+        registerEventHandler(getTTSHandler());
         registerEventHandler(getModuleBasicEventHandler());
     }
 
@@ -39,7 +39,7 @@ public class ModuleApplication extends BasicModuleApplication {
         mHelmetModuleManageServiceManager.registerHelmetModuleTTSCallback(new IHelmetModuleTTSCallback.Stub() {
             @Override
             public void onRequestTtsPlay(String text) throws RemoteException {
-                ModuleApplication.this.getTtsHandler().onRequestTtsPlay(text);
+                ModuleApplication.this.getTTSHandler().onRequestTtsPlay(text);
             }
         });
     }
@@ -51,7 +51,7 @@ public class ModuleApplication extends BasicModuleApplication {
         if (null != statusSuper) {
             status.append(statusSuper);
         }
-        if (!getTtsHandler().isReady()) {
+        if (!getTTSHandler().isReady()) {
             status.append(",TTS初始化异常");
         }
         return status.toString();
@@ -59,21 +59,21 @@ public class ModuleApplication extends BasicModuleApplication {
 
     @Override
     public void play(String text) {
-        getTtsHandler().onRequestTtsPlay(text);
+        getTTSHandler().onRequestTtsPlay(text);
     }
 
     public LocalModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mLocalModuleCommonHandler) {
             mLocalModuleCommonHandler = new LocalModuleCommonHandler();
-            mLocalModuleCommonHandler.setPowerStatusListener(getTtsHandler());
+            mLocalModuleCommonHandler.setPowerStatusListener(getTTSHandler());
         }
         return mLocalModuleCommonHandler;
     }
 
-    public TtsHandler getTtsHandler() {
-        if (null == mTtsHandler) {
-            mTtsHandler = new TtsHandler(getApplicationContext());
+    public TTSHandler getTTSHandler() {
+        if (null == mTTSHandler) {
+            mTTSHandler = new TTSHandler(getApplicationContext());
         }
-        return mTtsHandler;
+        return mTTSHandler;
     }
 }

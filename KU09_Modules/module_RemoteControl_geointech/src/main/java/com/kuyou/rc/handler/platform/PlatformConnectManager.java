@@ -100,12 +100,6 @@ public class PlatformConnectManager {
     public void connect(String ip, int port, SocketActionAdapter adapter) throws Exception {
         //调用通道进行连接
         initManager(ip, port);
-        try {
-            disconnect();
-        } catch (Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-            return;
-        }
         if (mManager != null) {
             Log.d(TAG, new StringBuilder("connect > ")
                     .append("\nserverUrl = ").append(ip)
@@ -121,6 +115,13 @@ public class PlatformConnectManager {
             throw new SocketManagerException("请先初始化");
         }
 
+    }
+
+    public boolean isClean() {
+        if (null == mSocketActionAdapter) {
+            return true;
+        }
+        return null != mManager && mManager.isClean();
     }
 
     public boolean isConnect() {
@@ -173,6 +174,7 @@ public class PlatformConnectManager {
         Log.d(TAG, "disconnect > 主动断开服务器连接 ----------------------------- ");
         mManager.unRegisterReceiver(mSocketActionAdapter);
         mManager.disconnect();
+        mSocketActionAdapter = null;
     }
 
 }

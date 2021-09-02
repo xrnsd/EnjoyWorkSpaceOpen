@@ -28,6 +28,13 @@ public interface IConnectionManager extends
     boolean isConnect();
 
     /**
+     * 是否清除
+     *
+     * @return true 已清除,false 未清除
+     */
+    boolean isClean();
+
+    /**
      * 是否处在断开连接的阶段.
      *
      * @return true 正在断开连接,false连接中或者已断开.

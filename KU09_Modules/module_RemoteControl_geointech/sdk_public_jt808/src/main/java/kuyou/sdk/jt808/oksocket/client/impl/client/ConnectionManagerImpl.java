@@ -365,6 +365,15 @@ public class ConnectionManagerImpl extends AbsConnectionManager {
     }
 
     @Override
+    public boolean isClean() {
+//        if (mSocket == null) {
+//            return false;
+//        }
+//        return null == mActionHandler && null == mConnectThread;
+        return null == mActionHandler && null == mConnectThread;
+    }
+
+    @Override
     public boolean isDisconnecting() {
         return isDisconnecting;
     }

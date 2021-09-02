@@ -41,7 +41,7 @@ public abstract class SocketActionAdapter implements ISocketActionListener {
     @Override
     public void onSocketIOThreadShutdown(String action, Exception e) {
         if (null != e && e.toString().length() > 0)
-            Log.e(TAG, Log.getStackTraceString(e));
+            Log.w(TAG, "onSocketIOThreadShutdown > \n"+ Log.getStackTraceString(e));
     }
 
     /**
@@ -55,7 +55,7 @@ public abstract class SocketActionAdapter implements ISocketActionListener {
     @Override
     public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
         if (null != e && e.toString().length() > 0)
-            Log.e(TAG, Log.getStackTraceString(e));
+            Log.w(TAG, "onSocketDisconnection > \n"+ Log.getStackTraceString(e));
     }
 
     /**
@@ -68,7 +68,7 @@ public abstract class SocketActionAdapter implements ISocketActionListener {
      */
     @Override
     public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-        //Log.d(TAG, "onSocketConnectionSuccess > 连接成功");
+        //Log.d(TAG, "onSocketConnectionSuccess > ");
     }
 
     /**
@@ -82,9 +82,8 @@ public abstract class SocketActionAdapter implements ISocketActionListener {
      */
     @Override
     public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-        Log.d(TAG, "onSocketConnectionFailed > 连接失败");
         if (null != e && e.toString().length() > 0)
-            Log.e(TAG, Log.getStackTraceString(e));
+            Log.e(TAG, "onSocketConnectionFailed > \n"+ Log.getStackTraceString(e));
     }
 
     /**

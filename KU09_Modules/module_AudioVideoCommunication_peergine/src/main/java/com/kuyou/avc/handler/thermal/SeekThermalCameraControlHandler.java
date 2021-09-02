@@ -118,7 +118,7 @@ public class SeekThermalCameraControlHandler extends BasicEventHandler implement
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         return false;
     }
 

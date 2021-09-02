@@ -31,6 +31,7 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
+import kuyou.common.ku09.event.rc.EventConnectRequest;
 import kuyou.common.ku09.event.rc.EventConnectResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
@@ -42,8 +43,6 @@ import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.common.ku09.status.IStatusProcessBus;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;
@@ -97,12 +96,10 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                                 break;
                             }
                         case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
-                            boolean isAuthenticationSuccess = (0 == bean.getReplyResult());
-                            Log.i(TAG, new StringBuilder(128)
-                                    .append("\n<<<<<<<<<<  服务器鉴权:").append(isAuthenticationSuccess ? "成功" : "失败")
-                                    .append("  <<<<<<<<<<")
-                                    .toString());
-                            dispatchEvent(new EventAuthenticationResult().setResult(isAuthenticationSuccess));
+                            dispatchEvent(new EventAuthenticationResult()
+                                    .setResult(0 == bean.getReplyResult())
+                                    .setEnableConsumeSeparately(false)
+                                    .setRemote(false));
                             break;
                         default:
                             break;
@@ -116,13 +113,22 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicTextMessage instruction) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SicTextMessage > process fail : 设备心跳异常，放弃处理服务器请求 \n"
+                                + instruction.toString());
+                        return;
+                    }
                     PlatformInteractiveHandler.this.play(instruction.getText());
                 }
 
                 @Override
                 public void onRemote2LocalExpand(SicAudioVideo instruction) {
-                    Log.d(TAG, "onParse > SICAudioVideo");
-
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n" 
+                                + instruction.toString());
+                        return;
+                    }
+                    Log.d(TAG, "onRemote2LocalExpand > SICAudioVideo");
                     EventAudioVideoOperateRequest event = null;
                     event = new EventAudioVideoOperateRequest()
                             .setFlowNumber(instruction.getFlowNumber())
@@ -136,6 +142,11 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicPhotoTake instruction) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SicPhotoTake > process fail : 设备心跳异常，放弃处理服务器请求 \n"
+                                + instruction.toString());
+                        return;
+                    }
                     instruction.setMediaId(System.currentTimeMillis());
                     dispatchEvent(new EventPhotoTakeRequest()
                             .setFileName(instruction.getFileName())
@@ -161,17 +172,23 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
             //服务器断开没有正常回调时，强制停止心跳
             if (null != getHeartbeatHandler() && getHeartbeatHandler().isStart()) {
-                getPlatformConnectManager().disconnect();
                 getHeartbeatHandler().stop();
+            }
+            if (!getPlatformConnectManager().isClean()) {
+                getPlatformConnectManager().disconnect();
             }
 
             return null;
         }
 
         if (!isNetworkAvailable && isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkConnect().setRemote(true));
+            dispatchEvent(new EventNetworkConnect()
+                    .setPolicyDispatch2Myself(true)
+                    .setRemote(true));
         } else if (isNetworkAvailable && !isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkDisconnect().setRemote(true));
+            dispatchEvent(new EventNetworkDisconnect()
+                    .setPolicyDispatch2Myself(true)
+                    .setRemote(true));
         }
         isNetworkAvailable = isNetworkAvailableNow;
 
@@ -224,21 +241,21 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 @Override
                 public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
                     super.onSocketDisconnection(info, action, e);
-                    PlatformInteractiveHandler.this.onModuleEvent(new EventConnectResult()
+                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
                             .setResultCode(EventResult.ResultCode.DIS));
                 }
 
                 @Override
                 public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
                     super.onSocketConnectionSuccess(info, action);
-                    PlatformInteractiveHandler.this.onModuleEvent(new EventConnectResult()
+                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
                             .setResultCode(EventResult.ResultCode.SUCCESS));
                 }
 
                 @Override
                 public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
                     super.onSocketConnectionFailed(info, action, e);
-                    PlatformInteractiveHandler.this.onModuleEvent(new EventConnectResult()
+                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
                             .setResultCode(EventResult.ResultCode.FAIL));
                 }
             });
@@ -252,9 +269,6 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     // =====================  事件处理 =============================
 
     private boolean isRemoteControlPlatformConnected = false;
-    private boolean isAuthenticationSuccess = false;
-    private int mStaProFlagAuthenticationTimeOut = -1;
-    private boolean isHeartbeatStartSuccess = false;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
         if (null == msg || msg.length <= 0) {
@@ -281,25 +295,9 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     @Override
-    public void setStatusProcessBus(IStatusProcessBus handler) {
-        super.setStatusProcessBus(handler);
-
-        mStaProFlagAuthenticationTimeOut = handler.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        Log.e(TAG, "onReceiveStatusNotice > process fail : 鉴权失败，请重新尝试");
-                        PlatformInteractiveHandler.this.isAuthenticationSuccess = false;
-                        PlatformInteractiveHandler.this.play("设备上线失败,错误1");
-                    }
-                });
-    }
-
-    @Override
     protected void initHandleEventCodeList() {
         registerHandleEvent(EventRemoteControl.Code.CONNECT_RESULT, false);
         registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
-        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_RESULT, false);
         registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
 
         registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
@@ -307,7 +305,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventPowerChange.Code.POWER_CHANGE:
                 //关机时主动关闭心跳
@@ -320,9 +318,19 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
                 final int status = EventLocalDeviceStatus.getDeviceStatus(event);
 
-                if (EventLocalDeviceStatus.Status.OFF_LINE == status
-                        && getPlatformConnectManager().isConnect()) {
-                    Log.d(TAG, "onModuleEvent > 设备离线，断开后台连接");
+                if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
+                    //Log.d(TAG, "onReceiveEventNotice > 设备离线，断开后台连接");
+                    getPlatformConnectManager().disconnect();
+                }
+                break;
+
+            case EventRemoteControl.Code.CONNECT_REQUEST:
+                if (EventRequest.RequestCode.REOPEN == EventConnectRequest.getRequestCode(event)) {
+                    Log.d(TAG, "onReceiveEventNotice > 设备重新连接后台");
+                    if (!isNetworkAvailable) {
+                        Log.i(TAG, "onReceiveEventNotice > 设备重新连接后台 > 未联网，放弃操作");
+                        break;
+                    }
                     getPlatformConnectManager().disconnect();
                 }
                 break;
@@ -330,24 +338,22 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
             case EventRemoteControl.Code.CONNECT_RESULT:
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
-                    Log.i(TAG, "onModuleEvent > 连接服务器成功");
-                    isAuthenticationSuccess = false;
+                    Log.i(TAG, "onReceiveEventNotice > 连接服务器成功");
                     dispatchEvent(new EventAuthenticationRequest()
+                            .setEnableConsumeSeparately(false)
                             .setRemote(false));
                     break;
-                }
-                if (EventResult.ResultCode.DIS == EventConnectResult.getResultCode(event)) {
-                    Log.w(TAG, "onModuleEvent > 服务器连接断开");
+                } else {
+                    Log.w(TAG, "onReceiveEventNotice > 服务器连接断开 > resultCode = " + EventConnectResult.getResultCode(event));
                     dispatchEvent(new EventHeartbeatRequest()
                             .setRequestCode(EventRequest.RequestCode.CLOSE)
                             .setRemote(false));
-                    break;
                 }
-                Log.w(TAG, "onModuleEvent > 连接服务器失败");
+                Log.w(TAG, "onReceiveEventNotice > 连接服务器失败");
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
-                Log.i(TAG, "onModuleEvent > 开始鉴权 ");
+                Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -359,22 +365,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                         authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
                         authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
                         sendToRemoteControlPlatform(authentication.getBody());
-                        //鉴权失败，超时提示
-                        PlatformInteractiveHandler.this.getStatusProcessBus().start(mStaProFlagAuthenticationTimeOut);
                     }
                 }, 500);
-                break;
-
-            case EventRemoteControl.Code.AUTHENTICATION_RESULT:
-                if (EventAuthenticationResult.isResultSuccess(event)) {
-                    isAuthenticationSuccess = true;
-                    dispatchEvent(new EventHeartbeatRequest()
-                            .setRequestCode(EventRequest.RequestCode.OPEN)
-                            .setRemote(false));
-                    getStatusProcessBus().stop(mStaProFlagAuthenticationTimeOut);
-                } else {
-                    //Log.w(TAG, "onModuleEvent > 鉴权失败 ");
-                }
                 break;
 
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
@@ -382,13 +374,13 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 break;
 
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:
-                Log.i(TAG, "onModuleEvent > 申请音视频参数和操作");
+                Log.i(TAG, "onReceiveEventNotice > 申请音视频参数和操作");
                 final int eventType = EventAudioVideoParametersApplyRequest.getEventType(event);
                 boolean isClose = IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType;
 
                 //处理：在未链接平台情况下申请打开参数
                 if (!isRemoteControlPlatformConnected) {
-                    Log.w(TAG, "onModuleEvent > 申请视频参数和操作 > 未链接平台");
+                    Log.w(TAG, "onReceiveEventNotice > 申请视频参数和操作 > 未链接平台");
                     dispatchEvent(new EventAudioVideoParametersApplyResult()
                             .setResult(false)
                             .setRemote(true));
@@ -414,11 +406,11 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 break;
 
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT:
-                Log.w(TAG, "onModuleEvent > 平台音视频参数请求处理结果 > 回复给平台");
+                Log.w(TAG, "onReceiveEventNotice > 平台音视频参数请求处理结果 > 回复给平台");
 
                 SicBasic singleInstructionParserAVOR = getSingleInstructionParserByEventCode(event);
                 if (null == singleInstructionParserAVOR) {
-                    Log.e(TAG, "onModuleEvent > 返回平台音视频参数下发的请求处理结果 > process fail : singleInstructionParserAVOR is null");
+                    Log.e(TAG, "onReceiveEventNotice > 返回平台音视频参数下发的请求处理结果 > process fail : singleInstructionParserAVOR is null");
                     break;
                 }
                 byte[] LocalDeviceHandleAVCResultMsg = ((SicAudioVideo) singleInstructionParserAVOR)

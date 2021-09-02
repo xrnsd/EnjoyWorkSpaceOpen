@@ -49,6 +49,7 @@ public abstract class RemoteEvent {
         return isEnableConsumeSeparately;
     }
 
+    //是否允许被单独消费，默认是
     public RemoteEvent setEnableConsumeSeparately(boolean enableConsumeSeparately) {
         isEnableConsumeSeparately = enableConsumeSeparately;
         return RemoteEvent.this;

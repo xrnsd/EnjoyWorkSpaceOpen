@@ -35,28 +35,28 @@ public class FlashlightHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
 
         boolean result = false;
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.FLASHLIGHT_REQUEST:
-                Log.i(TAG, "onModuleEvent > 处理手电筒申请");
+                Log.i(TAG, "onReceiveEventNotice > 处理手电筒申请");
                 result = CameraLightControl.getInstance(getContext())
                         .switchFlashLight(EventFlashlightRequest.isSwitch(event));
                 dispatchEvent(new EventFlashlightResult().setResult(result));
                 if (!result) {
-                    Log.e(TAG, "onModuleEvent > process fail : 无法打开手电筒");
+                    Log.e(TAG, "onReceiveEventNotice > process fail : 无法打开手电筒");
                     play("无法打开手电筒");
                 }
                 break;
 
             case EventAudioVideoCommunication.Code.LASER_LIGHT_REQUEST:
-                Log.i(TAG, "onModuleEvent > 处理激光灯申请");
+                Log.i(TAG, "onReceiveEventNotice > 处理激光灯申请");
                 result = CameraLightControl.getInstance(
                         getContext()).switchLaserLight(EventLaserLightRequest.isSwitch(event));
                 dispatchEvent(new EventLaserLightResult().setResult(result));
                 if (!result) {
-                    Log.e(TAG, "onModuleEvent > process fail : 无法打开激光灯");
+                    Log.e(TAG, "onReceiveEventNotice > process fail : 无法打开激光灯");
                     play("无法打开激光灯");
                 }
                 break;

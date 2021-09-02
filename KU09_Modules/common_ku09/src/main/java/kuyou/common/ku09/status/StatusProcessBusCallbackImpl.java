@@ -2,8 +2,9 @@ package kuyou.common.ku09.status;
 
 import android.os.Looper;
 
-public abstract class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
+public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
 
+    private int mStatusProcessFlag = -1;
     private boolean isAutoNoticeReceiveCycle = false;
     private boolean isEnableReceiveRemoveNotice = false;
     private long mNoticeReceiveFreq = -1;
@@ -22,22 +23,47 @@ public abstract class StatusProcessBusCallbackImpl implements IStatusProcessBusC
         mNoticeHandleLooper = val3;
     }
 
+    public StatusProcessBusCallbackImpl(IStatusProcessBusCallback callback) {
+        isAutoNoticeReceiveCycle = callback.isAutoNoticeReceiveCycle();
+        mNoticeReceiveFreq = callback.getNoticeReceiveFreq();
+        mNoticeHandleLooper = callback.getNoticeHandleLooper();
+        isEnableReceiveRemoveNotice = callback.isEnableReceiveRemoveNotice();
+    }
+
+    @Override
+    public void onReceiveStatusProcessNotice(boolean isRemove) {
+        
+    }
+
+    @Override
     public boolean isAutoNoticeReceiveCycle() {
         return isAutoNoticeReceiveCycle;
     }
 
+    @Override
     public long getNoticeReceiveFreq() {
         return mNoticeReceiveFreq;
     }
 
+    @Override
     public Looper getNoticeHandleLooper() {
         return mNoticeHandleLooper;
     }
 
+    @Override
     public boolean isEnableReceiveRemoveNotice() {
         return isEnableReceiveRemoveNotice;
     }
 
+    @Override
+    public int getStatusProcessFlag() {
+        return mStatusProcessFlag;
+    }
+
+    public StatusProcessBusCallbackImpl setStatusProcessFlag(int statusProcessFlag) {
+        mStatusProcessFlag = statusProcessFlag;
+        return StatusProcessBusCallbackImpl.this;
+    }
 
     /**
      * action:是否接收状态移除通知

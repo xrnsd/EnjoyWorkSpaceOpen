@@ -76,8 +76,8 @@ public class ModuleApplication extends BasicModuleApplication {
             mModuleCommonHandler = new ModuleCommonHandler() {
 
                 @Override
-                public boolean onModuleEvent(RemoteEvent event) {
-                    super.onModuleEvent(event);
+                public boolean onReceiveEventNotice(RemoteEvent event) {
+                    super.onReceiveEventNotice(event);
                     return false;
                 }
 

@@ -74,7 +74,7 @@ public class UnisoundVoiceControlHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventVoiceControl.Code.VOICE_WAKEUP:
                 play("正在为您打开语音控制");

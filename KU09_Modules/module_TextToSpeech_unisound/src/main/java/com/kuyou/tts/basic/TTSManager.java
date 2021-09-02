@@ -20,7 +20,7 @@ import java.util.Queue;
 
 import kuyou.common.file.AssetsCopy;
 
-public class TtsManager extends SpeechSynthesizer implements TTSConfig {
+public class TTSManager extends SpeechSynthesizer implements TTSConfig {
     private static final String TAG = "com.kuyou.tts.base > SpeechSynthesizer";
 
     private static final int MSG_SYNTHESIZED_TTS = 2033;
@@ -35,7 +35,7 @@ public class TtsManager extends SpeechSynthesizer implements TTSConfig {
                 mSpeechSynthesisContent = null;
                 mSpeechSynthesisContent = mQueueUnsynthesized.poll();
                 if (null != mSpeechSynthesisContent) {
-                    TtsManager.super.playText(mSpeechSynthesisContent);
+                    TTSManager.super.playText(mSpeechSynthesisContent);
                 }
             }
         }
@@ -61,18 +61,18 @@ public class TtsManager extends SpeechSynthesizer implements TTSConfig {
         InputStream abpath = getClass().getResourceAsStream("/assets/文件名");
     }
 
-    private static TtsManager sMain;
+    private static TTSManager sMain;
 
-    public static TtsManager getInstance(Context context, ISynthesizerListener listener) {
+    public static TTSManager getInstance(Context context, ISynthesizerListener listener) {
         if (null == sMain) {
-            sMain = new TtsManager(context, APP_KEY, SECRET);
+            sMain = new TTSManager(context, APP_KEY, SECRET);
 
         }
         sMain.addSynthesizerListener(listener);
         return sMain;
     }
 
-    private TtsManager(Context context, String appKey, String secret) {
+    private TTSManager(Context context, String appKey, String secret) {
         super(context, appKey, secret);
         initialize(context);
     }

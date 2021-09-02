@@ -18,15 +18,15 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
 public class LocalModuleCommonHandler extends ModuleCommonHandler {
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
-        super.onModuleEvent(event);
+    public boolean onReceiveEventNotice(RemoteEvent event) {
+        super.onReceiveEventNotice(event);
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.MODULE_EXIT:
                 if (EventAVCModuleLiveExit.isReboot(event)) {
-                    Log.i(TAG, "onModuleEvent > 模块即将重启");
+                    Log.i(TAG, "onReceiveEventNotice > 模块即将重启");
                     reboot(500);
                 } else {
-                    Log.i(TAG, "onModuleEvent > 模块即将关闭");
+                    Log.i(TAG, "onReceiveEventNotice > 模块即将关闭");
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 break;

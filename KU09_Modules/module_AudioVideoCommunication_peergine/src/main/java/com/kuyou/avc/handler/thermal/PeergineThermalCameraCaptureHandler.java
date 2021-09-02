@@ -83,7 +83,7 @@ public class PeergineThermalCameraCaptureHandler extends BasicEventHandler
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         return false;
     }
 }

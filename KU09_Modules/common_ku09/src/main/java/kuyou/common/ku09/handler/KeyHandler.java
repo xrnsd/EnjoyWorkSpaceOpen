@@ -23,7 +23,7 @@ public class KeyHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventKey.Code.KEY_CLICK:
                 onKeyClick(EventKey.getKeyCode(event));

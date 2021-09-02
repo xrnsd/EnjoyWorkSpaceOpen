@@ -69,13 +69,13 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
     }
 
     @Override
-    public int registerStatusProcessBusProcessCallback(final IStatusProcessBusCallback callback) {
+    public int registerStatusProcessBusCallback(final IStatusProcessBusCallback callback) {
         final int flag = applyProcessFlag();
         mStatusProcessBusCallbackList.put(flag, callback);
         mStatusProcessBusCallbackRunnableList.put(flag, new Runnable() {
             @Override
             public void run() {
-                callback.onReceiveStatusNotice(false);
+                callback.onReceiveStatusProcessNotice(false);
             }
         });
         mStatusProcessBusCallbackHandlerList.put(flag, new Handler(callback.getNoticeHandleLooper()));
@@ -110,7 +110,7 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
         if (!mStatusProcessBusCallbackList.get(processFlag).isEnableReceiveRemoveNotice()) {
             return;
         }
-        mStatusProcessBusCallbackList.get(processFlag).onReceiveStatusNotice(true);
+        mStatusProcessBusCallbackList.get(processFlag).onReceiveStatusProcessNotice(true);
     }
 
     @Override

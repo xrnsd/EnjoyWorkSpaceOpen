@@ -45,7 +45,7 @@ public class AlarmHandler extends BasicEventHandler implements ALARM {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventAlarm.Code.ALARM_NEAR_POWER:
                 play("您已进入强电非安全区域");
@@ -65,7 +65,7 @@ public class AlarmHandler extends BasicEventHandler implements ALARM {
                 break;
 
             case EventAlarm.Code.ALARM_SOS:
-                Log.i(TAG, "onModuleEvent > SOS报警");
+                Log.i(TAG, "onReceiveEventNotice > SOS报警");
                 SicLocationAlarm info = getLocationProvider().getLocationInfo();
 
                 if (info.isAutoAddSosFlag()) {

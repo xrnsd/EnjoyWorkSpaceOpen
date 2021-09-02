@@ -16,6 +16,8 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
+
+import kuyou.common.ku09.BuildConfig;
 import kuyou.common.ku09.basic.IModuleLiveControlCallback;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
@@ -224,10 +226,10 @@ public abstract class BasicModuleApplication extends Application implements IEve
     protected StatusProcessBusImpl getStatusGuardHandler() {
         if (null == mStatusGuardHandler) {
             mStatusGuardHandler = StatusProcessBusImpl.getInstance();
-            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusProcessBusProcessCallback(
+            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusProcessBusCallback(
                     new StatusProcessBusCallbackImpl(true, getFeedTimeLong(), Looper.getMainLooper()) {
                         @Override
-                        public void onReceiveStatusNotice(boolean isRemove) {
+                        public void onReceiveStatusProcessNotice(boolean isRemove) {
                             BasicModuleApplication.this.onFeedWatchDog();
                         }
                     });
@@ -394,9 +396,9 @@ public abstract class BasicModuleApplication extends Application implements IEve
 
     //本地事件
     @Subscribe
-    public void onModuleEvent(RemoteEvent event) {
+    public void onReceiveEventNotice(RemoteEvent event) {
         for (BasicEventHandler handler : getEventHandlerList()) {
-            if (handler.onModuleEvent(event)) {
+            if (handler.onReceiveEventNotice(event)) {
 //                Log.d(TAG, "已消费 event = " + event.getCode());
 //                Log.d(TAG, "EventHandler = " + handler.getClass().getSimpleName());
                 if (event.isEnableConsumeSeparately()) {
@@ -404,7 +406,7 @@ public abstract class BasicModuleApplication extends Application implements IEve
                 }
             }
         }
-        Log.i(TAG, "onModuleEvent > unable to consumption event = " + event.getCode());
+        Log.i(TAG, "onReceiveEventNotice > unable to consumption event = " + event.getCode());
     }
 
     public void play(String content) {

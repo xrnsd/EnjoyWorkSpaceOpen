@@ -34,7 +34,7 @@ public class MultiCaptureVideo extends MultiCapture {
 
     //本地事件
     @Subscribe
-    public void onModuleEvent(RemoteEvent event) {
+    public void onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
                 break;

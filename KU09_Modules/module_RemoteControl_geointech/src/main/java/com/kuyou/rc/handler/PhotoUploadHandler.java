@@ -75,7 +75,7 @@ public class PhotoUploadHandler extends BasicEventHandler {
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
                 isRemoteControlPlatformConnected =
@@ -85,9 +85,9 @@ public class PhotoUploadHandler extends BasicEventHandler {
             case EventRemoteControl.Code.PHOTO_UPLOAD_RESULT:
                 boolean isUploadSuccess = EventPhotoUploadResult.isResultSuccess(event);
                 if (isUploadSuccess) {
-                    Log.i(TAG, "onModuleEvent > 照片上传成功");
+                    Log.i(TAG, "onReceiveEventNotice > 照片上传成功");
                 } else {
-                    Log.w(TAG, "onModuleEvent > 照片上传失败");
+                    Log.w(TAG, "onReceiveEventNotice > 照片上传失败");
                 }
                 if (!isRemoteControlPlatformConnected) {
                     break;
@@ -106,7 +106,7 @@ public class PhotoUploadHandler extends BasicEventHandler {
                 break;
 
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT:
-                Log.i(TAG, "onModuleEvent > 拍照状态上传");
+                Log.i(TAG, "onReceiveEventNotice > 拍照状态上传");
                 if (!EventPhotoTakeResult.isResultSuccess(event)) {
                     SicBasic singleInstructionParserPTR = getSingleInstructionParserByEventCode(event);
                     if (null == singleInstructionParserPTR) {
@@ -121,17 +121,17 @@ public class PhotoUploadHandler extends BasicEventHandler {
                 break;
 
             case EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST:
-                Log.i(TAG, "onModuleEvent > 开始上传照片");
+                Log.i(TAG, "onReceiveEventNotice > 开始上传照片");
                 final String filePath = EventPhotoUploadRequest.getImgFilePath(event);
                 File imgFile = new File(filePath);
 
                 boolean isUploadReady = true;
                 if (!imgFile.exists()) {
                     isUploadReady = false;
-                    Log.e(TAG, "onModuleEvent > 开始上传照片 > process fail : 照片不存在 = " + filePath);
+                    Log.e(TAG, "onReceiveEventNotice > 开始上传照片 > process fail : 照片不存在 = " + filePath);
                 }
                 if (!isRemoteControlPlatformConnected) {
-                    Log.w(TAG, "onModuleEvent > 开始上传照片 > process fail : 未联网");
+                    Log.w(TAG, "onReceiveEventNotice > 开始上传照片 > process fail : 未联网");
                     play("上传失败，请检查网络链接");
                 }
                 if (!isUploadReady) {
@@ -154,7 +154,7 @@ public class PhotoUploadHandler extends BasicEventHandler {
                             @Override
                             public void onUploadFinish(int resultCode) {
                                 boolean isUploadSuccess = UploadUtil.ResultCode.UPLOAD_SUCCESS == resultCode;
-                                Log.i(TAG, "onModuleEvent > onUploadFinish > " + (isUploadSuccess ? "上传成功" : "上传失败"));
+                                Log.i(TAG, "onReceiveEventNotice > onUploadFinish > " + (isUploadSuccess ? "上传成功" : "上传失败"));
                                 dispatchEvent(new EventPhotoUploadResult()
                                         .setResult(isUploadSuccess)
                                         .setEventType(EventPhotoUploadRequest.getEventType(event))

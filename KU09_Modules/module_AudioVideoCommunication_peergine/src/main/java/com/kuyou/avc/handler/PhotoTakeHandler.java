@@ -87,11 +87,11 @@ public class PhotoTakeHandler extends BasicEventHandler
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
             case EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST:
                 setRemoteEventHandled(event);
-                Log.i(TAG, "onModuleEvent > 处理拍照请求");
+                Log.i(TAG, "onReceiveEventNotice > 处理拍照请求");
 
                 if (IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeRequest.getEventType(event)) {
                     play("正在为您拍照");

@@ -39,7 +39,6 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.common.ku09.status.IStatusProcessBus;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 
 /**
@@ -57,15 +56,17 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     protected final static String KEY_MEDIA_TYPE = "MediaType";
     protected final static String KEY_GROUP_OWNER = "GroupOwner";
 
+    protected final static int PS_FLAG = 0;
+    protected final static int PS_OPEN_REQUEST_BE_EXECUTING = PS_FLAG + 1;
+    protected final static int PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT = PS_FLAG + 2;
+    protected final static int PS_OPEN_HANDLE_BE_EXECUTING = PS_FLAG + 3;
+    protected final static int PS_OPEN_PARAMETER_PARSE_FAIL = PS_FLAG + 4;
+    protected final static int PS_CLOSE_BE_EXECUTING = PS_FLAG + 5;
+    protected final static int PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT = PS_FLAG + 6;
+
     private RingtoneHandler mRingtoneHandler;
     private SharedPreferences mSPHandleStatus;
 
-    private int mStaProFlagOpenRequestBeExecuting = -1;
-    private int mStaProFlagOpenRequestBeExecutingTimeOut = -1;
-    private int mStaProFlagOpenHandleBeExecuting = -1;
-    private int mStaProFlagOpenParameterParseFail = -1;
-    private int mStaProFlagCloseBeExecuting = -1;
-    private int mStaProFlagDeviceOffLineTimeOut = -1;
     private int mMediaTypeLocal = IJT808ExtensionProtocol.MEDIA_TYPE_DEFAULT;
 
     //用于群组通话，区分设备是否为采集端,本地和远程分配的相同就是，不同不是
@@ -79,38 +80,39 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     @Override
     public void onIpcFrameResisterSuccess() {
-        syncPlatformAudioVideoCommunicationStatus();
+        checkAVCLocalCacheStatus();
     }
 
-    private void syncPlatformAudioVideoCommunicationStatus() {
+    //模块启动后，确认是否存在未正常退出的通话
+    private void checkAVCLocalCacheStatus() {
         int handleStatusCache = getHandleStatusCache(getContext());
         int mediaTypCache = getMediaTypeCache(getContext());
         if (HS_NORMAL == handleStatusCache) {
-            //Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 没有通话不正常");
+            //Log.i(TAG, "checkAVCLocalCacheStatus > 没有通话不正常");
             return;
         }
 
-        Log.i(TAG, new StringBuilder("syncPlatformAudioVideoCommunicationStatus > 确认通话是否正常退出")
+        Log.i(TAG, new StringBuilder("checkAVCLocalCacheStatus > 确认通话是否正常退出")
                 .append("\nhandleStatusCache = ").append(handleStatusCache)
                 .append("\nmediaTypCache = ").append(mediaTypCache)
                 .toString());
         switch (mediaTypCache) {
             case IJT808ExtensionProtocol.MEDIA_TYPE_GROUP:
                 if (!getCacheVal(getContext(), KEY_GROUP_OWNER, false)) {
-                    Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组未正常退出,非群主无需处理 ");
+                    Log.i(TAG, "checkAVCLocalCacheStatus > 群组未正常退出,非群主无需处理 ");
                     saveStatus2Cache(getContext());//重置本地保存的状态
                     return;
                 }
-                Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 群组不正常 ");
+                Log.i(TAG, "checkAVCLocalCacheStatus > 群组不正常 ");
                 break;
             case IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO:
-                Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 视频不正常 ");
+                Log.i(TAG, "checkAVCLocalCacheStatus > 视频不正常 ");
                 if (HS_OPEN == handleStatusCache) {
                     handleStatusCache = HS_CLOSE_BE_EXECUTING;
                 }
                 break;
             case IJT808ExtensionProtocol.MEDIA_TYPE_AUDIO:
-                Log.i(TAG, "syncPlatformAudioVideoCommunicationStatus > 语音不正常");
+                Log.i(TAG, "checkAVCLocalCacheStatus > 语音不正常");
                 if (HS_OPEN == handleStatusCache) {
                     handleStatusCache = HS_CLOSE_BE_EXECUTING;
                 }
@@ -122,11 +124,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         switch (handleStatusCache) {
             case HS_OPEN:
                 mMediaTypeLocal = mediaTypCache;
-                getStatusProcessBus().start(mStaProFlagOpenRequestBeExecuting);
+                getStatusProcessBus().start(PS_OPEN_REQUEST_BE_EXECUTING);
                 break;
             default:
                 mMediaTypeLocal = mediaTypCache;
-                getStatusProcessBus().start(mStaProFlagCloseBeExecuting);
+                getStatusProcessBus().start(PS_CLOSE_BE_EXECUTING);
                 break;
         }
     }
@@ -292,7 +294,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 Log.i(TAG, "recoverAllLiveItem > cancel ");
                 return;
             }
-            getStatusProcessBus().stop(mStaProFlagDeviceOffLineTimeOut);
+            getStatusProcessBus().stop(PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT);
             Set<Integer> set = mItemListOnline.keySet();
             Iterator<Integer> it = set.iterator();
             AVCActivity activity;
@@ -395,6 +397,96 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
+    protected void initStatusProcessBusCallbackList() {
+        super.initStatusProcessBusCallbackList();
+
+        registerStatusProcessBusCallback(
+                PS_OPEN_REQUEST_BE_EXECUTING,
+                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper())
+                        .setEnableReceiveRemoveNotice(true));
+
+        registerStatusProcessBusCallback(
+                PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT,
+                new StatusProcessBusCallbackImpl(false, 15 * 1000, Looper.getMainLooper()));
+
+        registerStatusProcessBusCallback(
+                PS_OPEN_HANDLE_BE_EXECUTING,
+                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()));
+
+        registerStatusProcessBusCallback(
+                PS_OPEN_PARAMETER_PARSE_FAIL,
+                new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()));
+
+        registerStatusProcessBusCallback(
+                PS_CLOSE_BE_EXECUTING,
+                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()));
+
+        registerStatusProcessBusCallback(
+                PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT,
+                new StatusProcessBusCallbackImpl(false, 30 * 1000, Looper.getMainLooper()));
+    }
+
+    @Override
+    protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
+        super.onReceiveStatusProcessNotice(statusCode, isRemove);
+
+        switch (statusCode) {
+            case PS_OPEN_REQUEST_BE_EXECUTING:
+                if (isRemove) {
+                    getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
+                    break;
+                }
+                Log.i(TAG, "onReceiveStatusProcessNotice > 向平台发出音视频开启请求 > ");
+                getStatusProcessBus().start(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
+                setHandleStatus(HS_OPEN_REQUEST_BE_EXECUTING);
+                dispatchEvent(new EventAudioVideoParametersApplyRequest()
+                        .setMediaType(getMediaTypeLocal())
+                        .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
+                        .setRemote(true));
+                break;
+
+            case PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT:
+                Log.i(TAG, "onReceiveStatusProcessNotice > 向平台发出音视频开启请求 > 失败：未响应");
+                onReceiveEventNotice(new EventAudioVideoParametersApplyResult()
+                        .setResult(false)
+                        .setMediaType(mMediaTypeLocal)
+                        .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE));
+                break;
+
+            case PS_OPEN_HANDLE_BE_EXECUTING:
+                getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);
+                setHandleStatus(HS_OPEN_HANDLE_BE_EXECUTING);
+                break;
+
+            case PS_OPEN_PARAMETER_PARSE_FAIL:
+                Log.i(TAG, new StringBuilder("onReceiveStatusProcessNotice > 参数解析失败 > mCollectingEndId is invalid :")
+                        .append("\n mCollectingEndIdLocal = ").append(mCollectingEndIdLocal)
+                        .append("\n mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
+                        .toString());
+                break;
+
+            case PS_CLOSE_BE_EXECUTING:
+                Log.i(TAG, "onReceiveStatusProcessNotice > 开始关闭音视频 > ");
+                if (!isLiveOnlineByType(-1)) {
+                    setHandleStatus(HS_NORMAL);
+                } else {
+                    exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE);
+                }
+                break;
+
+            case PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT:
+                Log.i(TAG, "OperateTimeoutCallback > 设备离线后，超时没有上线,开始关闭音视频");
+                //由于离线30秒后服务器会清除通话状态，所以设备无需发送关闭指令
+                exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
     protected void initHandleEventCodeList() {
         registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
         registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
@@ -402,89 +494,6 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         registerHandleEvent(EventRemoteControl.Code.LOCAL_DEVICE_STATUS, true);
         registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST, true);
-    }
-
-    @Override
-    public void setStatusProcessBus(IStatusProcessBus bus) {
-        super.setStatusProcessBus(bus);
-
-        mStaProFlagOpenRequestBeExecuting = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        if (isRemove) {
-                            PeergineAudioVideoHandler.this.getStatusProcessBus().stop(
-                                    PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecutingTimeOut);
-                            return;
-                        }
-                        Log.i(TAG, "onReceiveStatusNotice > 向平台发出音视频开启请求 > ");
-                        PeergineAudioVideoHandler.this.getStatusProcessBus().start(
-                                PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecutingTimeOut);
-                        PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_REQUEST_BE_EXECUTING);
-                        PeergineAudioVideoHandler.this.dispatchEvent(new EventAudioVideoParametersApplyRequest()
-                                .setMediaType(PeergineAudioVideoHandler.this.getMediaTypeLocal())
-                                .setPlatformType(IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN)
-                                .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE)
-                                .setRemote(true));
-                    }
-                }.setEnableReceiveRemoveNotice(true));
-
-        mStaProFlagOpenRequestBeExecutingTimeOut = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 15 * 1000, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        Log.i(TAG, "onReceiveStatusNotice > 向平台发出音视频开启请求 > 失败：未响应");
-                        PeergineAudioVideoHandler.this.onModuleEvent(new EventAudioVideoParametersApplyResult()
-                                .setResult(false)
-                                .setMediaType(mMediaTypeLocal)
-                                .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE));
-                    }
-                });
-
-        mStaProFlagOpenHandleBeExecuting = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        PeergineAudioVideoHandler.this.getStatusProcessBus().stop(
-                                PeergineAudioVideoHandler.this.mStaProFlagOpenRequestBeExecuting);
-                        PeergineAudioVideoHandler.this.setHandleStatus(HS_OPEN_HANDLE_BE_EXECUTING);
-
-                    }
-                });
-
-        mStaProFlagOpenParameterParseFail = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        Log.i(TAG, new StringBuilder("onReceiveStatusNotice > 参数解析失败 > mCollectingEndId is invalid :")
-                                .append("\n mCollectingEndIdLocal = ").append(mCollectingEndIdLocal)
-                                .append("\n mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
-                                .toString());
-                    }
-                });
-
-        mStaProFlagCloseBeExecuting = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        Log.i(TAG, "onReceiveStatusNotice > 开始关闭音视频 > ");
-                        if (!PeergineAudioVideoHandler.this.isLiveOnlineByType(-1)) {
-                            PeergineAudioVideoHandler.this.setHandleStatus(HS_NORMAL);
-                        } else {
-                            PeergineAudioVideoHandler.this.exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE);
-                        }
-                    }
-                });
-
-        mStaProFlagDeviceOffLineTimeOut = bus.registerStatusProcessBusProcessCallback(
-                new StatusProcessBusCallbackImpl(false, 30 * 1000, Looper.getMainLooper()) {
-                    @Override
-                    public void onReceiveStatusNotice(boolean isRemove) {
-                        Log.i(TAG, "OperateTimeoutCallback > 设备离线后，超时没有上线,开始关闭音视频");
-                        //由于离线30秒后服务器会清除通话状态，所以设备无需发送关闭指令
-                        PeergineAudioVideoHandler.this.exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE);
-                    }
-                });
     }
 
     @Override
@@ -517,7 +526,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                     //群组必要参数缺失
                     if (null == mCollectingEndIdLocal || null == mCollectingEndIdRemote) {
                         Log.w(TAG, "openItem > 群组必要参数缺失");
-                        getStatusProcessBus().start(mStaProFlagOpenParameterParseFail);
+                        getStatusProcessBus().start(PS_OPEN_PARAMETER_PARSE_FAIL);
                         onResult(event, IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                     }
                     //未加入群组
@@ -582,7 +591,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
             Log.i(TAG, "performOperate > 终端取消,正在申请的通话");
-            getStatusProcessBus().stop(mStaProFlagOpenRequestBeExecuting);
+            getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);
             setHandleStatus(HS_NORMAL);
             play(getTitleByMediaType(mMediaTypeLocal, R.string.media_request_cancel_request));
             return;
@@ -600,17 +609,17 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         }
 
         Log.i(TAG, "performOperate > 终端申请，开启通话 : " + getMediaTypeLocal());
-        getStatusProcessBus().start(mStaProFlagOpenRequestBeExecuting);
+        getStatusProcessBus().start(PS_OPEN_REQUEST_BE_EXECUTING);
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         String resultStr = null;
         switch (event.getCode()) {
             case EventCommon.Code.NETWORK_DISCONNECT:
                 if (isItInHandlerState(HS_OPEN)) {//存在已打开通话
-                    Log.i(TAG, "onModuleEvent > 设备状态 > 设备已离线，存在已打开通话，开启超时关闭");
-                    getStatusProcessBus().start(mStaProFlagDeviceOffLineTimeOut);
+                    Log.i(TAG, "onReceiveEventNotice > 设备状态 > 设备已离线，存在已打开通话，开启超时关闭");
+                    getStatusProcessBus().start(PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT);
                 }
                 break;
 
@@ -626,12 +635,12 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
                 //申请参数失败,或服务器异常
                 if (!EventAudioVideoParametersApplyResult.isResultSuccess(event)) {
-                    getStatusProcessBus().stop(mStaProFlagOpenRequestBeExecuting);
+                    getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);
                     setHandleStatus(HS_NORMAL);
 
                     //平台未响应,超时处理
                     if (IJT808ExtensionProtocol.MEDIA_TYPE_GROUP == EventAudioVideoParametersApplyResult.getMediaType(event)) {
-                        Log.e(TAG, "onModuleEvent >  音视频请求异常，服务器可能下发指令异常");
+                        Log.e(TAG, "onReceiveEventNotice >  音视频请求异常，服务器可能下发指令异常");
                         play(getContext().getString(R.string.media_request_exit_group_exception));
                         break;
                     }
@@ -644,19 +653,19 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 break;
 
             case EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST:
-                Log.i(TAG, "onModuleEvent > 处理音视频请求");
+                Log.i(TAG, "onReceiveEventNotice > 处理音视频请求");
 
                 final int eventType = EventAudioVideoOperateRequest.getEventType(event);
 
                 //平台拒绝
                 if (IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType) {
                     if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
-                        getStatusProcessBus().stop(mStaProFlagOpenRequestBeExecuting);
+                        getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);
                         play(getTitleByMediaType(mMediaTypeLocal, R.string.media_request_open_rejected_title));
                         setHandleStatus(HS_NORMAL);
-                        Log.i(TAG, "onModuleEvent > 处理音视频申请 > 平台拒绝通话申请");
+                        Log.i(TAG, "onReceiveEventNotice > 处理音视频申请 > 平台拒绝通话申请");
                     } else {
-                        Log.i(TAG, "onModuleEvent > 处理音视频申请 > 平台拒绝已取消的通话申请");
+                        Log.i(TAG, "onReceiveEventNotice > 处理音视频申请 > 平台拒绝已取消的通话申请");
                     }
                     break;
                 }
@@ -664,30 +673,30 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 //关闭通话
                 if (IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType) {
                     if (HS_NORMAL == getHandlerStatus() && !isLiveOnlineByType(-1)) {
-                        Log.i(TAG, "onModuleEvent > 处理音视频请求 > 关闭通话 > 没有已打开通话，取消操作");
+                        Log.i(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话 > 没有已打开通话，取消操作");
                         break;
                     }
                     if (HS_CLOSE_BE_EXECUTING == getHandlerStatus()) {
-                        Log.d(TAG, "onModuleEvent > 处理音视频请求 > 关闭通话 > 正在关闭，请稍等");
+                        Log.d(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话 > 正在关闭，请稍等");
                         break;
                     }
                     if (getMediaTypeLocal() != EventAudioVideoOperateRequest.getMediaType(event)) {
                         onResult(event, IJT808ExtensionProtocol.RESULT_FAIL);
-                        Log.i(TAG, "onModuleEvent > 处理音视频请求 > 关闭通话 > 请求类型和打开类型不一致，取消操作");
+                        Log.i(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话 > 请求类型和打开类型不一致，取消操作");
                         break;
                     }
-                    Log.i(TAG, "onModuleEvent > 处理音视频请求 > 关闭通话");
-                    getStatusProcessBus().start(mStaProFlagCloseBeExecuting);
+                    Log.i(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话");
+                    getStatusProcessBus().start(PS_CLOSE_BE_EXECUTING);
                     break;
                 }
 
                 //开启通话
                 if (!isLiveOnlineByType(-1)) {
-                    getStatusProcessBus().start(mStaProFlagOpenHandleBeExecuting);
+                    getStatusProcessBus().start(PS_OPEN_HANDLE_BE_EXECUTING);
 
                     resultStr = openItem(getContext(), event);
                     if (null != resultStr) {
-                        Log.e(TAG, "onModuleEvent > process fail : " + resultStr);
+                        Log.e(TAG, "onReceiveEventNotice > process fail : " + resultStr);
                         dispatchEvent(new EventAudioVideoOperateResult().setResult(false));
                         play(resultStr);
                         setHandleStatus(HS_NORMAL);
@@ -701,7 +710,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 final int mediaTypeRequest = EventAudioVideoOperateRequest.getMediaType(event);
                 String medTypeContentRequest = getTitleByMediaType(mediaTypeRequest, -1);
                 String medTypeContentLocal = getTitleByMediaType(getMediaTypeLocal(), -1);
-                Log.w(TAG, new StringBuilder("onModuleEvent > 处理音视频申请 > 存在打开项")
+                Log.w(TAG, new StringBuilder("onReceiveEventNotice > 处理音视频申请 > 存在打开项")
                         .append("\n").append(getHandlerStatus())
                         .append("\nrequest mediaType = ").append(medTypeContentRequest)
                         .append("\nlocal mediaType = ").append(medTypeContentLocal)
@@ -715,6 +724,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                     onResult(event, IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
                 }
                 break;
+
             default:
                 return false;
         }

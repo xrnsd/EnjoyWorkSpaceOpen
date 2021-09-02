@@ -19,6 +19,7 @@ public class EventRequest extends EventRemoteControl {
     public static interface RequestCode {
         public final static int OPEN = 0;
         public final static int CLOSE = 1;
+        public final static int REOPEN = 2;
     }
 
     @Override

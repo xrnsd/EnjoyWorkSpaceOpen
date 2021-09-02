@@ -143,16 +143,16 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     }
 
     @Override
-    public boolean onModuleEvent(RemoteEvent event) {
+    public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
 //            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
-//                Log.i(TAG, "onModuleEvent > 开始上报位置 ");
+//                Log.i(TAG, "onReceiveEventNotice > 开始上报位置 ");
 //                break;
 //            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
-//                Log.i(TAG, "onModuleEvent > 停止上报位置 ");
+//                Log.i(TAG, "onReceiveEventNotice > 停止上报位置 ");
 //                break;
             case EventRemoteControl.Code.HEARTBEAT_REPORT:
-                Log.d(TAG, "onModuleEvent > 心跳");
+//                Log.d(TAG, "onReceiveEventNotice > 心跳");
                 LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
                         .setMsg(LocationHandler.this.getLocationInfo().getBody()));
                 break;

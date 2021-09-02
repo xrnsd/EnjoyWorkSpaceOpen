@@ -10,7 +10,7 @@ public interface IStatusProcessBusCallback {
      *
      * @param isRemove ，为true表示状态已被主动移除 <br/>
      */
-    public void onReceiveStatusNotice(boolean isRemove);
+    public void onReceiveStatusProcessNotice(boolean isRemove);
 
     /**
      * action:设定是否开启状态通知自动循环
@@ -33,4 +33,11 @@ public interface IStatusProcessBusCallback {
      * @return 为true表示接收
      */
     public boolean isEnableReceiveRemoveNotice();
+
+    /**
+     * action:状态通知ID
+     *
+     * @return 为true表示接收
+     */
+    public int getStatusProcessFlag();
 }
