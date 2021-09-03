@@ -1,6 +1,5 @@
 package com.kuyou.rc.handler;
 
-import android.os.Looper;
 import android.util.Log;
 
 import com.kuyou.rc.handler.platform.basic.IHeartbeat;
@@ -15,6 +14,7 @@ import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :
@@ -128,24 +128,29 @@ public class HeartbeatHandler extends BasicEventHandler implements IHeartbeat {
         super.initStatusProcessBusCallbackList();
 
         registerStatusProcessBusCallback(
-                PS_AUTHENTICATION_TIME_OUT, 
-                new StatusProcessBusCallbackImpl(false, 2000, Looper.getMainLooper()));
+                PS_AUTHENTICATION_TIME_OUT,
+                new StatusProcessBusCallbackImpl(false, 2000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
-                PS_AUTHENTICATION_TIME_OUT_HANDLE, 
-                new StatusProcessBusCallbackImpl(false, 1000, Looper.getMainLooper()));
+                PS_AUTHENTICATION_TIME_OUT_HANDLE,
+                new StatusProcessBusCallbackImpl(false, 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_HEARTBEAT_REPORT,
-                new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval(), Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval())
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_HEARTBEAT_REPORT_START_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 5000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 5000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_DEVICE_OFF_LINE,
-                new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 5 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 
     @Override

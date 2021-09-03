@@ -1,7 +1,6 @@
 package com.kuyou.tts.handler;
 
 import android.content.Context;
-import android.os.Looper;
 import android.util.Log;
 
 import com.kuyou.tts.basic.TTSManager;
@@ -11,13 +10,13 @@ import java.util.Queue;
 
 import kuyou.common.BuildConfig;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.IPowerStatusListener;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :
@@ -27,7 +26,7 @@ import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
  * date: 21-8-21 <br/>
  * </p>
  */
-public class TTSHandler extends BasicEventHandler implements IPowerStatusListener {
+public class TTSHandler extends BasicEventHandler {
 
     protected final static String TAG = "com.kuyou.tts.handler > TtsHandler";
     protected final static int PS_PLAY = 1;
@@ -90,10 +89,12 @@ public class TTSHandler extends BasicEventHandler implements IPowerStatusListene
     protected void initStatusProcessBusCallbackList() {
         super.initStatusProcessBusCallbackList();
         registerStatusProcessBusCallback(PS_PLAY,
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 0)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(PS_PLAY_OLD_RESET,
-                new StatusProcessBusCallbackImpl(false, 2 * 1000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 2 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 
     @Override
@@ -187,19 +188,6 @@ public class TTSHandler extends BasicEventHandler implements IPowerStatusListene
     }
 
     @Override
-    public void onPowerStatus(int status) {
-        if (EventPowerChange.POWER_STATUS.SHUTDOWN == status) {
-            synchronized (mPendingPlaylist) {
-                getStatusProcessBus().stop(PS_PLAY);
-                mPendingPlaylist.clear();
-                getStatusProcessBus().stop(PS_PLAY_OLD_RESET);
-            }
-            mTTSPlayer.play("关机");
-        }
-        mPowerStatus = status;
-    }
-
-    @Override
     protected void initHandleEventCodeList() {
         registerHandleEvent(EventTextToSpeech.Code.MODULE_INIT_REQUEST, false);
         registerHandleEvent(EventTextToSpeech.Code.TEXT_PLAY, true);
@@ -208,6 +196,18 @@ public class TTSHandler extends BasicEventHandler implements IPowerStatusListene
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
+            case EventPowerChange.Code.POWER_CHANGE:
+                int status = EventPowerChange.getPowerStatus(event);
+                if (EventPowerChange.POWER_STATUS.SHUTDOWN == status) {
+                    synchronized (mPendingPlaylist) {
+                        getStatusProcessBus().stop(PS_PLAY);
+                        mPendingPlaylist.clear();
+                        getStatusProcessBus().stop(PS_PLAY_OLD_RESET);
+                    }
+                    mTTSPlayer.play("关机");
+                }
+                mPowerStatus = status;
+                return false;
             case EventTextToSpeech.Code.TEXT_PLAY:
                 //Log.d(TAG, "onReceiveEventNotice > text_play = " + EventTextToSpeechPlayRequest.getPlayContent(event));
                 onRequestTtsPlay(EventTextToSpeechPlayRequest.getPlayContent(event));

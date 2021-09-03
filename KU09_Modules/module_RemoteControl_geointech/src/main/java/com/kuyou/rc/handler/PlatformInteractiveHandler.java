@@ -27,6 +27,7 @@ import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.EventNetworkConnect;
 import kuyou.common.ku09.event.common.EventNetworkDisconnect;
 import kuyou.common.ku09.event.common.EventPowerChange;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
@@ -124,7 +125,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 @Override
                 public void onRemote2LocalExpand(SicAudioVideo instruction) {
                     if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
-                        Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n" 
+                        Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n"
                                 + instruction.toString());
                         return;
                     }
@@ -296,6 +297,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
     @Override
     protected void initHandleEventCodeList() {
+        registerHandleEvent(EventCommon.Code.POWER_CHANGE, false);
+
         registerHandleEvent(EventRemoteControl.Code.CONNECT_RESULT, false);
         registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
         registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
@@ -312,6 +315,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 if (EventPowerChange.POWER_STATUS.SHUTDOWN == EventPowerChange.getPowerStatus(event)) {
                     getPlatformConnectManager().disconnect();
                     getHeartbeatHandler().stop();
+                    Log.d(TAG, "onReceiveEventNotice > POWER_CHANGE:SHUTDOWN ================================ ");
                 }
                 break;
 

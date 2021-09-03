@@ -40,6 +40,7 @@ import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :协处理器[音视频][基于Peergine]
@@ -63,6 +64,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     protected final static int PS_OPEN_PARAMETER_PARSE_FAIL = PS_FLAG + 4;
     protected final static int PS_CLOSE_BE_EXECUTING = PS_FLAG + 5;
     protected final static int PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT = PS_FLAG + 6;
+    protected final static int PS_CACHE_STATUS_CHECK = PS_FLAG + 7;
 
     private RingtoneHandler mRingtoneHandler;
     private SharedPreferences mSPHandleStatus;
@@ -80,7 +82,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     @Override
     public void onIpcFrameResisterSuccess() {
-        checkAVCLocalCacheStatus();
+        if (null != getStatusProcessBus()) {
+            getStatusProcessBus().start(PS_CACHE_STATUS_CHECK);
+        } else {
+            Log.e(TAG, "onIpcFrameResisterSuccess > process fail : cancel perform checkAVCLocalCacheStatus , getStatusProcessBus is null ");
+        }
     }
 
     //模块启动后，确认是否存在未正常退出的通话
@@ -402,28 +408,39 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
         registerStatusProcessBusCallback(
                 PS_OPEN_REQUEST_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper())
+                new StatusProcessBusCallbackImpl(false, 0)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
                         .setEnableReceiveRemoveNotice(true));
 
         registerStatusProcessBusCallback(
                 PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 15 * 1000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 15 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_OPEN_HANDLE_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 0)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_OPEN_PARAMETER_PARSE_FAIL,
-                new StatusProcessBusCallbackImpl(false, 5 * 1000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 5 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_CLOSE_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 0)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         registerStatusProcessBusCallback(
                 PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 30 * 1000, Looper.getMainLooper()));
+                new StatusProcessBusCallbackImpl(false, 30 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
+
+        registerStatusProcessBusCallback(
+                PS_CACHE_STATUS_CHECK,
+                new StatusProcessBusCallbackImpl(false, 0)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_BACKGROUND));
     }
 
     @Override
@@ -479,6 +496,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 Log.i(TAG, "OperateTimeoutCallback > 设备离线后，超时没有上线,开始关闭音视频");
                 //由于离线30秒后服务器会清除通话状态，所以设备无需发送关闭指令
                 exitAllLiveItem(IJT808ExtensionProtocol.EVENT_TYPE_CLOSE);
+                break;
+
+            case PS_CACHE_STATUS_CHECK:
+                checkAVCLocalCacheStatus();
                 break;
 
             default:

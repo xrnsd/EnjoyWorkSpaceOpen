@@ -4,18 +4,17 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.IModuleLiveControlCallback;
+import kuyou.common.ku09.basic.ILiveControlCallback;
 import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.status.IStatusProcessBus;
-import kuyou.common.ku09.status.IStatusProcessBusCallback;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
+import kuyou.common.ku09.status.StatusProcessBusProxy;
+import kuyou.common.ku09.status.basic.IStatusProcessBus;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.ku09.status.basic.IStatusProcessBusProxy;
 
 /**
  * action :业务处理器[抽象]
@@ -26,20 +25,10 @@ import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
  * </p>
  */
 public abstract class BasicEventHandler {
+
     protected final String TAG = "kuyou.common.ku09.handler > BasicEventHandler";
 
     private Context mContext;
-
-    private IModuleLiveControlCallback mModuleLiveControlCallback;
-    private IEventBusDispatchCallback mEventBusDispatchCallBack;
-    private IDeviceConfig mDeviceConfig;
-
-    private List<Integer> mHandleLocalEventCodeList = null, mHandleRemoteEventCodeList = null;
-
-    private IStatusProcessBus mStatusProcessBus;
-    private IStatusProcessBus mStatusProcessBusProxy;
-    private Map<Integer, Integer> mStatusProcessBusProxyStatusCodeList;
-    private Map<Integer, Integer> mStatusProcessBusProxyFlagList;
 
     protected Context getContext() {
         return mContext;
@@ -49,9 +38,7 @@ public abstract class BasicEventHandler {
         mContext = context;
     }
 
-    public abstract boolean onReceiveEventNotice(RemoteEvent event);
-
-    protected abstract void initHandleEventCodeList();
+    //协处理器 相关
 
     /**
      * action: 嵌套的协处理器列表 <br/>
@@ -59,6 +46,82 @@ public abstract class BasicEventHandler {
      */
     public List<BasicEventHandler> getSubEventHandlers() {
         return null;
+    }
+
+    //设备配置相关 相关
+
+    private IDeviceConfig mDeviceConfig;
+
+    protected IDeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
+    }
+
+    public void setDevicesConfig(IDeviceConfig config) {
+        mDeviceConfig = config;
+    }
+
+    //模块控制 相关
+    private ILiveControlCallback mModuleLiveControlCallback;
+
+    public BasicEventHandler setModuleLiveControlCallback(ILiveControlCallback callback) {
+        mModuleLiveControlCallback = callback;
+        return BasicEventHandler.this;
+    }
+
+    protected void rebootModule(int delayedMillisecond) {
+        if (null == mModuleLiveControlCallback) {
+            Log.e(TAG, "reboot > process fail : mModuleLiveControlCallback is null");
+            return;
+        }
+        mModuleLiveControlCallback.rebootModule(delayedMillisecond);
+    }
+
+    // StatusProcessBus 相关
+
+    private IStatusProcessBusProxy mStatusProcessBus;
+
+    final public void setStatusProcessBus(IStatusProcessBus spb) {
+        if (null != mStatusProcessBus) {
+            return;
+        }
+        mStatusProcessBus = new StatusProcessBusProxy(spb) {
+            @Override
+            protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
+                BasicEventHandler.this.onReceiveStatusProcessNotice(statusCode, isRemove);
+            }
+        };
+        initStatusProcessBusCallbackList();
+    }
+
+    public IStatusProcessBusProxy getStatusProcessBus() {
+        return mStatusProcessBus;
+    }
+
+    protected void initStatusProcessBusCallbackList() {
+    }
+
+    protected void registerStatusProcessBusCallback(int statusCode, IStatusProcessBusCallback callback) {
+        if (null == getStatusProcessBus()) {
+            Log.e(TAG, "registerStatusProcessBusCallback > process fail : getStatusProcessBus is null");
+            return;
+        }
+        getStatusProcessBus().registerStatusProcessBusCallback(statusCode, callback);
+    }
+
+    protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
+    }
+
+    //RemoteEventBus 相关
+
+    private IEventBusDispatchCallback mEventBusDispatchCallBack;
+    private List<Integer> mHandleLocalEventCodeList = null,
+            mHandleRemoteEventCodeList = null;
+
+    public boolean onReceiveEventNotice(RemoteEvent event) {
+        return false;
+    }
+
+    protected void initHandleEventCodeList() {
     }
 
     protected BasicEventHandler registerHandleEvent(int eventCode, boolean isRemote) {
@@ -111,19 +174,6 @@ public abstract class BasicEventHandler {
         return mEventBusDispatchCallBack;
     }
 
-    public BasicEventHandler setModuleLiveControlCallback(IModuleLiveControlCallback callback) {
-        mModuleLiveControlCallback = callback;
-        return BasicEventHandler.this;
-    }
-
-    protected IDeviceConfig getDeviceConfig() {
-        return mDeviceConfig;
-    }
-
-    public void setDevicesConfig(IDeviceConfig config) {
-        mDeviceConfig = config;
-    }
-
     protected void dispatchEvent(RemoteEvent event) {
         if (null == mEventBusDispatchCallBack) {
             Log.e(TAG, "dispatchEvent > process fail : mDispatchEventCallBack is null");
@@ -138,93 +188,5 @@ public abstract class BasicEventHandler {
             return;
         }
         dispatchEvent(new EventTextToSpeechPlayRequest(content));
-    }
-
-    protected void reboot(int delayedMillisecond) {
-        if (null == mModuleLiveControlCallback) {
-            Log.e(TAG, "reboot > process fail : mModuleLiveControlCallback is null");
-            return;
-        }
-        mModuleLiveControlCallback.reboot(delayedMillisecond);
-    }
-
-    final public void setStatusProcessBus(IStatusProcessBus spb) {
-        mStatusProcessBus = spb;
-        if (null == mStatusProcessBusProxy) {
-            mStatusProcessBusProxy = new IStatusProcessBus() {
-                @Override
-                public int registerStatusProcessBusCallback(IStatusProcessBusCallback callback) {
-                    throw new RuntimeException("this api is disable");
-                }
-
-                @Override
-                public void start(int statusCode) {
-                    if (!BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.containsKey(Integer.valueOf(statusCode))) {
-                        Log.w(TAG, "start > process fail : statusCode is not registered");
-                        return;
-                    }
-                    BasicEventHandler.this.mStatusProcessBus
-                            .start(BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.get(Integer.valueOf(statusCode)));
-                }
-
-                @Override
-                public void stop(int statusCode) {
-                    if (!BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.containsKey(Integer.valueOf(statusCode))) {
-                        Log.w(TAG, "stop > process fail : statusCode is not registered");
-                        return;
-                    }
-                    BasicEventHandler.this.mStatusProcessBus
-                            .stop(BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.get(Integer.valueOf(statusCode)));
-                }
-
-                @Override
-                public boolean isStart(int statusCode) {
-                    if (!BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.containsKey(Integer.valueOf(statusCode))) {
-                        Log.w(TAG, "isStart > process fail : statusCode is not registered");
-                        return false;
-                    }
-                    return BasicEventHandler.this.mStatusProcessBus
-                            .isStart(BasicEventHandler.this.mStatusProcessBusProxyStatusCodeList.get(Integer.valueOf(statusCode)));
-                }
-            };
-
-            mStatusProcessBusProxyStatusCodeList = new HashMap<Integer, Integer>();
-            mStatusProcessBusProxyFlagList = new HashMap<Integer, Integer>();
-            initStatusProcessBusCallbackList();
-        }
-    }
-
-    protected void initStatusProcessBusCallbackList() {
-    }
-
-    protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
-
-    }
-
-    protected IStatusProcessBus getStatusProcessBus() {
-        return mStatusProcessBusProxy;
-    }
-
-    protected void registerStatusProcessBusCallback(int statusCode, IStatusProcessBusCallback callback) {
-        if (null == getStatusProcessBus()) {
-            Log.e(TAG, "registerStatusProcessBusCallback > process fail : getStatusProcessBus is null");
-            return;
-        }
-        if (mStatusProcessBusProxyStatusCodeList.containsKey(Integer.valueOf(statusCode))) {
-            Log.w(TAG, "registerStatusProcessBusCallback > process fail : statusCode is registered");
-            return;
-        }
-        StatusProcessBusCallbackImpl callbackProxy = new StatusProcessBusCallbackImpl(callback) {
-            @Override
-            public void onReceiveStatusProcessNotice(boolean isRemove) {
-                BasicEventHandler.this.onReceiveStatusProcessNotice(
-                        mStatusProcessBusProxyFlagList.get(Integer.valueOf(getStatusProcessFlag())), isRemove);
-            }
-        };
-        final int flag = mStatusProcessBus.registerStatusProcessBusCallback(callbackProxy);
-        callbackProxy.setStatusProcessFlag(flag);
-
-        mStatusProcessBusProxyStatusCodeList.put(statusCode, flag);
-        mStatusProcessBusProxyFlagList.put(flag, statusCode);
     }
 }

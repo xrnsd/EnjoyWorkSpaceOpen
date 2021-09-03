@@ -1,8 +1,18 @@
-package kuyou.common.ku09.status;
+package kuyou.common.ku09.status.basic;
 
 import android.os.Looper;
 
 public interface IStatusProcessBusCallback {
+
+    /**
+     * action:设定状态通知处理线程,使用主线程
+     */
+    public final static int LOOPER_POLICY_MAIN = 0;
+
+    /**
+     * action:设定状态通知处理线程,使用后台线程
+     */
+    public final static int LOOPER_POLICY_BACKGROUND = 1;
 
     /**
      * action:收到状态通知 <br/>
@@ -26,6 +36,11 @@ public interface IStatusProcessBusCallback {
      * action:设定状态通知处理线程
      */
     public Looper getNoticeHandleLooper();
+
+    /**
+     * action:设定状态通知处理线程配置策略
+     */
+    public int getNoticeHandleLooperPolicy();
 
     /**
      * action:是否接收状态移除通知

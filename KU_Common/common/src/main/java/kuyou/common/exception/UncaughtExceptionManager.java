@@ -6,8 +6,6 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -201,37 +199,20 @@ public class UncaughtExceptionManager implements UncaughtExceptionHandler {
     }
 
     //======================   重启APP相关  ===============================
-
-    private static final String KEY_RESTART_TIME = "key.restart.time",
-            KEY_RESTART_TIMES = "key.restart.times";
-    private SharedPreferences mDataBase;
-
-    private void initUncaughtExceptionManagerDataBase(Context context) {
-        if (null != mDataBase)
-            return;
-        mDataBase = context.getSharedPreferences("UncaughtExceptionManagerConfig",
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ? Context.MODE_PRIVATE : Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
-    }
+    private int mReStartTimesNow = 1;
+    private long mTimeRestartOld = -1;
 
     private boolean addReExceptionTimes() {
-        initUncaughtExceptionManagerDataBase(mContext);
-
-        final long timeNow = System.currentTimeMillis(),
-                timeRestartOld = mDataBase.getLong(KEY_RESTART_TIME, 0);
-        int reStartTimesNow = 1;
+        final long timeNow = System.currentTimeMillis();
         //1分钟内连续重启次数
-        if (0 != timeRestartOld && timeNow - timeRestartOld < 60 * 1000) {
-            reStartTimesNow = mDataBase.getInt(KEY_RESTART_TIMES, 0) + 1;
+        if (0 != mTimeRestartOld && timeNow - mTimeRestartOld < 60 * 1000) {
+            mReStartTimesNow += 1;
         }
-        if (reStartTimesNow > 3) //用于连续多次崩溃之后，强制退出
+        mTimeRestartOld = timeNow;
+        if (mReStartTimesNow > 3) //用于连续多次崩溃之后，强制退出
             return true;
 
-        Log.d(TAG, "addReExceptionTimes > reStartTimesNow=" + reStartTimesNow);
-
-        SharedPreferences.Editor editor = mDataBase.edit();
-        editor.putInt(KEY_RESTART_TIMES, reStartTimesNow);
-        editor.putLong(KEY_RESTART_TIME, timeNow);
-        editor.commit();
+        Log.d(TAG, "addReExceptionTimes > reStartTimesNow=" + mReStartTimesNow);
         return false;
     }
 

@@ -1,14 +1,20 @@
 package kuyou.common.ku09.status;
 
 import android.os.Looper;
+import android.util.Log;
+
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 
 public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
+    protected static final String TAG = "kuyou.common.ku09.status > StatusProcessBusCallbackImpl ";
 
     private int mStatusProcessFlag = -1;
     private boolean isAutoNoticeReceiveCycle = false;
     private boolean isEnableReceiveRemoveNotice = false;
     private long mNoticeReceiveFreq = -1;
+
     private Looper mNoticeHandleLooper = null;
+    private int mNoticeHandleLooperPolicy = -1;
 
     /**
      * action:自动循环收到消息
@@ -17,10 +23,9 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
      * @param val2 ，val1为true时，自动循环收到消息的周期
      * @param val3 ，设定消息处理线程
      */
-    public StatusProcessBusCallbackImpl(boolean val1, long val2, Looper val3) {
+    public StatusProcessBusCallbackImpl(boolean val1, long val2) {
         isAutoNoticeReceiveCycle = val1;
         mNoticeReceiveFreq = val2;
-        mNoticeHandleLooper = val3;
     }
 
     public StatusProcessBusCallbackImpl(IStatusProcessBusCallback callback) {
@@ -32,7 +37,7 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
 
     @Override
     public void onReceiveStatusProcessNotice(boolean isRemove) {
-        
+
     }
 
     @Override
@@ -48,6 +53,11 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
     @Override
     public Looper getNoticeHandleLooper() {
         return mNoticeHandleLooper;
+    }
+
+    @Override
+    public int getNoticeHandleLooperPolicy() {
+        return mNoticeHandleLooperPolicy;
     }
 
     @Override
@@ -72,6 +82,19 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
      */
     public StatusProcessBusCallbackImpl setEnableReceiveRemoveNotice(boolean val) {
         isEnableReceiveRemoveNotice = val;
+        return StatusProcessBusCallbackImpl.this;
+    }
+
+    public StatusProcessBusCallbackImpl setNoticeHandleLooper(Looper looper) {
+        mNoticeHandleLooper = looper;
+        return StatusProcessBusCallbackImpl.this;
+    }
+
+    public StatusProcessBusCallbackImpl setNoticeHandleLooperPolicy(int policy) {
+        if (LOOPER_POLICY_MAIN != policy && LOOPER_POLICY_BACKGROUND != policy) {
+            Log.e(TAG, "setNoticeHandleLooperPolicy > process fail : policy is invalid");
+        }
+        mNoticeHandleLooperPolicy = policy;
         return StatusProcessBusCallbackImpl.this;
     }
 }

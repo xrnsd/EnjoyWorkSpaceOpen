@@ -2,13 +2,13 @@ package com.kuyou.rc.handler;
 
 import android.util.Log;
 
-import kuyou.common.ku09.basic.IPowerStatusListener;
+import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.config.IKeyConfig;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmSos;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.IKeyConfig;
 
 /**
  * action :协处理器[实体按键]
@@ -18,7 +18,7 @@ import kuyou.common.ku09.config.IKeyConfig;
  * date: 21-7-23 <br/>
  * </p>
  */
-public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener {
+public class LocalKeyHandler extends KeyHandler {
     protected final String TAG = "com.kuyou.rc.handler > KeyHandler";
 
     private boolean isEnableNearPowerAlarm = true;
@@ -67,9 +67,17 @@ public class LocalKeyHandler extends KeyHandler implements IPowerStatusListener 
     }
 
     @Override
-    public void onPowerStatus(int status) {
-        isEnableNearPowerAlarm = EventPowerChange.POWER_STATUS.CHARGE != status
-                && EventPowerChange.POWER_STATUS.SHUTDOWN != status;
-        Log.d(TAG, "onPowerStatus > isEnableNearPowerAlarm = " + isEnableNearPowerAlarm);
+    public boolean onReceiveEventNotice(RemoteEvent event) {
+        switch (event.getCode()) {
+            case EventPowerChange.Code.POWER_CHANGE:
+                int status = EventPowerChange.getPowerStatus(event);
+                isEnableNearPowerAlarm = EventPowerChange.POWER_STATUS.CHARGE != status
+                        && EventPowerChange.POWER_STATUS.SHUTDOWN != status;
+                Log.d(TAG, "onPowerStatus > isEnableNearPowerAlarm = " + isEnableNearPowerAlarm);
+                return false;
+            default:
+                break;
+        }
+        return super.onReceiveEventNotice(event);
     }
 }

@@ -41,7 +41,7 @@ public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEv
     public static final double DEFAULT_VEL_FACTOR = 1.0;
     public static final double DEFAULT_POS_FACTOR = 1.0;
 
-    public enum Interh {
+    public enum LogMessageType {
         KALMAN_ALLOC,
         KALMAN_PREDICT,
         KALMAN_UPDATE,

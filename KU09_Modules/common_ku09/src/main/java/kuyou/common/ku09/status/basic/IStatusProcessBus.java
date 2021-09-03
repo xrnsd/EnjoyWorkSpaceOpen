@@ -1,4 +1,6 @@
-package kuyou.common.ku09.status;
+package kuyou.common.ku09.status.basic;
+
+import android.os.Looper;
 
 public interface IStatusProcessBus {
     public int registerStatusProcessBusCallback(final IStatusProcessBusCallback callback);

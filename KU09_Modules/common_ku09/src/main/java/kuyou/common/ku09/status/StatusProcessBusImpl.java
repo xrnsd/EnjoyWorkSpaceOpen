@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import kuyou.common.ku09.status.basic.IStatusProcessBus;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+
 /**
  * action :提供状态的物流服务
  * <p>
@@ -28,9 +31,9 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
         if (instance == null) {
             synchronized (StatusProcessBusImpl.class) {
                 if (instance == null) {
-                    HandlerThread handlerThreadStatusGuard = new HandlerThread(".HandlerThread.StatusProcessBus");
-                    handlerThreadStatusGuard.start();
-                    instance = new StatusProcessBusImpl(handlerThreadStatusGuard.getLooper());
+                    HandlerThread handlerThreadStatusProcessBus = new HandlerThread(".HandlerThread.StatusProcessBus");
+                    handlerThreadStatusProcessBus.start();
+                    instance = new StatusProcessBusImpl(handlerThreadStatusProcessBus.getLooper());
                 }
             }
         }
@@ -43,13 +46,24 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
 
     private int mProcessFlag = 0;
 
+    private Looper mLooper;
+
     protected Map<Integer, IStatusProcessBusCallback> mStatusProcessBusCallbackList = new HashMap<Integer, IStatusProcessBusCallback>();
     protected Map<Integer, Handler> mStatusProcessBusCallbackHandlerList = new HashMap<Integer, Handler>();
     protected Map<Integer, Runnable> mStatusProcessBusCallbackRunnableList = new HashMap<Integer, Runnable>();
 
-    public int applyProcessFlag() {
+    protected int applyProcessFlag() {
         Log.d(TAG, "applyProcessFlag > basic flag = " + mProcessFlag);
         return mProcessFlag++;
+    }
+
+    protected Looper getBackgroundHandleLooper() {
+        if (null == mLooper) {
+            HandlerThread handlerThreadBackgroundHandle = new HandlerThread(".HandlerThread.BackgroundHandle");
+            handlerThreadBackgroundHandle.start();
+            mLooper = handlerThreadBackgroundHandle.getLooper();
+        }
+        return mLooper;
     }
 
     @Override
@@ -78,7 +92,24 @@ public class StatusProcessBusImpl extends Handler implements IStatusProcessBus {
                 callback.onReceiveStatusProcessNotice(false);
             }
         });
-        mStatusProcessBusCallbackHandlerList.put(flag, new Handler(callback.getNoticeHandleLooper()));
+        final int looperPolicy = callback.getNoticeHandleLooperPolicy();
+        Looper looper = null;
+        switch (looperPolicy) {
+            case IStatusProcessBusCallback.LOOPER_POLICY_BACKGROUND:
+                looper = getBackgroundHandleLooper();
+                break;
+            case IStatusProcessBusCallback.LOOPER_POLICY_MAIN:
+                looper = Looper.getMainLooper();
+                break;
+            default:
+                looper = callback.getNoticeHandleLooper();
+                break;
+        }
+        if (null != looper) {
+            mStatusProcessBusCallbackHandlerList.put(flag, new Handler(looper));
+        } else {
+            Log.e(TAG, "registerStatusProcessBusCallback > process fail :getNoticeHandleLooper is null ");
+        }
         return flag;
     }
 

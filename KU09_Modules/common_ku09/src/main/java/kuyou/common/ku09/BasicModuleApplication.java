@@ -3,9 +3,9 @@ package kuyou.common.ku09;
 import android.app.Application;
 import android.app.HelmetModuleManageServiceManager;
 import android.app.IHelmetModuleCommonCallback;
-import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -16,20 +16,20 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-
 import kuyou.common.ku09.BuildConfig;
-import kuyou.common.ku09.basic.IModuleLiveControlCallback;
+import kuyou.common.ku09.basic.ILiveControlCallback;
 import kuyou.common.ku09.config.DeviceConfigImpl;
 import kuyou.common.ku09.config.IDeviceConfig;
-import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
+import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicEventHandler;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 import kuyou.common.ku09.status.StatusProcessBusImpl;
+import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
@@ -38,6 +38,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
 /**
  * action :模块通用基础实现[抽象]
  * <p>
+ * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 20-11-4 <br/>
  * 已实现列表：<br/>
@@ -48,7 +49,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 5 业务协处理器实现 <br/>
  * <p>
  */
-public abstract class BasicModuleApplication extends Application implements IEventBusDispatchCallback, IModuleLiveControlCallback {
+public abstract class BasicModuleApplication extends Application implements IEventBusDispatchCallback, ILiveControlCallback {
 
     protected String TAG = "kuyou.common.ku09 > BasicModuleApplication";
 
@@ -103,20 +104,20 @@ public abstract class BasicModuleApplication extends Application implements IEve
      * action:初始化严格模式配置
      */
     protected void initStrictModePolicy() {
-        final String key = "persist.hm.strict.mode";
+        final String key = "persist.kub.hm.sm";
         if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
             Log.d(TAG, "initLogcatLocal > LogcatHelper is disable");
             return;
         }
-        DebugUtil.startStrictModeThreadPolicy();
         DebugUtil.startStrictModeVmPolicy();
+        DebugUtil.startStrictModeThreadPolicy();
     }
 
     /**
      * action:初始化log本地保存
      */
     protected void initLogcatLocal() {
-        final String key = "persist.hm.log.save";
+        final String key = "persist.kud.hm.ls";
         if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
             Log.d(TAG, "initLogcatLocal > LogcatHelper is disable");
             return;
@@ -134,7 +135,7 @@ public abstract class BasicModuleApplication extends Application implements IEve
      * action:初始化异常log本地保存
      */
     protected void initExceptionLogLocal() {
-        final String key = "persist.hm.exception.save";
+        final String key = "persist.kud.hm.els";
         if (!SystemPropertiesUtils.get(key, "0").equals("1")) {
             Log.d(TAG, "initExceptionLogLocal > exception info auto save is disable");
             return;
@@ -197,7 +198,11 @@ public abstract class BasicModuleApplication extends Application implements IEve
 
             @Override
             public void onPowerStatus(int status) throws RemoteException {
-                BasicModuleApplication.this.dispatchEvent(new EventPowerChange().setPowerStatus(status));
+                BasicModuleApplication.this.dispatchEvent(new EventPowerChange()
+                        .setPowerStatus(status)
+                        .setEnableConsumeSeparately(false)
+                        .setRemote(false));
+                Log.d(TAG, "onPowerStatus > status " + status);
             }
 
             @Override
@@ -212,6 +217,13 @@ public abstract class BasicModuleApplication extends Application implements IEve
 
             @Override
             public void onKeyLongClick(int keyCode) throws RemoteException {
+                if (KeyEvent.KEYCODE_POWER == keyCode) {
+                    BasicModuleApplication.this.dispatchEvent(new EventPowerChange()
+                            .setPowerStatus(EventPowerChange.POWER_STATUS.SHUTDOWN)
+                            .setEnableConsumeSeparately(false)
+                            .setRemote(false));
+                    return;
+                }
                 BasicModuleApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
             }
         });
@@ -227,12 +239,12 @@ public abstract class BasicModuleApplication extends Application implements IEve
         if (null == mStatusGuardHandler) {
             mStatusGuardHandler = StatusProcessBusImpl.getInstance();
             mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusProcessBusCallback(
-                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong(), Looper.getMainLooper()) {
+                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong()){
                         @Override
                         public void onReceiveStatusProcessNotice(boolean isRemove) {
                             BasicModuleApplication.this.onFeedWatchDog();
                         }
-                    });
+                    }.setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
             mStatusGuardHandler.start(mStatusGuardCallbackFlag);
 
             if (null != getHelmetModuleManageServiceManager()) {
@@ -261,7 +273,9 @@ public abstract class BasicModuleApplication extends Application implements IEve
     }
 
     /**
-     * action:模块状态看门狗 > 相关状态检测的流程的周期长度,单位毫秒
+     * action:模块状态看门狗 > 相关状态检测的流程的周期长度,单位毫秒 <br/>
+     *
+     * @return : 模块看门狗喂食频度，不能大于60000,60*1000为模块服务看门狗的默认吃饭频度 <br/>
      */
     protected long getFeedTimeLong() {
         return FLAG_FEED_TIME_LONG;
@@ -302,7 +316,12 @@ public abstract class BasicModuleApplication extends Application implements IEve
     }
 
     @Override
-    public void reboot(int delayedMillisecond) {
+    public void rebootDevice(boolean isAutoBoot) {
+        SystemPropertiesUtils.set("ctl.start", isAutoBoot ? "system_shutdwon" : "system_reboot");
+    }
+
+    @Override
+    public void rebootModule(int delayedMillisecond) {
         getHelmetModuleManageServiceManager().rebootModule(
                 getPackageName(),
                 android.os.Process.myPid(),

@@ -4,9 +4,9 @@ import com.kuyou.vc.handler.UnisoundVoiceControlHandler;
 import com.kuyou.vc.protocol.basic.VoiceControl;
 
 import kuyou.common.ku09.BasicModuleApplication;
+import kuyou.common.ku09.config.IKeyConfig;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.IKeyConfig;
 
 /**
  * action :语音控制模块
@@ -19,7 +19,8 @@ import kuyou.common.ku09.config.IKeyConfig;
 public class ModuleApplication extends BasicModuleApplication {
     private final String TAG = "com.kuyou.vc > ModuleApplication";
 
-    public static final int INIT_CHECK_COUNT_MAX = 10;
+    //INIT_CHECK_COUNT_MAX * INIT_CHECK_FREQ 不能大于模块服务看门狗的60000默认频度
+    public static final int INIT_CHECK_COUNT_MAX = 6;
     public static final int INIT_CHECK_FREQ = 10 * 1000;
 
     private KeyHandler mKeyHandler;

@@ -14,15 +14,16 @@ import kuyou.common.utils.SystemPropertiesUtils;
  */
 public class DeviceConfigImpl implements IDeviceConfig {
     protected final String TAG = "kuyou.common.ku09.config > DevicesConfig";
+    
+    protected final static String KEY_HEARTBEAT_INTERVAL = "persist.kub.hm.hf";
 
-    protected final static String KEY_DEV_ID = "persist.dev.id";
-    protected final static String KEY_COLLECTING_END_CODE = "persist.dev.ce.id";
-    protected final static String KEY_UWB_ID = "persist.uwb.id";
-    protected final static String KEY_SERVER_ADDRESS = "persist.ser.ads";
-    protected final static String KEY_SERVER_ADDRESS_PHOTO = "persist.ser.ads.po";
-    protected final static String KEY_SERVER_PORT = "persist.ser.port";
-    protected final static String KEY_HEARTBEAT_INTERVAL = "persist.ser.htiv";
-    protected final static String KEY_AUTHENTICATION_CODE = "persist.ser.ac";
+    protected final static String KEY_DEV_ID = "persist.kud.hm.di";
+    protected final static String KEY_COLLECTING_END_CODE = "persist.kud.hm.ci";
+    protected final static String KEY_UWB_ID = "persist.kud.hm.ui";
+    protected final static String KEY_SERVER_ADDRESS = "persist.kud.hm.sa";
+    protected final static String KEY_SERVER_ADDRESS_PHOTO = "persist.kud.hm.sa.po";
+    protected final static String KEY_SERVER_PORT = "persist.kud.hm.sap";
+    protected final static String KEY_AUTHENTICATION_CODE = "persist.kud.hm.ac";
 
     private String mDevId = null;
     private String mUwbId = null;

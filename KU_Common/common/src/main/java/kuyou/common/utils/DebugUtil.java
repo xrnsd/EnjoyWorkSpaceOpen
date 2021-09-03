@@ -9,7 +9,8 @@ public class DebugUtil {
                 .detectLeakedClosableObjects()/*检测未关闭的Closable对象*/
                 .detectLeakedSqlLiteObjects() /*检测Sqlite对象是否关闭*/
                 /*也可以采用detectAll()来检测所有想检测的东西*/
-                .penaltyLog().build());
+                .penaltyLog()
+                .build());
     }
 
     public static void startStrictModeThreadPolicy() {
@@ -18,6 +19,7 @@ public class DebugUtil {
                 .detectDiskWrites()/*检测磁盘写入操作*/
                 .detectNetwork() /*检测网络操作*/
                 /*也可以采用detectAll()来检测所有想检测的东西*/
-                .penaltyLog().build());
+                .penaltyLog()
+                .build());
     }
 }

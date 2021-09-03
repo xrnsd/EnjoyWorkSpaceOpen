@@ -65,7 +65,6 @@ public class ModuleApplication extends BasicModuleApplication {
     public LocalModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mLocalModuleCommonHandler) {
             mLocalModuleCommonHandler = new LocalModuleCommonHandler();
-            mLocalModuleCommonHandler.setPowerStatusListener(getTTSHandler());
         }
         return mLocalModuleCommonHandler;
     }

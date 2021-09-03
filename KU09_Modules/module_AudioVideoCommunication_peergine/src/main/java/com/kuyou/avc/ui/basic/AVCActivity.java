@@ -185,7 +185,7 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
             setAudioVideoRequestCallback(null);
             setDispatchEventCallback(null);
             if (IJT808ExtensionProtocol.MEDIA_TYPE_VIDEO == getTypeCode()) {
-                //ModuleApplication.getInstance().reboot(200);
+                //ModuleApplication.getInstance().rebootModule(200);
             }
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));

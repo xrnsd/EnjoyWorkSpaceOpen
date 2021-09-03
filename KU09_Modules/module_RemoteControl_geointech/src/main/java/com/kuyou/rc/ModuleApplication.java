@@ -90,7 +90,7 @@ public class ModuleApplication extends BasicModuleApplication {
                     registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, false);
                     registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, false);
                 }
-            }.setPowerStatusListener(getLocalKeyHandler());
+            };
         }
         return mModuleCommonHandler;
     }
