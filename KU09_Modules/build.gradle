@@ -41,4 +41,7 @@ ext {
     KeyStorePassword = System.getenv("ANDROID_KEY_STORE_PASSWORD")
     KeyAlias = System.getenv("ANDROID_KEY_ALIAS")
     KeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+    
+    //混淆
+    isConfuse = false
 }

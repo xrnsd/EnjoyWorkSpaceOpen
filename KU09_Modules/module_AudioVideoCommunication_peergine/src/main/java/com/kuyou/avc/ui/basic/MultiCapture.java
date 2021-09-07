@@ -171,7 +171,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 String sInfo = "Forward free relpy: error=" + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("VideoCamera")) {
-                onScreenshotResult(true, sData);
+                onTakePhotoResult(true, sData);
                 String sInfo = "The picture is save to: " + sData;
                 Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
             } else if (sAct.equals("FilePutRequest")) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kuyou.rc.handler.location.amap.AmapLocationActivity;
+import com.kuyou.rc.handler.location.trace.TraceTestActivity;
 
 /**
  * action :位置提供器[高德]
@@ -25,6 +27,7 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
     protected final String TAG = "com.kuyou.rc.location > AMapLocationProvider";
 
     private AmapLocationActivity mLocationProviderReal;
+    private TraceTestActivity mTraceTestActivity;
 
     public AMapLocationProvider(Context context) {
         super(context);
@@ -56,7 +59,19 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
     }
 
     @Override
+    public void dispatchLocation(Location location) {
+        if (null != mTraceTestActivity) {
+            mTraceTestActivity.onLocationChange(location);
+        }
+        super.dispatchLocation(location);
+    }
+
+    @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        if (activity instanceof TraceTestActivity) {
+            mTraceTestActivity = (TraceTestActivity) activity;
+            return;
+        }
         if (!(activity instanceof AmapLocationActivity)) {
             return;
         }
@@ -66,6 +81,10 @@ public class AMapLocationProvider extends HMLocationProvider implements Applicat
 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
+        if (activity instanceof TraceTestActivity) {
+            mTraceTestActivity = null;
+            return;
+        }
         if (!(activity instanceof AmapLocationActivity)) {
             return;
         }

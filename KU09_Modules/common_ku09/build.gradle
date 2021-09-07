@@ -4,6 +4,8 @@ plugins {
 //配套软硬件配置
 ext {
     moduleName = "Common_ku09"
+    //混淆
+    isConfuse = rootProject.ext.isConfuse
 }
 
 android {
@@ -20,11 +22,15 @@ android {
 
         buildConfigField "String", "BUILD_DATE", "\"${rootProject.ext.versionDate}\""
         buildConfigField "String", "BUILD_DATE_PATTERN", "\"${rootProject.ext.versionDatePattern}\""
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            zipAlignEnabled project.isConfuse
+            minifyEnabled project.isConfuse
+            //minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

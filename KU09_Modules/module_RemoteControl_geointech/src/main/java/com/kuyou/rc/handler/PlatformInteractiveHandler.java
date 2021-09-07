@@ -12,7 +12,6 @@ import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import com.kuyou.rc.protocol.jt808extend.item.SicAudioVideo;
 import com.kuyou.rc.protocol.jt808extend.item.SicAuthentication;
 import com.kuyou.rc.protocol.jt808extend.item.SicPhotoTake;
-import com.kuyou.rc.protocol.jt808extend.item.SicPhotoUploadReply;
 import com.kuyou.rc.protocol.jt808extend.item.SicTextMessage;
 
 import java.util.ArrayList;
@@ -37,12 +36,11 @@ import kuyou.common.ku09.event.rc.EventConnectResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
-import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
@@ -58,7 +56,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  * date: 21-3-29 <br/>
  * </p>
  */
-public class PlatformInteractiveHandler extends BasicEventHandler {
+public class PlatformInteractiveHandler extends BasicAssistHandler {
 
     protected final String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
 
@@ -72,8 +70,8 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     @Override
-    public List<BasicEventHandler> getSubEventHandlers() {
-        List<BasicEventHandler> handlers = new ArrayList<>();
+    public List<BasicAssistHandler> getSubEventHandlers() {
+        List<BasicAssistHandler> handlers = new ArrayList<>();
         Log.d(TAG, "getSubEventHandlers > ");
         HeartbeatHandler handler = new HeartbeatHandler();
         handlers.add(handler);
@@ -114,7 +112,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicTextMessage instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
                         Log.e(TAG, "onRemote2LocalExpand > SicTextMessage > process fail : 设备心跳异常，放弃处理服务器请求 \n"
                                 + instruction.toString());
                         return;
@@ -124,7 +122,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicAudioVideo instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
                         Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n"
                                 + instruction.toString());
                         return;
@@ -143,7 +141,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicPhotoTake instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isHeartbeatConnected()) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
                         Log.e(TAG, "onRemote2LocalExpand > SicPhotoTake > process fail : 设备心跳异常，放弃处理服务器请求 \n"
                                 + instruction.toString());
                         return;
@@ -154,22 +152,16 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                             .setUpload(true)
                             .setRemote(true));
                 }
-
-                @Override
-                public void onRemote2LocalExpand(SicPhotoUploadReply instruction) {
-                    dispatchEvent(new EventPhotoUploadResult()
-                            .setResult(instruction.isResultSuccess()));
-                }
             }).load(PlatformInteractiveHandler.this.getDeviceConfig());
         }
         return mJt808ExtendProtocolCodec;
     }
 
     public String isReady() {
-        //联网检测
+        //网络检测
         boolean isNetworkAvailableNow = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailableNow) {
-            Log.w(TAG, "isReady > 未联网,放弃平台链接状态检查和模块自动重置 ");
+            Log.w(TAG, "isReady > 网络:未连接 > 放弃平台连接状态检查和模块自动重置 ");
 
             //服务器断开没有正常回调时，强制停止心跳
             if (null != getHeartbeatHandler() && getHeartbeatHandler().isStart()) {
@@ -193,20 +185,19 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
         }
         isNetworkAvailable = isNetworkAvailableNow;
 
-        //联网后以socketManager连接状态为准
+        //网络连接后以socketManager连接状态为准
         if (isNetworkAvailable) {
             if (getPlatformConnectManager().isConnect()) {
-                Log.i(TAG, "isReady > 已联网,平台链接正常 ");
-
-                //心跳未正常开启，尝试开启
-//                if (!getHeartbeatHandler().isStart()) {
-//                    getHeartbeatHandler().start();
-//                }
+                if (!getHeartbeatHandler().isConnect()) {
+                    Log.w(TAG, "isReady > 网络:已连接,平台:已连接,心跳:未连接 ");
+                    return "心跳:未连接";
+                }
+                Log.i(TAG, "isReady > 网络:已连接,平台:已连接,心跳:已连接 ");
                 return null;
             }
-            Log.w(TAG, "isReady >  已联网,未连接平台,尝试链接平台 ");
+            Log.w(TAG, "isReady >  网络:已连接,平台:未连接 > 尝试连接平台 ");
             if (!connect()) {
-                return "平台连接异常";
+                return "平台:连接异常";
             }
             return null;
         }
@@ -296,7 +287,7 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventCommon.Code.POWER_CHANGE, false);
 
         registerHandleEvent(EventRemoteControl.Code.CONNECT_RESULT, false);
@@ -382,13 +373,13 @@ public class PlatformInteractiveHandler extends BasicEventHandler {
                 final int eventType = EventAudioVideoParametersApplyRequest.getEventType(event);
                 boolean isClose = IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType;
 
-                //处理：在未链接平台情况下申请打开参数
+                //处理：在未连接平台情况下申请打开参数
                 if (!isRemoteControlPlatformConnected) {
-                    Log.w(TAG, "onReceiveEventNotice > 申请视频参数和操作 > 未链接平台");
+                    Log.w(TAG, "onReceiveEventNotice > 申请视频参数和操作 > 未连接平台");
                     dispatchEvent(new EventAudioVideoParametersApplyResult()
                             .setResult(false)
                             .setRemote(true));
-                    play("打开失败，请检查网络链接");
+                    play("打开失败，请检查网络连接");
                     break;
                 }
 

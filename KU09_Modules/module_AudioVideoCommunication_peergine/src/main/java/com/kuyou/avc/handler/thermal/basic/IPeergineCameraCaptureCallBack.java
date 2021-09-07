@@ -1,7 +1,7 @@
 package com.kuyou.avc.handler.thermal.basic;
 
 /**
- * action :
+ * action :红外回调
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

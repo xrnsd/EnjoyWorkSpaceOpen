@@ -40,7 +40,7 @@ import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 
 public class TakePhotoBackground extends Service {
 
-    protected static final String TAG = "com.kuyou.avc.photo > BackgroundTakeService";
+    protected static final String TAG = "com.kuyou.avc.photo > TakePhotoBackground";
 
     private static Intent sTakePhotoServer = null;
 
@@ -62,6 +62,7 @@ public class TakePhotoBackground extends Service {
         } else {
             context.getApplicationContext().startService(sTakePhotoServer);
         }
+        Log.d(TAG, "perform > 开始后台拍照");
     }
 
     public static void stop(Context context) {

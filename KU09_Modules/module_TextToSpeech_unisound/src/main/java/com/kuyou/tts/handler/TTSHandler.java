@@ -14,19 +14,19 @@ import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 
 /**
- * action :
+ * action :协处理器[语音合成]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-21 <br/>
  * </p>
  */
-public class TTSHandler extends BasicEventHandler {
+public class TTSHandler extends BasicAssistHandler {
 
     protected final static String TAG = "com.kuyou.tts.handler > TtsHandler";
     protected final static int PS_PLAY = 1;
@@ -86,20 +86,20 @@ public class TTSHandler extends BasicEventHandler {
     }
 
     @Override
-    protected void initStatusProcessBusCallbackList() {
-        super.initStatusProcessBusCallbackList();
-        registerStatusProcessBusCallback(PS_PLAY,
+    public void initReceiveProcessStatusNotices() {
+        super.initReceiveProcessStatusNotices();
+        getStatusProcessBus().registerStatusNoticeCallback(PS_PLAY,
                 new StatusProcessBusCallbackImpl(false, 0)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(PS_PLAY_OLD_RESET,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_PLAY_OLD_RESET,
                 new StatusProcessBusCallbackImpl(false, 2 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 
     @Override
-    protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
-        super.onReceiveStatusProcessNotice(statusCode, isRemove);
+    protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+        super.onReceiveProcessStatusNotice(statusCode, isRemove);
         switch (statusCode) {
             case PS_PLAY:
                 if (!isInitFinish
@@ -117,13 +117,13 @@ public class TTSHandler extends BasicEventHandler {
                 if (null != mTTSPlayer) {
                     isPlaying = true;
                     mTTSPlayer.play(mPlayText);
-                    Log.i(TAG, "onReceiveStatusProcessNotice > MSG_PLAY > text = " + mPlayText);
+                    Log.i(TAG, "onReceiveProcessStatusNotice > MSG_PLAY > text = " + mPlayText);
                 }
                 break;
 
             case PS_PLAY_OLD_RESET:
                 mPlayTextOld = null;
-                Log.d(TAG, "onReceiveStatusProcessNotice > MSG_RESET");
+                Log.d(TAG, "onReceiveProcessStatusNotice > MSG_RESET");
                 break;
             default:
                 break;
@@ -188,7 +188,7 @@ public class TTSHandler extends BasicEventHandler {
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventTextToSpeech.Code.MODULE_INIT_REQUEST, false);
         registerHandleEvent(EventTextToSpeech.Code.TEXT_PLAY, true);
     }

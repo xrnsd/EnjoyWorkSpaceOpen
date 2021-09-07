@@ -82,8 +82,8 @@ public class ModuleApplication extends BasicModuleApplication {
                 }
 
                 @Override
-                protected void initHandleEventCodeList() {
-                    super.initHandleEventCodeList();
+                protected void initReceiveEventNotices() {
+                    super.initReceiveEventNotices();
                     unRegisterHandleEvent(EventCommon.Code.NETWORK_CONNECTED);
                     unRegisterHandleEvent(EventCommon.Code.NETWORK_DISCONNECT);
 

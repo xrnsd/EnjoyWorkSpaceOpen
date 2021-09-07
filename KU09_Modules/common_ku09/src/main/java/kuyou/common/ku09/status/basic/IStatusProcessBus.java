@@ -1,11 +1,13 @@
 package kuyou.common.ku09.status.basic;
 
-import android.os.Looper;
-
 public interface IStatusProcessBus {
-    public int registerStatusProcessBusCallback(final IStatusProcessBusCallback callback);
+    public void registerStatusNoticeCallback(int statusCode, IStatusProcessBusCallback callback);
+
+    public int registerStatusNoticeCallback(final IStatusProcessBusCallback callback);
 
     public void start(int processFlag);
+
+    public void start(int processFlag,long delayed);
 
     public void stop(int processFlag);
 

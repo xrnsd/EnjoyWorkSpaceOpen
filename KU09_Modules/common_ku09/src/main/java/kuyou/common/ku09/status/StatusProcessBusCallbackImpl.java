@@ -33,10 +33,12 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
         mNoticeReceiveFreq = callback.getNoticeReceiveFreq();
         mNoticeHandleLooper = callback.getNoticeHandleLooper();
         isEnableReceiveRemoveNotice = callback.isEnableReceiveRemoveNotice();
+        mNoticeHandleLooperPolicy = callback.getNoticeHandleLooperPolicy();
+        mNoticeHandleLooper = callback.getNoticeHandleLooper();
     }
 
     @Override
-    public void onReceiveStatusProcessNotice(boolean isRemove) {
+    public void onReceiveProcessStatusNotice(boolean isRemove) {
 
     }
 

@@ -26,9 +26,10 @@ import kuyou.common.ku09.event.common.EventKeyLongClick;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
 import kuyou.common.ku09.status.StatusProcessBusImpl;
+import kuyou.common.ku09.status.basic.IStatusProcessBus;
 import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
 import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
@@ -49,7 +50,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * 5 业务协处理器实现 <br/>
  * <p>
  */
-public abstract class BasicModuleApplication extends Application implements IEventBusDispatchCallback, ILiveControlCallback {
+public abstract class BasicModuleApplication extends Application {
 
     protected String TAG = "kuyou.common.ku09 > BasicModuleApplication";
 
@@ -92,9 +93,10 @@ public abstract class BasicModuleApplication extends Application implements IEve
         initLogcatLocal();
         initExceptionLogLocal();
 
-        //初始化模块状态控制系统服务
+        //初始化模块状态维护相关
         initHelmetModuleManageServiceManager();
         initModuleSystemServiceCallBack();
+        getProcessStatusBus();
 
         //初始化按键协处理器
         initKeyHandlers();
@@ -122,13 +124,23 @@ public abstract class BasicModuleApplication extends Application implements IEve
             Log.d(TAG, "initLogcatLocal > LogcatHelper is disable");
             return;
         }
+        if (BuildConfig.IS_ENABLE_CONFUSE) {
+            LogcatHelper.getInstance(getApplicationContext())
+                    .setSaveLogDirPath(new StringBuilder()
+                            .append("/kuyou/logcat/")
+                            .append(getApplicationName())
+                            .toString())
+                    .setLogSizeMax(1024 * 1024 * 10) //100M
+                    .start("logcat \"*:i*:w*:e\" | grep \"(" + android.os.Process.myPid() + ")\"");
+            return;
+        }
         LogcatHelper.getInstance(getApplicationContext())
                 .setSaveLogDirPath(new StringBuilder()
                         .append("/kuyou/logcat/")
                         .append(getApplicationName())
                         .toString())
                 .setLogSizeMax(1024 * 1024 * 10) //100M
-                .start("logcat \"*:i*:w*:e\" | grep \"(" + android.os.Process.myPid() + ")\"");
+                .start("logcat \"*:d*:i*:w*:e\" | grep \"(" + android.os.Process.myPid() + ")\"");
     }
 
     /**
@@ -198,33 +210,35 @@ public abstract class BasicModuleApplication extends Application implements IEve
 
             @Override
             public void onPowerStatus(int status) throws RemoteException {
-                BasicModuleApplication.this.dispatchEvent(new EventPowerChange()
+                BasicModuleApplication.this.getEventBusDispatchCallback().dispatchEvent(new EventPowerChange()
                         .setPowerStatus(status)
                         .setEnableConsumeSeparately(false)
                         .setRemote(false));
-                Log.d(TAG, "onPowerStatus > status " + status);
+                //Log.d(TAG, "onPowerStatus > status " + status);
             }
 
             @Override
             public void onKeyClick(int keyCode) throws RemoteException {
-                BasicModuleApplication.this.dispatchEvent(new EventKeyClick(keyCode));
+                BasicModuleApplication.this.getEventBusDispatchCallback().dispatchEvent(new EventKeyClick(keyCode));
             }
 
             @Override
             public void onKeyDoubleClick(int keyCode) throws RemoteException {
-                BasicModuleApplication.this.dispatchEvent(new EventKeyDoubleClick(keyCode));
+                BasicModuleApplication.this.getEventBusDispatchCallback().dispatchEvent(new EventKeyDoubleClick(keyCode));
             }
 
             @Override
             public void onKeyLongClick(int keyCode) throws RemoteException {
                 if (KeyEvent.KEYCODE_POWER == keyCode) {
-                    BasicModuleApplication.this.dispatchEvent(new EventPowerChange()
+                    BasicModuleApplication.this.getEventBusDispatchCallback().dispatchEvent(new EventPowerChange()
                             .setPowerStatus(EventPowerChange.POWER_STATUS.SHUTDOWN)
                             .setEnableConsumeSeparately(false)
                             .setRemote(false));
                     return;
                 }
-                BasicModuleApplication.this.dispatchEvent(new EventKeyLongClick(keyCode));
+                BasicModuleApplication.this
+                        .getEventBusDispatchCallback()
+                        .dispatchEvent(new EventKeyLongClick(keyCode));
             }
         });
     }
@@ -232,44 +246,52 @@ public abstract class BasicModuleApplication extends Application implements IEve
     // ============================ 模块状态看门狗 ============================
 
     private static final int FLAG_FEED_TIME_LONG = 25 * 1000;
-    private int mStatusGuardCallbackFlag = -1;
-    private StatusProcessBusImpl mStatusGuardHandler;
+    private static final int PS_FEED = 1;
+    private IStatusProcessBus mStatusProcessBus;
 
-    protected StatusProcessBusImpl getStatusGuardHandler() {
-        if (null == mStatusGuardHandler) {
-            mStatusGuardHandler = StatusProcessBusImpl.getInstance();
-            mStatusGuardCallbackFlag = mStatusGuardHandler.registerStatusProcessBusCallback(
-                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong()){
-                        @Override
-                        public void onReceiveStatusProcessNotice(boolean isRemove) {
-                            BasicModuleApplication.this.onFeedWatchDog();
-                        }
-                    }.setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
-            mStatusGuardHandler.start(mStatusGuardCallbackFlag);
+    protected IStatusProcessBus getProcessStatusBus() {
+        if (null == mStatusProcessBus) {
+            mStatusProcessBus = new StatusProcessBusImpl() {
+                @Override
+                protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+                    Log.d(BasicModuleApplication.this.TAG, "onFeedWatchDog > MSG_WATCHDOG_2_FEED ");
+                    String status = BasicModuleApplication.this.isReady();
+
+                    if (null == status || status.replaceAll(" ", "").length() == 0) {
+                        //提醒boss自己还没挂,和运行状态
+                        BasicModuleApplication.this.getHelmetModuleManageServiceManager()
+                                .feedWatchDog(getPackageName(), System.currentTimeMillis());
+                    } else {
+                        //模块在偷懒,抓起来打一顿
+                        StringBuilder logInfo = new StringBuilder()
+                                .append("======================================================\n")
+                                .append("\n模块：").append(getApplicationName())
+                                .append("\n异常状态:").append(status)
+                                .append("\n操作：").append("重启模块")
+                                .append("\n\n======================================================");
+
+                        Log.e(TAG, logInfo.toString());
+
+                        BasicModuleApplication.this.getHelmetModuleManageServiceManager()
+                                .feedWatchDog(getPackageName(), 1);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        return;
+                    }
+                }
+            };
+            mStatusProcessBus.registerStatusNoticeCallback(PS_FEED,
+                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong())
+                            .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
+
+            mStatusProcessBus.start(PS_FEED);
 
             if (null != getHelmetModuleManageServiceManager()) {
                 getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), System.currentTimeMillis());
             } else {
-                Log.e(TAG, "getStatusGuardHandler > process fail : 马上启动看门狗失败，安全帽模块服务未获取");
+                Log.e(TAG, "getProcessStatusBus > process fail : 马上启动看门狗失败，安全帽模块服务未获取");
             }
         }
-        return mStatusGuardHandler;
-    }
-
-    /**
-     * action:模块状态看门狗 > 相关状态检测的流程的处理
-     */
-    protected void onFeedWatchDog() {
-        Log.d(TAG, "onFeedWatchDog > MSG_WATCHDOG_2_FEED ");
-
-        String status = isReady();
-
-        if (null == status || status.replaceAll(" ", "").length() == 0) {
-            //提醒boss自己还没挂,和运行状态
-            mHelmetModuleManageServiceManager.feedWatchDog(getPackageName(), System.currentTimeMillis());
-        } else {
-            onDogBitesLazyBug(-1, status);
-        }
+        return mStatusProcessBus;
     }
 
     /**
@@ -292,47 +314,35 @@ public abstract class BasicModuleApplication extends Application implements IEve
         return null;
     }
 
-    /**
-     * action:模块状态看门狗 > 模块在偷懒,抓起来打一顿
-     *
-     * @param flag 重启的等待时间,毫秒
-     */
-    protected void onDogBitesLazyBug(int flag, String stasMsg) {
-        StringBuilder logInfo = new StringBuilder()
-                .append("======================================================\n")
-                .append("\n模块：").append(getApplicationName())
-                .append("\n异常状态:").append(stasMsg)
-                .append("\n操作：");
-        if (-1 != flag) {
-            flag = Math.abs(flag) < 5000 ? 5000 : flag;
-            logInfo.append("在").append(flag).append("毫秒后重启");
-        } else {
-            logInfo.append("重启模块");
+    // ============================ 安全帽模块生命管理 ============================
+
+    private ILiveControlCallback mLiveControlCallback;
+
+    protected ILiveControlCallback getLiveControlCallback() {
+        if (null == mLiveControlCallback) {
+            mLiveControlCallback = new ILiveControlCallback() {
+                @Override
+                public void rebootModule(int delayedMillisecond) {
+                    BasicModuleApplication.this.getHelmetModuleManageServiceManager().rebootModule(
+                            getPackageName(),
+                            android.os.Process.myPid(),
+                            delayedMillisecond);
+                }
+
+                @Override
+                public void rebootDevice(boolean isAutoBoot) {
+                    SystemPropertiesUtils.set("ctl.start", isAutoBoot ? "system_shutdwon" : "system_reboot");
+                }
+            };
         }
-        Log.e(TAG, logInfo.append("\n\n======================================================").toString());
-
-        getHelmetModuleManageServiceManager().feedWatchDog(getPackageName(), -flag);
-        android.os.Process.killProcess(android.os.Process.myPid());
-    }
-
-    @Override
-    public void rebootDevice(boolean isAutoBoot) {
-        SystemPropertiesUtils.set("ctl.start", isAutoBoot ? "system_shutdwon" : "system_reboot");
-    }
-
-    @Override
-    public void rebootModule(int delayedMillisecond) {
-        getHelmetModuleManageServiceManager().rebootModule(
-                getPackageName(),
-                android.os.Process.myPid(),
-                delayedMillisecond);
+        return mLiveControlCallback;
     }
 
     // ============================ 模块间IPC，模块与系统服务 ,模块事件的各种协处理器 ============================
 
     private RemoteEventBus.IFrameLiveListener mFrameLiveListener;
-
-    private List<BasicEventHandler> mEventHandlerList = null;
+    private IEventBusDispatchCallback mEventBusDispatchCallback;
+    private List<BasicAssistHandler> mEventHandlerList = null;
 
     /**
      * action:注册事件处理器
@@ -347,27 +357,39 @@ public abstract class BasicModuleApplication extends Application implements IEve
             Log.e(TAG, "getEventDispatchList > process fail : handlers is null");
             return null;
         }
-        List<BasicEventHandler> subHandlerList = new ArrayList<>();
-        List<Integer> codeList = getEventDispatchListByHandlers(getEventHandlerList(), subHandlerList);
+        List<BasicAssistHandler> subHandlerList = new ArrayList<>();
+        List<Integer> codeList = getAssistHandlerList(getEventHandlerList(), subHandlerList);
         if (subHandlerList.size() > 0) {
             getEventHandlerList().addAll(subHandlerList);
         }
         return codeList;
     }
 
-    private List<Integer> getEventDispatchListByHandlers(List<BasicEventHandler> handlerList, List<BasicEventHandler> subHandlerList) {
-        List<Integer> remoteEventCodeList = new ArrayList<>();
-        for (BasicEventHandler handler : handlerList) {
-            handler.setContext(BasicModuleApplication.this);
-            handler.setDispatchEventCallBack(BasicModuleApplication.this);
-            handler.setModuleLiveControlCallback(BasicModuleApplication.this);
-            handler.setDevicesConfig(getDeviceConfig());
-            handler.setStatusProcessBus(getStatusGuardHandler());
+    protected IEventBusDispatchCallback getEventBusDispatchCallback() {
+        if (null == mEventBusDispatchCallback) {
+            mEventBusDispatchCallback = new IEventBusDispatchCallback() {
+                @Override
+                public void dispatchEvent(RemoteEvent event) {
+                    RemoteEventBus.getInstance().dispatch(event);
+                }
+            };
+        }
+        return mEventBusDispatchCallback;
+    }
 
-            List<BasicEventHandler> sub = handler.getSubEventHandlers();
+    private List<Integer> getAssistHandlerList(List<BasicAssistHandler> handlerList, List<BasicAssistHandler> subHandlerList) {
+        List<Integer> remoteEventCodeList = new ArrayList<>();
+        for (BasicAssistHandler handler : handlerList) {
+            handler.setContext(getApplicationContext());
+            handler.setDispatchEventCallBack(getEventBusDispatchCallback());
+            handler.setLiveControlCallback(getLiveControlCallback());
+            handler.setDevicesConfig(getDeviceConfig());
+            handler.initReceiveProcessStatusNotices();
+
+            List<BasicAssistHandler> sub = handler.getSubEventHandlers();
             if (null != sub && sub.size() > 0) {
                 subHandlerList.addAll(sub);
-                remoteEventCodeList.addAll(getEventDispatchListByHandlers(sub, subHandlerList));
+                remoteEventCodeList.addAll(getAssistHandlerList(sub, subHandlerList));
             }
             remoteEventCodeList.addAll(handler.getHandleRemoteEventCodeList());
         }
@@ -394,12 +416,12 @@ public abstract class BasicModuleApplication extends Application implements IEve
         return mFrameLiveListener;
     }
 
-    protected BasicModuleApplication registerEventHandler(BasicEventHandler handler) {
+    protected BasicModuleApplication registerEventHandler(BasicAssistHandler handler) {
         getEventHandlerList().add(handler);
         return BasicModuleApplication.this;
     }
 
-    protected List<BasicEventHandler> getEventHandlerList() {
+    protected List<BasicAssistHandler> getEventHandlerList() {
         if (null == mEventHandlerList) {
             mEventHandlerList = new ArrayList<>();
             initRegisterEventHandlers();
@@ -407,16 +429,10 @@ public abstract class BasicModuleApplication extends Application implements IEve
         return mEventHandlerList;
     }
 
-    @Override
-    public void dispatchEvent(RemoteEvent event) {
-
-        RemoteEventBus.getInstance().dispatch(event);
-    }
-
     //本地事件
     @Subscribe
     public void onReceiveEventNotice(RemoteEvent event) {
-        for (BasicEventHandler handler : getEventHandlerList()) {
+        for (BasicAssistHandler handler : getEventHandlerList()) {
             if (handler.onReceiveEventNotice(event)) {
 //                Log.d(TAG, "已消费 event = " + event.getCode());
 //                Log.d(TAG, "EventHandler = " + handler.getClass().getSimpleName());
@@ -433,7 +449,7 @@ public abstract class BasicModuleApplication extends Application implements IEve
             Log.e(TAG, "play > process fail : content is invalid");
             return;
         }
-        dispatchEvent(new EventTextToSpeechPlayRequest(content));
+        getEventBusDispatchCallback().dispatchEvent(new EventTextToSpeechPlayRequest(content));
     }
 
     // =========================== 设备配置等==============================

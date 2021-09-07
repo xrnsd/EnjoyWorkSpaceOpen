@@ -17,7 +17,7 @@ import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**
  * action :协处理器[位置]
@@ -27,7 +27,7 @@ import kuyou.common.ku09.handler.BasicEventHandler;
  * date: 21-8-5 <br/>
  * </p>
  */
-public class LocationHandler extends BasicEventHandler implements ILocationProviderPolicy {
+public class LocationHandler extends BasicAssistHandler implements ILocationProviderPolicy {
 
     protected static final String TAG = "com.kuyou.rc.handler > LocationHandler";
 
@@ -49,8 +49,10 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
         if (isEnableFilterByPolicy(ILocationProviderPolicy.POLICY_PROVIDER_AMAP)) {
             AMapLocationProvider locationProvider = new AMapLocationProvider(context);
             application.registerActivityLifecycleCallbacks(locationProvider);
+            Log.i(TAG, "initProviderFilter > 启用高德位置提供器");
             mLocationProvider = locationProvider;
         } else if (isEnableFilterByPolicy(ILocationProviderPolicy.POLICY_PROVIDER_NORMAL_LOCAL)) {
+            Log.i(TAG, "initProviderFilter > 启用本地位置提供器");
             mLocationProvider = new HMLocationProvider(context);
         }
         mLocationProvider.setDeviceConfig(getDeviceConfig());
@@ -135,7 +137,7 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
 
         registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
@@ -153,8 +155,8 @@ public class LocationHandler extends BasicEventHandler implements ILocationProvi
 //                break;
             case EventRemoteControl.Code.HEARTBEAT_REPORT:
 //                Log.d(TAG, "onReceiveEventNotice > 心跳");
-                LocationHandler.this.dispatchEvent(new EventSendToRemoteControlPlatformRequest()
-                        .setMsg(LocationHandler.this.getLocationInfo().getBody()));
+                dispatchEvent(new EventSendToRemoteControlPlatformRequest()
+                        .setMsg(getLocationInfo().getBody()));
                 break;
             default:
                 return false;

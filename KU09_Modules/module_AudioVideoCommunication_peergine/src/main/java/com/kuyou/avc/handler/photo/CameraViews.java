@@ -97,10 +97,12 @@ public class CameraViews extends LinearLayout {
     }
 
     private void openCamera() {
+        Log.d(TAG, "openCamera > ");
         mCameraManager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);  // 初始化
         mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
             @Override
             public void onOpened(@NonNull CameraDevice camera) {
+                Log.d(CameraViews.this.TAG, "onOpened > ");
                 mCameraDeviceOpened = camera;
                 try {
                     mCaptureRequestBuilder = mCameraDeviceOpened.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -114,8 +116,8 @@ public class CameraViews extends LinearLayout {
                                 session.setRepeatingRequest(mCaptureRequest, null, null);
                                 CameraViews.this.take();
                             } catch (CameraAccessException e) {
-                                Log.e(TAG, "onConfigured > process fail : ");
-                                onResult(null, "CameraCaptureSession config fail :" + e.toString());
+                                Log.e(CameraViews.this.TAG, "onConfigured > process fail : ");
+                                CameraViews.this.onResult(null, "CameraCaptureSession config fail :" + e.toString());
                             }
                         }
 
@@ -126,22 +128,25 @@ public class CameraViews extends LinearLayout {
                     mCameraDeviceOpened.createCaptureSession(Arrays.asList(mTextureSurface, mSurfaceSurface), mCameraCaptureSessionStateCallback, null);
                 } catch (CameraAccessException e) {
                     e.printStackTrace();
-                    onResult(null, "camera open fail :" + e.toString());
+                    CameraViews.this.onResult(null, "camera open fail :" + e.toString());
                 }
             }
 
             @Override
             public void onDisconnected(@NonNull CameraDevice camera) {
+                Log.d(CameraViews.this.TAG, "onDisconnected > ");
             }
 
             @Override
             public void onError(@NonNull CameraDevice camera, int error) {
+                CameraViews.this.onResult(null, "camera open fail :" + error);
             }
         };
         try {
             mCameraManager.openCamera(mCameraManager.getCameraIdList()[0], mCameraDeviceStateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+            onResult(null, "camera open fail :" + e.toString());
         }
     }
 

@@ -136,7 +136,7 @@ public class UncaughtExceptionManager implements UncaughtExceptionHandler {
 
     /**
      * <p>
-     * action : 设定异常log的相对路径<br/>
+     * action :设定异常log的相对路径<br/>
      * author: wuguoxian <br/>
      * date: 20200519 <br/>
      * remark:<br/>

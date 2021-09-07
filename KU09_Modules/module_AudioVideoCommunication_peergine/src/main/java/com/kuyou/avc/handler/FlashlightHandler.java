@@ -11,7 +11,7 @@ import kuyou.common.ku09.event.avc.EventFlashlightResult;
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
 import kuyou.common.ku09.event.avc.EventLaserLightResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**
  * action :协处理器[手电筒]
@@ -21,7 +21,7 @@ import kuyou.common.ku09.handler.BasicEventHandler;
  * date: 21-7-26 <br/>
  * </p>
  */
-public class FlashlightHandler extends BasicEventHandler {
+public class FlashlightHandler extends BasicAssistHandler {
     protected final String TAG = "com.kuyou.avc.handle > FlashlightHandler";
 
     public FlashlightHandler(Context context) {
@@ -29,7 +29,7 @@ public class FlashlightHandler extends BasicEventHandler {
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventAudioVideoCommunication.Code.FLASHLIGHT_REQUEST, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.LASER_LIGHT_REQUEST, true);
     }

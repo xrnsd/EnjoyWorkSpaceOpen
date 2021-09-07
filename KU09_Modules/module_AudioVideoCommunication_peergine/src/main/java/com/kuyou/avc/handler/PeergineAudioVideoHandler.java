@@ -403,49 +403,42 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
-    protected void initStatusProcessBusCallbackList() {
-        super.initStatusProcessBusCallbackList();
+    public void initReceiveProcessStatusNotices() {
+        super.initReceiveProcessStatusNotices();
 
-        registerStatusProcessBusCallback(
-                PS_OPEN_REQUEST_BE_EXECUTING,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_REQUEST_BE_EXECUTING,
                 new StatusProcessBusCallbackImpl(false, 0)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
                         .setEnableReceiveRemoveNotice(true));
 
-        registerStatusProcessBusCallback(
-                PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT,
                 new StatusProcessBusCallbackImpl(false, 15 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(
-                PS_OPEN_HANDLE_BE_EXECUTING,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_HANDLE_BE_EXECUTING,
                 new StatusProcessBusCallbackImpl(false, 0)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(
-                PS_OPEN_PARAMETER_PARSE_FAIL,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_PARAMETER_PARSE_FAIL,
                 new StatusProcessBusCallbackImpl(false, 5 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(
-                PS_CLOSE_BE_EXECUTING,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_CLOSE_BE_EXECUTING,
                 new StatusProcessBusCallbackImpl(false, 0)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(
-                PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT,
                 new StatusProcessBusCallbackImpl(false, 30 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        registerStatusProcessBusCallback(
-                PS_CACHE_STATUS_CHECK,
+        getStatusProcessBus().registerStatusNoticeCallback(PS_CACHE_STATUS_CHECK,
                 new StatusProcessBusCallbackImpl(false, 0)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_BACKGROUND));
     }
 
     @Override
-    protected void onReceiveStatusProcessNotice(int statusCode, boolean isRemove) {
-        super.onReceiveStatusProcessNotice(statusCode, isRemove);
+    protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+        super.onReceiveProcessStatusNotice(statusCode, isRemove);
 
         switch (statusCode) {
             case PS_OPEN_REQUEST_BE_EXECUTING:
@@ -453,7 +446,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                     getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
                     break;
                 }
-                Log.i(TAG, "onReceiveStatusProcessNotice > 向平台发出音视频开启请求 > ");
+                Log.i(TAG, "onReceiveProcessStatusNotice > 向平台发出音视频开启请求 > ");
                 getStatusProcessBus().start(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
                 setHandleStatus(HS_OPEN_REQUEST_BE_EXECUTING);
                 dispatchEvent(new EventAudioVideoParametersApplyRequest()
@@ -464,7 +457,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 break;
 
             case PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT:
-                Log.i(TAG, "onReceiveStatusProcessNotice > 向平台发出音视频开启请求 > 失败：未响应");
+                Log.i(TAG, "onReceiveProcessStatusNotice > 向平台发出音视频开启请求 > 失败：未响应");
                 onReceiveEventNotice(new EventAudioVideoParametersApplyResult()
                         .setResult(false)
                         .setMediaType(mMediaTypeLocal)
@@ -477,14 +470,14 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 break;
 
             case PS_OPEN_PARAMETER_PARSE_FAIL:
-                Log.i(TAG, new StringBuilder("onReceiveStatusProcessNotice > 参数解析失败 > mCollectingEndId is invalid :")
+                Log.i(TAG, new StringBuilder("onReceiveProcessStatusNotice > 参数解析失败 > mCollectingEndId is invalid :")
                         .append("\n mCollectingEndIdLocal = ").append(mCollectingEndIdLocal)
                         .append("\n mCollectingEndIdRemote = ").append(mCollectingEndIdRemote)
                         .toString());
                 break;
 
             case PS_CLOSE_BE_EXECUTING:
-                Log.i(TAG, "onReceiveStatusProcessNotice > 开始关闭音视频 > ");
+                Log.i(TAG, "onReceiveProcessStatusNotice > 开始关闭音视频 > ");
                 if (!isLiveOnlineByType(-1)) {
                     setHandleStatus(HS_NORMAL);
                 } else {
@@ -508,7 +501,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
         registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
 

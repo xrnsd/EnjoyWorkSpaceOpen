@@ -11,7 +11,7 @@ import java.util.List;
 import kuyou.common.utils.CommonUtils;
 
 /**
- * action:TODO
+ * action:全局手势实现
  * <p>
  * project: MemoryInfoDemo
  * Package: com.edl.memory

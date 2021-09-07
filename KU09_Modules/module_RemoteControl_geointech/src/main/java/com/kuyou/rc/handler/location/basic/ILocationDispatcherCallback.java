@@ -5,7 +5,7 @@ import android.location.Location;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 /**
- * action :位置提供[接口]
+ * action :位置分发[接口]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

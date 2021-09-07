@@ -27,7 +27,7 @@ import kuyou.common.bytes.ByteUtils;
  * </p>
  */
 public class SicLocationAlarm extends SicBasic {
-    protected final String TAG = "com.kuyou.rc.protocol > SicLocationAlarm";
+    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicLocationAlarm";
 
     private final int LOCATION_BATCH_SIZE = 3;
 

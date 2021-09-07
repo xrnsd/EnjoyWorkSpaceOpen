@@ -13,7 +13,7 @@ public interface IConfiguration {
      * 修改参数配置
      *
      * @param okOptions 新的参数配置
-     * @return 当前的链接管理器
+     * @return 当前的连接管理器
      */
     IConnectionManager option(OkSocketOptions okOptions);
 

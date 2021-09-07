@@ -1,7 +1,7 @@
 package kuyou.common.ipc.basic;
 
 /**
- * action :
+ * action :RemoteEventBus初始化状态监听器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

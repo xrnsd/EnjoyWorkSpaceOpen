@@ -72,6 +72,19 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".handler.location.trace.TraceTestActivity"
+            android:label="RC_LocationActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:theme="@style/translucent"
+            android:noHistory="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <service android:name="com.amap.api.location.APSService" />
 
         <meta-data

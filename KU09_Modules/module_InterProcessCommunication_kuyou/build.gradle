@@ -8,6 +8,8 @@ ext {
     moduleName = "InterProcessCommunication_kuyou"
     //应用包名
     modulePackageName = "com.kuyou.ipc"
+    //混淆
+    isConfuse = rootProject.ext.isConfuse
 }
 
 android {
@@ -30,14 +32,19 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "${versionNumberCustom()}"
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
     }
 
     buildTypes {
         release {
-//            zipAlignEnabled true
-//            minifyEnabled true
-//            shrinkResources true
-            minifyEnabled false
+            if (project.isConfuse) {
+                zipAlignEnabled project.isConfuse
+                minifyEnabled project.isConfuse
+                shrinkResources project.isConfuse
+            }else{
+                minifyEnabled false
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release //加入签名配置
         }

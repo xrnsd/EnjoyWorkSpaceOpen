@@ -35,7 +35,7 @@ public class AmapLocationActivity extends BasicPermissionsHandlerActivity
 
     protected final String TAG = "com.kuyou.rc.handler.location.amap > AmapLocationActivity";
 
-    private static final int GAO_DE_POSITION_FREQ = 5000;
+    private static final int GAO_DE_POSITION_FREQ = 2000;
     private static final String NOTIFICATION_CHANNEL_NAME = "状态";
 
     private boolean isCreateChannel = false;

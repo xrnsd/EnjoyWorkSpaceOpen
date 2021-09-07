@@ -92,7 +92,7 @@ public class Jt808ExtendProtocolCodec {
             Log.e(TAG, "handler > process fail : check fail");
             return;
         }
-        Log.i(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
+        Log.d(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
 
         SicBasic instruction = null;
         JTT808Bean bean = JTT808Coding.resolve808(bytes);
@@ -134,6 +134,7 @@ public class Jt808ExtendProtocolCodec {
                     getAutoLoadAllInfoCallBack().getInfoClass())) {
                 instruction = (SicBasic) item.newInstance();
                 instruction.setDeviceConfig(config);
+                Log.d(TAG, "load > " + instruction.getTitle());
                 mSicBasicList.add(instruction);
                 if (instruction.getFlag() > 0) {
                     mRequestParserList.put(instruction.getFlag(), instruction);

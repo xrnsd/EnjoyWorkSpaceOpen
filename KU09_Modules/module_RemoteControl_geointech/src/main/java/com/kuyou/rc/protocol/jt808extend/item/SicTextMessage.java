@@ -18,7 +18,7 @@ import kuyou.common.bytes.ByteUtils;
  * </p>
  */
 public class SicTextMessage extends SicBasic {
-    protected final String TAG = "com.kuyou.rc.protocol > SicTextMessage";
+    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicTextMessage";
 
     private String mText;
     private String mTextType;

@@ -6,6 +6,8 @@ ext {
     moduleName = "RemoteControl_geointech"
     //应用包名
     modulePackageName = "com.kuyou.rc"
+    //混淆
+    isConfuse = rootProject.ext.isConfuse
 }
 
 android {
@@ -31,13 +33,19 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', "arm64-v8a"
         }
+
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
     }
     buildTypes {
         release {
-//            zipAlignEnabled true
-//            minifyEnabled true
-//            shrinkResources true
-            minifyEnabled false
+            if (project.isConfuse) {
+                zipAlignEnabled project.isConfuse
+                minifyEnabled project.isConfuse
+                shrinkResources project.isConfuse
+            }else{
+                minifyEnabled false
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release //加入签名配置
         }
@@ -62,12 +70,14 @@ dependencies {
     implementation project(path: ':common_ku09')
     implementation project(path: ':module_RemoteControl_geointech:sdk_public_jt808')
 
+    implementation 'com.amap.api:3dmap:latest.integration'
+    implementation 'com.amap.api:location:4.7.0'
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation("com.google.guava:guava:28.2-android")
-    implementation 'com.amap.api:location:4.7.0'
     implementation 'com.fanjun:keeplive:1.1.20'
     implementation 'com.noober.light:core:1.1.0'
     implementation("com.squareup.okhttp3:okhttp:4.2.0")

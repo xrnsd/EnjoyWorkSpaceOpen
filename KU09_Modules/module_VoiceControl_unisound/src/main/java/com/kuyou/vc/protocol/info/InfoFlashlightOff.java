@@ -4,7 +4,7 @@ import com.kuyou.vc.protocol.CodecVoice;
 import com.kuyou.vc.protocol.basic.IOnParseListener;
 
 /**
- * action :
+ * action :协议编解码项[语音控制][硬件实现][关闭手电筒]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

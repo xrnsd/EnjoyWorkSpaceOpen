@@ -1,7 +1,7 @@
 package kuyou.common.serialport.base;
 
 /**
- * action :
+ * action :串口数据输入监听器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

@@ -4,19 +4,19 @@ import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.basic.EventKey;
 
 /**
- * action :
+ * action :协处理器[按键]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-21 <br/>
  * </p>
  */
-public class KeyHandler extends BasicEventHandler {
+public class KeyHandler extends BasicAssistHandler {
 
     protected final String TAG = "kuyou.common.ku09 > KeyHandler";
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventKey.Code.KEY_CLICK, false);
         registerHandleEvent(EventKey.Code.KEY_LONG_CLICK, false);
         registerHandleEvent(EventKey.Code.KEY_DOUBLE_CLICK, false);

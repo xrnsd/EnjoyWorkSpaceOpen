@@ -22,7 +22,7 @@ import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
  * </p>
  */
 public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
-    protected final String TAG = "com.kuyou.rc.protocol > SICAudioVideo";
+    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicAudioVideo";
 
     private int mPlatformType = IJT808ExtensionProtocol.PLATFORM_TYPE_PEERGIN;
     private int mChannelId = -1;

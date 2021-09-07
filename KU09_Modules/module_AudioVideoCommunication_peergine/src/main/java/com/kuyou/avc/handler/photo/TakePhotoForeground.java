@@ -50,12 +50,12 @@ import kuyou.common.ku09.ui.BasicActivity;
  */
 public class TakePhotoForeground extends BasicActivity {
 
-    private static final String TAG = "com.kuyou.avc > TakePhoto >";
+    private static final String TAG = "com.kuyou.avc.handler.photo > TakePhoto >";
 
     private static ITakePhotoByCameraResultListener sTakePhotoResultListener;
 
     public static void perform(Context context, Bundle data, ITakePhotoByCameraResultListener listener) {
-        Log.d(TAG, "perform > ");
+        Log.d(TAG, "perform > 前台拍照");
         sTakePhotoResultListener = listener;
 
         Intent intent = new Intent();
@@ -251,6 +251,12 @@ public class TakePhotoForeground extends BasicActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
             }
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
+        }
     }
 
     private boolean isLocalDeviceSendInitiate() {
@@ -272,7 +278,7 @@ public class TakePhotoForeground extends BasicActivity {
     }
 
     public class ImageSaver implements Runnable {
-        protected final String TAG = "com.kuyou.avc.ui > TakePhoto > ImageSaver ";
+        protected final String TAG = "com.kuyou.avc.handler.photo> TakePhotoForeground$ImageSaver ";
 
         private Image mImage = null;
         private File mFileImage = null;

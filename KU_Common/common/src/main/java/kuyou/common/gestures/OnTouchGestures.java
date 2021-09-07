@@ -3,7 +3,7 @@ package kuyou.common.gestures;
 import android.graphics.Rect;
 
 /**
- * action:TODO
+ * action:手势实现API
  * <p>
  * Package: com.wgx.common.gestures
  * ClassName: IGlobalTouchGesturesEventHandling

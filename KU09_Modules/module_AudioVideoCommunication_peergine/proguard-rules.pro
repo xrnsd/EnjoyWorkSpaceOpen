@@ -56,3 +56,4 @@
 -keep class android.app.**  {*;}
 -keep class com.peergine.**  {*;}
 -keep class com.thermal.**  {*;}
+-keep class com.kuyou.avc.handler.photo.**  {*;}

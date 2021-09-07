@@ -6,6 +6,8 @@ ext {
     moduleName = "TextToSpeech_unisound"
     //应用包名
     modulePackageName = "com.kuyou.tts"
+    //混淆
+    isConfuse = rootProject.ext.isConfuse
 }
 
 android {
@@ -31,6 +33,8 @@ android {
         ndk {
             abiFilters "armeabi-v7a"
         }
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
     }
     sourceSets{
         main{
@@ -41,9 +45,13 @@ android {
 
     buildTypes {
         release {
-//            zipAlignEnabled true
-//            minifyEnabled true
-//            shrinkResources true
+            if (project.isConfuse) {
+                zipAlignEnabled project.isConfuse
+                minifyEnabled project.isConfuse
+                shrinkResources project.isConfuse
+            }else{
+                minifyEnabled false
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release //加入签名配置
         }

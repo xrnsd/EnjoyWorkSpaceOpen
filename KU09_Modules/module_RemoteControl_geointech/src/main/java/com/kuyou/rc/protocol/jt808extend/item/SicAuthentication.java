@@ -18,11 +18,11 @@ import kuyou.sdk.jt808.utils.Base64Util;
  * </p>
  */
 public class SicAuthentication extends SicBasic {
-    protected final String TAG = "com.kuyou.rc.protocol > SICAuthentication";
+    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicAuthentication";
 
     @Override
     public String getTitle() {
-        return "设备鉴权_设备软硬件配置上报";
+        return "设备鉴权_设备软硬件配置";
     }
 
     @Override

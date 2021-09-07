@@ -10,17 +10,17 @@ import com.thermal.seekware.SeekImage;
 import com.thermal.seekware.SeekImageView;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**
- * action :
+ * action :协处理器[红外]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-23 <br/>
  * </p>
  */
-public class SeekThermalCameraControlHandler extends BasicEventHandler implements SeekCamera.StateCallback {
+public class SeekThermalCameraControlHandler extends BasicAssistHandler implements SeekCamera.StateCallback {
     protected final String TAG = "com.kuyou.avc.handler.infeare > SeekThermalImagingCameraHandler";
 
     private SeekCamera mSeekCamera;
@@ -114,7 +114,7 @@ public class SeekThermalCameraControlHandler extends BasicEventHandler implement
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
     }
 
     @Override

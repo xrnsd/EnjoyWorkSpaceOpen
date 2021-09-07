@@ -38,7 +38,7 @@ public class NetworkUtils {
         NetworkInfo info = sConnectivityManager.getActiveNetworkInfo();
         boolean isConnected = info != null && info.isConnected()  // 当前网络是连接的
                 && info.getState() == NetworkInfo.State.CONNECTED;      // 当前所连接的网络可用
-        Log.d(TAG, " isNetworkAvailable > ConnectivityManager.isConnected = " + isConnected);
+        //Log.d(TAG, " isNetworkAvailable > ConnectivityManager.isConnected = " + isConnected);
         return isConnected;
     }
 

@@ -15,7 +15,7 @@ import java.util.Map;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**
  * action :协处理器[音视频][抽象]
@@ -25,7 +25,7 @@ import kuyou.common.ku09.handler.BasicEventHandler;
  * date: 21-7-23 <br/>
  * </p>
  */
-public abstract class AudioVideoRequestResultHandler extends BasicEventHandler implements IAudioVideoRequestCallback,
+public abstract class AudioVideoRequestResultHandler extends BasicAssistHandler implements IAudioVideoRequestCallback,
         Application.ActivityLifecycleCallbacks,
         RemoteEventBus.IFrameLiveListener {
 

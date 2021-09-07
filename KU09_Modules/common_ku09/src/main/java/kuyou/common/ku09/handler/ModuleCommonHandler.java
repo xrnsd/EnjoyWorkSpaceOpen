@@ -5,19 +5,19 @@ import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.basic.EventCommon;
 
 /**
- * action :模块通用事件处理器
+ * action :协处理器[模块通用事件]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-21 <br/>
  * </p>
  */
-public class ModuleCommonHandler extends BasicEventHandler {
+public class ModuleCommonHandler extends BasicAssistHandler {
 
     protected final String TAG = "kuyou.common.ku09 > KeyHandler";
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
         registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
         registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
         registerHandleEvent(EventPowerChange.Code.POWER_CHANGE, false);

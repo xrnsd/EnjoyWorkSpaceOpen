@@ -191,7 +191,7 @@ public class OkSocketOptions implements IIOCoreOptions {
          * </p>
          * 默认是 true
          *
-         * @param connectionHolden true 讲此次链接交由OkSocket进行缓存管理,false 则不进行缓存管理.
+         * @param connectionHolden true 讲此次连接交由OkSocket进行缓存管理,false 则不进行缓存管理.
          */
         public Builder setConnectionHolden(boolean connectionHolden) {
             mOptions.isConnectionHolden = connectionHolden;

@@ -21,7 +21,7 @@ public interface IJT808ExtensionProtocol {
      */
     public final static int S2C_REQUEST_TEXT_MESSAGE = 0x8300;
     /**
-     * action : 拍照和拍照后上传
+     * action : 拍照和照片上传
      * flow：server > client
      */
     public final static int S2C_REQUEST_PHOTO_TAKE_AND_PHOTO_UPLOAD = 0x8F02;
@@ -43,7 +43,7 @@ public interface IJT808ExtensionProtocol {
      */
     public final static int S2C_RESULT_AUTHENTICATION_REPLY = 0x8fff;
     /**
-     * action : 上传照片结果回复
+     * action : 服务器接收照片的回复
      * flow：server > client
      */
     public final static int S2C_RESULT_PHOTO_UPLOAD_REPLY = 0x8F01;
@@ -68,7 +68,7 @@ public interface IJT808ExtensionProtocol {
 
     // C2S_RESULT
     /**
-     * action : 终端对拍照和拍照后上传处理回复
+     * action : 终端对"拍照和照片上传"的处理回复
      * flow：client > server
      */
     public final static int C2S_RESULT_PHOTO_TAKE_AND_PHOTO_UPLOAD = 0x0F01;

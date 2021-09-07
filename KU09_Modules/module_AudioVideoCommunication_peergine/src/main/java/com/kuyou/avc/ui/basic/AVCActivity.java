@@ -63,13 +63,13 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
         return mTakePhotoByScreenshotResultCallback;
     }
 
-    protected void onScreenshotResult(boolean result, String info) {
+    protected void onTakePhotoResult(boolean result, String info) {
         if (null == getTakePhotoByScreenshotResultCallback()) {
-            Log.e(TAG, "onScreenshotResult > process fail : mTakePhotoByScreenshotResultCallback is null");
+            Log.e(TAG, "onTakePhotoResult > process fail : mTakePhotoByScreenshotResultCallback is null");
             return;
         }
         getTakePhotoByScreenshotResultCallback()
-                .onScreenshotResult(result, info, getTakePhotoByScreenshotResultCallback().getEventData());
+                .onTakePhotoResult(result, info, getTakePhotoByScreenshotResultCallback().getEventData());
     }
 
     @Override

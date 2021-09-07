@@ -9,17 +9,17 @@ import com.peergine.plugin.android.pgDevVideoIn;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
-import kuyou.common.ku09.handler.BasicEventHandler;
+import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**
- * action :
+ * action :协处理器[Peergine][红外]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-8-23 <br/>
  * </p>
  */
-public class PeergineThermalCameraCaptureHandler extends BasicEventHandler
+public class PeergineThermalCameraCaptureHandler extends BasicAssistHandler
         implements IPeergineCameraCaptureHandler {
 
     protected final String TAG = "com.kuyou.avc.handler.thermal > PeergineThermalCameraCaptureHandler";
@@ -48,7 +48,7 @@ public class PeergineThermalCameraCaptureHandler extends BasicEventHandler
     }
 
     @Override
-    public BasicEventHandler setDispatchEventCallBack(IEventBusDispatchCallback dispatchEventCallBack) {
+    public BasicAssistHandler setDispatchEventCallBack(IEventBusDispatchCallback dispatchEventCallBack) {
         getThermalCameraControlHandler().setDispatchEventCallBack(dispatchEventCallBack);
         return super.setDispatchEventCallBack(dispatchEventCallBack);
     }
@@ -79,7 +79,7 @@ public class PeergineThermalCameraCaptureHandler extends BasicEventHandler
     }
 
     @Override
-    protected void initHandleEventCodeList() {
+    protected void initReceiveEventNotices() {
     }
 
     @Override

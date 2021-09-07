@@ -12,7 +12,7 @@ import kuyou.common.bytes.ByteUtils;
 
 
 /**
- * action :
+ * action :串口读写实现
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
