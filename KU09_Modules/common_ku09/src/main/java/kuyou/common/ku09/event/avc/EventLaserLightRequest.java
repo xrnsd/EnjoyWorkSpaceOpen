@@ -13,8 +13,6 @@ import kuyou.common.ku09.event.avc.basic.EventRequest;
  */
 public class EventLaserLightRequest extends EventRequest {
 
-    protected static final String KEY_IS_SWITCH = "keyEventData.isSwitch";
-
     public EventLaserLightRequest setSwitch(boolean val) {
         getData().putBoolean(KEY_IS_SWITCH, val);
         return EventLaserLightRequest.this;

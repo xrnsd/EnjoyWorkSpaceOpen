@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  */
 public class EventAlarmGas extends EventAlarm {
 
-    protected final static String KEY_TYPE = "key.gas.alarm.type";
+    protected final static String KEY_TYPE = "keyEventData.gasAlarmType";
 
     public static interface Type {
         public final static int OFF = 999;
@@ -38,7 +38,7 @@ public class EventAlarmGas extends EventAlarm {
 
     @Override
     public int getCode() {
-        return Code.ALARM_GAS;
+        return ALARM_GAS;
     }
 
     public static int getType(RemoteEvent event) {

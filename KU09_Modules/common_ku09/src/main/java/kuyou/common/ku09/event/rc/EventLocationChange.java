@@ -15,12 +15,9 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
  */
 public class EventLocationChange extends EventRemoteControl {
 
-    protected static final String KEY_LONGITUDE = "event.data.Longitude";
-    protected static final String KEY_LATITUDE = "event.data.Latitude";
-
     @Override
     public int getCode() {
-        return Code.LOCATION_CHANGE;
+        return LOCATION_CHANGE;
     }
 
     public EventLocationChange setLongitude(double val) {

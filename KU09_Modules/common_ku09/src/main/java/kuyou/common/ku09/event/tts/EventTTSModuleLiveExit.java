@@ -18,8 +18,6 @@ public class EventTTSModuleLiveExit extends EventTextToSpeech {
         public final static int REBOOT = 1;
     }
 
-    protected static final String KEY_EXIT_TYPE = "keyEventData.exitType";
-
     @Override
     public int getCode() {
         return Code.MODULE_EXIT;

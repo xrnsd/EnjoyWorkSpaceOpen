@@ -13,8 +13,9 @@ import android.os.Bundle;
 public abstract class RemoteEvent {
 
     protected final static String TAG = "com.kuyou.ipc > RemoteEvent";
-    protected final static String KEY_EVENT_CODE = "event.code";
-    protected final static String KEY_EVENT_START_PACKAGE_NAME = "event.start.package.name";
+
+    protected final static String KEY_EVENT_CODE = "keyEventData.eventCode";
+    protected final static String KEY_EVENT_START_PACKAGE_NAME = "keyEventData.packageNameStart";
 
     protected final static int NONE = -1;
 

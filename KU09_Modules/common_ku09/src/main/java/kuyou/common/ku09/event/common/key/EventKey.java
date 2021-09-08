@@ -1,8 +1,9 @@
-package kuyou.common.ku09.event.common.basic;
+package kuyou.common.ku09.event.common.key;
 
 import androidx.annotation.NonNull;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.event.common.EventCommon;
 
 /**
  * action :事件[按键][抽象]
@@ -13,7 +14,6 @@ import kuyou.common.ipc.RemoteEvent;
  * </p>
  */
 public abstract class EventKey extends EventCommon {
-    public static final String KEY_CODE = "key.code";
 
     public EventKey() {
 

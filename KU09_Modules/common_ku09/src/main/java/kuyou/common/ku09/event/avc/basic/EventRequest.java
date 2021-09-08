@@ -9,17 +9,7 @@ package kuyou.common.ku09.event.avc.basic;
  * </p>
  */
 public abstract class EventRequest extends EventAudioVideoCommunication {
-
-    public static final String KEY_REQUEST_CODE = "request.code";
-
-    public static interface RequestCode {
-        public final static int OPEN = 0;
-        public final static int CLOSE = 1;
-        public final static int SHOOT = 2;
-        public final static int UPLOAD = 3;
-        public final static int SHOOT_UPLOAD = 4;
-    }
-
+    
     public EventRequest() {
 
     }

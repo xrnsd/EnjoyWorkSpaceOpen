@@ -37,34 +37,34 @@ public class AlarmHandler extends BasicAssistHandler implements ALARM {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventAlarm.Code.ALARM_NEAR_POWER, false);
-        registerHandleEvent(EventAlarm.Code.ALARM_CAP_OFF, false);
-        registerHandleEvent(EventAlarm.Code.ALARM_FALL, false);
-        registerHandleEvent(EventAlarm.Code.ALARM_GAS, false);
-        registerHandleEvent(EventAlarm.Code.ALARM_SOS, false);
+        registerHandleEvent(EventAlarm.ALARM_NEAR_POWER, false);
+        registerHandleEvent(EventAlarm.ALARM_CAP_OFF, false);
+        registerHandleEvent(EventAlarm.ALARM_FALL, false);
+        registerHandleEvent(EventAlarm.ALARM_GAS, false);
+        registerHandleEvent(EventAlarm.ALARM_SOS, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventAlarm.Code.ALARM_NEAR_POWER:
+            case EventAlarm.ALARM_NEAR_POWER:
                 play("您已进入强电非安全区域");
                 getLocationProvider().getLocationInfo().setAlarmFlag(IJT808ExtensionProtocol.ALARM_FLAG_NEAR_POWER);
                 break;
 
-            case EventAlarm.Code.ALARM_CAP_OFF:
+            case EventAlarm.ALARM_CAP_OFF:
                 getLocationProvider().getLocationInfo().setAlarmFlag(IJT808ExtensionProtocol.ALARM_FLAG_CAP_OFF);
                 break;
 
-            case EventAlarm.Code.ALARM_FALL:
+            case EventAlarm.ALARM_FALL:
                 getLocationProvider().getLocationInfo().setAlarmFlag(IJT808ExtensionProtocol.ALARM_FLAG_FALL);
                 break;
 
-            case EventAlarm.Code.ALARM_GAS:
+            case EventAlarm.ALARM_GAS:
                 getLocationProvider().getLocationInfo().setAlarmFlag(IJT808ExtensionProtocol.ALARM_FLAG_GAS);
                 break;
 
-            case EventAlarm.Code.ALARM_SOS:
+            case EventAlarm.ALARM_SOS:
                 Log.i(TAG, "onReceiveEventNotice > SOS报警");
                 SicLocationAlarm info = getLocationProvider().getLocationInfo();
 

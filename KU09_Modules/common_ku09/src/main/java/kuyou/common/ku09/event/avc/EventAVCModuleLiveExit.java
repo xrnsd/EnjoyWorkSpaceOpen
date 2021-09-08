@@ -17,8 +17,6 @@ public class EventAVCModuleLiveExit extends EventAudioVideoCommunication {
         public final static int SHUTDOWN = 0;
         public final static int REBOOT = 1;
     }
-
-    protected static final String KEY_EXIT_TYPE = "keyEventData.exitType";
     
     @Override
     public int getCode() {

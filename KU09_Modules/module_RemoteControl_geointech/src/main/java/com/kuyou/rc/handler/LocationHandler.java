@@ -138,22 +138,22 @@ public class LocationHandler extends BasicAssistHandler implements ILocationProv
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+        registerHandleEvent(EventRemoteControl.HEARTBEAT_REPORT, false);
 
-        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
-        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.LOCATION_REPORT_START_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.LOCATION_REPORT_STOP_REQUEST, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-//            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
+//            case EventRemoteControl.LOCATION_REPORT_START_REQUEST:
 //                Log.i(TAG, "onReceiveEventNotice > 开始上报位置 ");
 //                break;
-//            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
+//            case EventRemoteControl.LOCATION_REPORT_STOP_REQUEST:
 //                Log.i(TAG, "onReceiveEventNotice > 停止上报位置 ");
 //                break;
-            case EventRemoteControl.Code.HEARTBEAT_REPORT:
+            case EventRemoteControl.HEARTBEAT_REPORT:
 //                Log.d(TAG, "onReceiveEventNotice > 心跳");
                 dispatchEvent(new EventSendToRemoteControlPlatformRequest()
                         .setMsg(getLocationInfo().getBody()));

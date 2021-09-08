@@ -1,6 +1,4 @@
-package kuyou.common.ku09.event.common;
-
-import kuyou.common.ku09.event.common.basic.EventKey;
+package kuyou.common.ku09.event.common.key;
 
 /**
  * action :事件[按键，双击]
@@ -13,7 +11,7 @@ import kuyou.common.ku09.event.common.basic.EventKey;
 public class EventKeyDoubleClick extends EventKey {
 
     public EventKeyDoubleClick(){
-        super(Code.KEY_DOUBLE_CLICK);
+        super(KEY_DOUBLE_CLICK);
     }
 
     public EventKeyDoubleClick(int keyCode) {
@@ -22,6 +20,6 @@ public class EventKeyDoubleClick extends EventKey {
 
     @Override
     public int getCode() {
-        return Code.KEY_DOUBLE_CLICK;
+        return KEY_DOUBLE_CLICK;
     }
 }

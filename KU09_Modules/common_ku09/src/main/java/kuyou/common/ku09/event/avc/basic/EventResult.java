@@ -12,8 +12,6 @@ import kuyou.common.ipc.RemoteEvent;
  */
 public abstract class EventResult extends EventAudioVideoCommunication {
 
-    public static final String KEY_RESULT_CODE = "keyEventData.resultCode";
-
     public static interface ResultCode {
         public final static int SUCCESS = 0;
         public final static int FAIL = 1;

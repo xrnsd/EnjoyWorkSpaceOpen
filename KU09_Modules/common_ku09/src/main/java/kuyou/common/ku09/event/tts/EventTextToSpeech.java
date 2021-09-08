@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.tts;
 
-import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.event.common.EventCommon;
 
 /**
  * action :事件[语音生成][抽象]
@@ -10,12 +10,13 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-29 <br/>
  * </p>
  */
-public abstract class EventTextToSpeech extends RemoteEvent {
+public abstract class EventTextToSpeech extends EventCommon {
 
-    protected final String TAG = "kuyou.common.ku09.event.tts > "+ this.getClass().getSimpleName();
+    protected final String TAG = "kuyou.common.ku09.event.tts > " + this.getClass().getSimpleName();
 
     //8292~10339
     protected final static int FLAG_CODE = 8292;
+
     //FLAG_CODE+0 ~ FLAG_CODE+2047
     public static interface Code {
         //模块状态相关 0~127

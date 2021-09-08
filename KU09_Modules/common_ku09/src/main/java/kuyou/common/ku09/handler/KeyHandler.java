@@ -1,7 +1,7 @@
 package kuyou.common.ku09.handler;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.basic.EventKey;
+import kuyou.common.ku09.event.common.key.EventKey;
 
 /**
  * action :协处理器[按键]
@@ -17,21 +17,21 @@ public class KeyHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventKey.Code.KEY_CLICK, false);
-        registerHandleEvent(EventKey.Code.KEY_LONG_CLICK, false);
-        registerHandleEvent(EventKey.Code.KEY_DOUBLE_CLICK, false);
+        registerHandleEvent(EventKey.KEY_CLICK, false);
+        registerHandleEvent(EventKey.KEY_LONG_CLICK, false);
+        registerHandleEvent(EventKey.KEY_DOUBLE_CLICK, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventKey.Code.KEY_CLICK:
+            case EventKey.KEY_CLICK:
                 onKeyClick(EventKey.getKeyCode(event));
                 break;
-            case EventKey.Code.KEY_LONG_CLICK:
+            case EventKey.KEY_LONG_CLICK:
                 onKeyLongClick(EventKey.getKeyCode(event));
                 break;
-            case EventKey.Code.KEY_DOUBLE_CLICK:
+            case EventKey.KEY_DOUBLE_CLICK:
                 onKeyDoubleClick(EventKey.getKeyCode(event));
                 break;
             default:

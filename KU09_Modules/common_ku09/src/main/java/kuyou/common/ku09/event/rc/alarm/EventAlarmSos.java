@@ -11,6 +11,6 @@ package kuyou.common.ku09.event.rc.alarm;
 public class EventAlarmSos extends EventAlarm {
     @Override
     public int getCode() {
-        return Code.ALARM_SOS;
+        return ALARM_SOS;
     }
 }

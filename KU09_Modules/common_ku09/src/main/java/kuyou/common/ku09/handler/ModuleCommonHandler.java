@@ -1,8 +1,7 @@
 package kuyou.common.ku09.handler;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.EventPowerChange;
-import kuyou.common.ku09.event.common.basic.EventCommon;
+import kuyou.common.ku09.event.common.EventCommon;
 
 /**
  * action :协处理器[模块通用事件]
@@ -18,19 +17,19 @@ public class ModuleCommonHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
-        registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
-        registerHandleEvent(EventPowerChange.Code.POWER_CHANGE, false);
+        registerHandleEvent(EventCommon.NETWORK_CONNECTED, true);
+        registerHandleEvent(EventCommon.NETWORK_DISCONNECT, true);
+        registerHandleEvent(EventCommon.POWER_CHANGE, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventPowerChange.Code.POWER_CHANGE:
+            case EventCommon.POWER_CHANGE:
                 break;
-            case EventPowerChange.Code.NETWORK_CONNECTED:
+            case EventCommon.NETWORK_CONNECTED:
                 break;
-            case EventPowerChange.Code.NETWORK_DISCONNECT:
+            case EventCommon.NETWORK_DISCONNECT:
                 break;
             default:
                 return false;

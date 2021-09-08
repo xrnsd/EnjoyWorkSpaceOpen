@@ -5,6 +5,7 @@ import android.util.Log;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.config.IKeyConfig;
 import kuyou.common.ku09.event.common.EventPowerChange;
+import kuyou.common.ku09.event.common.EventCommon;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmSos;
@@ -22,6 +23,7 @@ public class LocalKeyHandler extends KeyHandler {
     protected final String TAG = "com.kuyou.rc.handler > KeyHandler";
 
     private boolean isEnableNearPowerAlarm = true;
+    private boolean isBindingMode = false;
 
     @Override
     public void onKeyClick(int keyCode) {
@@ -69,7 +71,7 @@ public class LocalKeyHandler extends KeyHandler {
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventPowerChange.Code.POWER_CHANGE:
+            case EventCommon.POWER_CHANGE:
                 int status = EventPowerChange.getPowerStatus(event);
                 isEnableNearPowerAlarm = EventPowerChange.POWER_STATUS.CHARGE != status
                         && EventPowerChange.POWER_STATUS.SHUTDOWN != status;

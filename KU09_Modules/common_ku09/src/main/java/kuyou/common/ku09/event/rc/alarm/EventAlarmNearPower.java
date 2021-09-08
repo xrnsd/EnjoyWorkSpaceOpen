@@ -11,6 +11,6 @@ package kuyou.common.ku09.event.rc.alarm;
 public class EventAlarmNearPower extends EventAlarm {
     @Override
     public int getCode() {
-        return Code.ALARM_NEAR_POWER;
+        return ALARM_NEAR_POWER;
     }
 }

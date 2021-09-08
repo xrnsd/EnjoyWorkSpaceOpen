@@ -32,7 +32,7 @@ public class SicAuthentication extends SicBasic {
 
     @Override
     public boolean isMatchEventCode(int eventCode) {
-        return eventCode == EventRemoteControl.Code.AUTHENTICATION_REQUEST;
+        return eventCode == EventRemoteControl.AUTHENTICATION_REQUEST;
     }
 
     @Override

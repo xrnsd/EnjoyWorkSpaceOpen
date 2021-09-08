@@ -18,6 +18,6 @@ public class EventLocationReportRequest extends EventRemoteControl {
     
     @Override
     public int getCode() {
-        return Code.LOCATION_REPORT_REQUEST;
+        return LOCATION_REPORT_REQUEST;
     }
 }

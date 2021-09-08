@@ -88,7 +88,7 @@ public class PhotoTakeHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT, true);
+        registerHandleEvent(EventRemoteControl.PHOTO_UPLOAD_RESULT, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_REQUEST, true);
     }
 

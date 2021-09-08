@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.avc.basic;
 
-import kuyou.common.ku09.event.common.basic.RemoteEventCommon;
+import kuyou.common.ku09.event.common.EventCommon;
 
 /**
  * action :模块事件基础配置
@@ -10,7 +10,7 @@ import kuyou.common.ku09.event.common.basic.RemoteEventCommon;
  * date: 21-3-29 <br/>
  * </p>
  */
-public abstract class EventAudioVideoCommunication extends RemoteEventCommon {
+public abstract class EventAudioVideoCommunication extends EventCommon {
 
     protected final String TAG = "kuyou.common.ku09.event.avc > " + this.getClass().getSimpleName();
 

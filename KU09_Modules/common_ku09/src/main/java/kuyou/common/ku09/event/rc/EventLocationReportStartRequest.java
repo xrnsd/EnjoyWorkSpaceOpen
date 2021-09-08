@@ -13,6 +13,6 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 public class EventLocationReportStartRequest extends EventRemoteControl {
     @Override
     public int getCode() {
-        return Code.LOCATION_REPORT_START_REQUEST;
+        return LOCATION_REPORT_START_REQUEST;
     }
 }

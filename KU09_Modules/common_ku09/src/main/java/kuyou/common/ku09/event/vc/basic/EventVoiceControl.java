@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.vc.basic;
 
-import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.event.common.EventCommon;
 
 /**
  * action :事件[语言控制][抽象]
@@ -10,12 +10,13 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-29 <br/>
  * </p>
  */
-public abstract class EventVoiceControl extends RemoteEvent {
+public abstract class EventVoiceControl extends EventCommon {
 
     protected final String TAG = "kuyou.common.ku09.event.voicecontrol > " + this.getClass().getSimpleName();
 
     //10340 ~ 12387
     protected final static int FLAG_CODE = 10340;
+
     //FLAG_CODE+0 ~ FLAG_CODE+2047
     public static interface Code {
         //模块状态相关 0~127

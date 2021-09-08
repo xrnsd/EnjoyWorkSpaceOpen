@@ -1,6 +1,5 @@
 package kuyou.common.ku09.event.common;
 
-import kuyou.common.ku09.event.common.basic.EventCommon;
 
 /**
  * action :事件[网络连接]
@@ -13,6 +12,6 @@ import kuyou.common.ku09.event.common.basic.EventCommon;
 public class EventNetworkConnect extends EventCommon {
     @Override
     public int getCode() {
-        return Code.NETWORK_CONNECTED;
+        return NETWORK_CONNECTED;
     }
 }
