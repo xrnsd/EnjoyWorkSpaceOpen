@@ -33,6 +33,7 @@ import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
 import kuyou.common.ku09.event.rc.EventConnectRequest;
 import kuyou.common.ku09.event.rc.EventConnectResult;
+import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
@@ -364,14 +365,24 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }, 500);
                 break;
 
+            case EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_FINISH:
+                Log.i(TAG, "onReceiveEventNotice > 发送鉴权信息[已添加硬件搭载状态信息]");
+                SicBasic singleInstructionParser = PlatformInteractiveHandler.this.getSingleInstructionParserByEventCode(event);
+                if (null == singleInstructionParser) {
+                    break;
+                }
+                SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
+                authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
+                authentication.setItemAdditionHardwareModuleDetection(EventHardwareModuleStatusDetectionResult.getMsg(event));
+                sendToRemoteControlPlatform(authentication.getBody());
+                break;
+
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
                 sendToRemoteControlPlatform(EventSendToRemoteControlPlatformRequest.getMsg(event));
                 break;
 
             case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:
                 Log.i(TAG, "onReceiveEventNotice > 申请音视频参数和操作");
-                final int eventType = EventAudioVideoParametersApplyRequest.getEventType(event);
-                boolean isClose = IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType;
 
                 //处理：在未连接平台情况下申请打开参数
                 if (!isRemoteControlPlatformConnected) {
@@ -383,19 +394,15 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                     break;
                 }
 
-                //处理：平台未响应时的超时机制
-                int platformType = EventAudioVideoParametersApplyRequest.getPlatformType(event);
-                int mediaTypeCode = EventAudioVideoParametersApplyRequest.getMediaType(event);
-
                 //处理：通知平台
                 SicBasic singleInstructionParserAVOAR = getSingleInstructionParserByEventCode(event);
                 if (null == singleInstructionParserAVOAR) {
                     break;
                 }
                 byte[] PlatformDirectiveAVCMsg = ((SicAudioVideo) singleInstructionParserAVOAR)
-                        .setPlatformType(platformType)
-                        .setMediaType(mediaTypeCode)
-                        .setEventType(eventType)
+                        .setPlatformType(EventAudioVideoParametersApplyRequest.getPlatformType(event))
+                        .setMediaType(EventAudioVideoParametersApplyRequest.getMediaType(event))
+                        .setEventType(EventAudioVideoParametersApplyRequest.getEventType(event))
                         .getBody(SicBasic.BodyConfig.REQUEST);
                 sendToRemoteControlPlatform(PlatformDirectiveAVCMsg);
                 break;

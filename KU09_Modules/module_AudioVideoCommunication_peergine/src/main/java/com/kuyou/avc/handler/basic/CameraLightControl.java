@@ -24,26 +24,31 @@ import kuyou.common.utils.CommonUtils;
  */
 public class CameraLightControl {
 
-    protected final String TAG = "com.kuyou.avc.util > " + this.getClass().getSimpleName();
+    protected static final String TAG = "com.kuyou.avc.util > CameraLightControl";
 
-    private CameraManager mCameraManager;
-    private CameraManager.TorchCallback mTorchCallback;
-    private boolean isFlashLightOn = false;
-    private Context mContext = null;
-
-    private static CameraLightControl sMain;
+    private volatile static CameraLightControl sInstance;
 
     private CameraLightControl(Context context) {
 
     }
 
     public static CameraLightControl getInstance(Context context) {
-        if (null == sMain) {
-            sMain = new CameraLightControl(context);
+        if (sInstance == null) {
+            synchronized (CameraLightControl.class) {
+                if (sInstance == null) {
+                    context=context.getApplicationContext();
+                    sInstance = new CameraLightControl(context);
+                    sInstance.initTorchCallback(context);
+                }
+            }
         }
-        sMain.initTorchCallback(context);
-        return sMain;
+        return sInstance;
     }
+
+    private CameraManager mCameraManager;
+    private CameraManager.TorchCallback mTorchCallback;
+    private boolean isFlashLightOn = false;
+    private Context mContext = null;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void initTorchCallback(Context context) {
@@ -76,7 +81,7 @@ public class CameraLightControl {
     }
 
     public boolean isFlashLightOn() {
-        Log.d(TAG, "isFlashLightOn > isFlashLightOn ="+isFlashLightOn);
+        Log.d(TAG, "isFlashLightOn > isFlashLightOn =" + isFlashLightOn);
         return isFlashLightOn;
     }
 

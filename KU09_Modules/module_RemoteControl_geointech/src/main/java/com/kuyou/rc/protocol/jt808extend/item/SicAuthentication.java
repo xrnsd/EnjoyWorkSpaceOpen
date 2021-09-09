@@ -32,12 +32,13 @@ public class SicAuthentication extends SicBasic {
 
     @Override
     public boolean isMatchEventCode(int eventCode) {
-        return eventCode == EventRemoteControl.Code.AUTHENTICATION_REQUEST;
+        return eventCode == EventRemoteControl.Code.AUTHENTICATION_REQUEST ||
+                eventCode == EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_RESULT;
     }
 
     @Override
     public void parse(byte[] data, InstructionParserListener listener) {
-        super.parse(data,listener);
+        super.parse(data, listener);
     }
 
     @Override
@@ -68,12 +69,18 @@ public class SicAuthentication extends SicBasic {
             Log.e(TAG, "getItemAddition > process fail : peergine 多端视频服务SDK的采集端ID为空");
         }
 
-        return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes);
+        if(null!=mItemAdditionHardwareModuleDetection){
+            return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes,mItemAdditionHardwareModuleDetection);
+        }
 
-//        byte[] hardwareModuleStatus = new byte[2];
-//        byte[] hardwareModuleStatusBytes = getConfig().getCollectingEndId().getBytes();//协议 V20210723
-//        hardwareModuleStatus[0] = (byte) (0xE3);
-//        hardwareModuleStatus[1] = ByteUtils.int2Byte(hardwareModuleStatus.length);
+        return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes);
+    }
+
+    private byte[] mItemAdditionHardwareModuleDetection;
+
+    public SicAuthentication setItemAdditionHardwareModuleDetection(byte[] itemAddition) {
+        mItemAdditionHardwareModuleDetection = itemAddition;
+        return SicAuthentication.this;
     }
 
     @Override
@@ -85,6 +92,6 @@ public class SicAuthentication extends SicBasic {
         sb.append("\npeergine 多端视频服务SDK的采集端ID = ").append(getDeviceConfig().getCollectingEndId());
         return sb.toString();
     }
-    
-    
+
+
 }

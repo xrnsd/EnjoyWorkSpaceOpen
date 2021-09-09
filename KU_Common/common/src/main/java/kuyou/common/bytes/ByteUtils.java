@@ -67,11 +67,15 @@ public class ByteUtils {
     public static byte[] byteMergerAll(List<byte[]> bytes) {
         int allLength = 0;
         for (byte[] b : bytes) {
+            if (null == b)
+                continue;
             allLength += b.length;
         }
         byte[] allByte = new byte[allLength];
         int countLength = 0;
         for (byte[] b : bytes) {
+            if (null == b)
+                continue;
             System.arraycopy(b, 0, allByte, countLength, b.length);
             countLength += b.length;
         }

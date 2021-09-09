@@ -1,6 +1,8 @@
 package kuyou.common.ku09.handler;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public abstract class BasicAssistHandler {
     protected final String TAG = "kuyou.common.ku09.handler > BasicEventHandler";
 
     private Context mContext;
+
+    private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
     protected Context getContext() {
         return mContext;
@@ -100,7 +104,7 @@ public abstract class BasicAssistHandler {
     }
 
     protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
-        
+
     }
 
     //RemoteEventBus 相关
@@ -171,7 +175,17 @@ public abstract class BasicAssistHandler {
             Log.e(TAG, "dispatchEvent > process fail : mDispatchEventCallBack is null");
             return;
         }
-        mEventBusDispatchCallBack.dispatchEvent(event);
+        //确保在主线程处理
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            mEventBusDispatchCallBack.dispatchEvent(event);
+            return;
+        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                BasicAssistHandler.this.mEventBusDispatchCallBack.dispatchEvent(event);
+            }
+        });
     }
 
     protected void play(String content) {
