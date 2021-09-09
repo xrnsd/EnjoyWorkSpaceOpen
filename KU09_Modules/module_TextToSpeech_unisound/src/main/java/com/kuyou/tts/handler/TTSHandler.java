@@ -15,8 +15,8 @@ import kuyou.common.ku09.event.tts.EventTTSModuleLiveExit;
 import kuyou.common.ku09.event.tts.EventTextToSpeech;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :协处理器[语音合成]

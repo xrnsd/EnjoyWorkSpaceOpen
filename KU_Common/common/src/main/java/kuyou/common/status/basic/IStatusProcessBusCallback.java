@@ -1,4 +1,4 @@
-package kuyou.common.ku09.status.basic;
+package kuyou.common.status.basic;
 
 import android.os.Looper;
 

@@ -14,8 +14,8 @@ import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :协处理器[心跳和设备上下线]

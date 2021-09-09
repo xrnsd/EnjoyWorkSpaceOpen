@@ -1,12 +1,12 @@
-package kuyou.common.ku09.status;
+package kuyou.common.status;
 
 import android.os.Looper;
 import android.util.Log;
 
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
-    protected static final String TAG = "kuyou.common.ku09.status > StatusProcessBusCallbackImpl ";
+    protected static final String TAG = "kuyou.common.status > StatusProcessBusCallbackImpl ";
 
     private int mStatusProcessFlag = -1;
     private boolean isAutoNoticeReceiveCycle = false;

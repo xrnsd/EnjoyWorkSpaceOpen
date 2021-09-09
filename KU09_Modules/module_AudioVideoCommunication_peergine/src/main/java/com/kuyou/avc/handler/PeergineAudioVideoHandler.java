@@ -39,8 +39,8 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :协处理器[音视频][基于Peergine]

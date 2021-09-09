@@ -1,4 +1,4 @@
-package com.kuyou.rc.handler.hardware;
+package com.kuyou.rc.handler.hmd;
 
 import kuyou.common.bytes.ByteUtils;
 

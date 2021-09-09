@@ -3,6 +3,7 @@ package com.kuyou.rc.protocol.uwb;
 import android.content.Context;
 import android.util.Log;
 
+import com.kuyou.rc.handler.hmd.UsbDeviceHandler;
 import com.kuyou.rc.protocol.uwb.basic.IModuleInfoListener;
 import com.kuyou.rc.protocol.uwb.basic.InfoUwb;
 import com.kuyou.rc.protocol.uwb.info.InfoSetModuleId;
@@ -22,18 +23,33 @@ import kuyou.common.serialport.protocol.SerialPortImpl;
  */
 public class UwbManager {
 
-    protected final String TAG = "com.kuyou.rc.location.uwb > " + this.getClass().getSimpleName();
+    protected final static String TAG = "com.kuyou.rc.location.uwb > UwbManager";
+
+    private volatile static UwbManager sInstance;
+
+    private UwbManager(Context context) {
+        init(context);
+    }
+
+    public static UwbManager getInstance(Context context) {
+        if (sInstance == null) {
+            synchronized (UsbDeviceHandler.class) {
+                if (sInstance == null) {
+                    sInstance = new UwbManager(context);
+                }
+            }
+        }
+        return sInstance;
+    }
 
     private static final String VAL_ON_SERIAL_PORT = "uwb_uart_on";
     private static final String VAL_OFF_SERIAL_PORT = "uwb_uart_off";
-
-    private static UwbManager sMain;
 
     private Param mSerialPortParam;
     private SerialPortImpl mSerialPort;
     private CodecUwb mCodec;
 
-    private UwbManager(Context context, IModuleInfoListener listener) {
+    protected void init(Context context) {
         setParam(new Param()
                 .setPathDev("/sys/kernel/lactl/attr/uwb")
                 .setPathDevOnVal("uwb_pwr_on")
@@ -47,17 +63,9 @@ public class UwbManager {
                 .setBufferSize(32)
                 .setBaudRate(115200));
         mCodec = CodecUwb.getInstance(context.getApplicationContext());
-        mCodec.setListener(listener);
     }
 
-    public static UwbManager getInstance(Context context, IModuleInfoListener listener) {
-        if (null == sMain) {
-            sMain = new UwbManager(context, listener);
-        }
-        return sMain;
-    }
-
-    public UwbManager setParam(Param param) {
+    protected UwbManager setParam(Param param) {
         param.setListener(new SerialPort.IOnSerialPortListener() {
             @Override
             public void onReceiveData(byte[] data) {
@@ -73,6 +81,15 @@ public class UwbManager {
 
         if (null == mSerialPort) {
             mSerialPort = SerialPortImpl.getInstance(param);
+        }
+        return UwbManager.this;
+    }
+
+    public UwbManager setModuleInfoListener(IModuleInfoListener listener) {
+        if (null == mCodec) {
+            Log.e(TAG, "getEventDispatchList > process fail : IModuleInfoListener is null");
+        } else {
+            mCodec.setListener(listener);
         }
         return UwbManager.this;
     }

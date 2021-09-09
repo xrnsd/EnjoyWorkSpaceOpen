@@ -1,6 +1,6 @@
 package com.kuyou.rc.handler;
 
-import com.kuyou.rc.handler.hardware.HardwareModuleInfo;
+import com.kuyou.rc.handler.hmd.HardwareModuleInfo;
 
 import java.util.ArrayList;
 import java.util.List;

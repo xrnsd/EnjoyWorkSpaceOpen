@@ -1,4 +1,4 @@
-package com.kuyou.rc.handler.hardware;
+package com.kuyou.rc.handler.hmd;
 
 import android.content.Context;
 import android.hardware.camera2.CameraCharacteristics;
@@ -19,8 +19,8 @@ import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionReq
 import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.IHardwareModule;
-import kuyou.common.ku09.status.StatusProcessBusCallbackImpl;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :
@@ -34,6 +34,7 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
 
     protected final static int PS_DETECTION_CAMERA_INFRARED_THERMAL_TIME_OUT = 1024;
     protected final static int PS_DETECTION_LOCATION_UWB_TIME_OUT = 1025;
+    protected final static int PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT = 1026;
 
     @Override
     public void initReceiveProcessStatusNotices() {
@@ -90,9 +91,14 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
 
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_CAMERA_INFRARED_THERMAL_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 3000));
+                new StatusProcessBusCallbackImpl(false, 3000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 3000));
+                new StatusProcessBusCallbackImpl(false, 3000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
+        getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT,
+                new StatusProcessBusCallbackImpl(false, 3000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 
     @Override
@@ -114,6 +120,30 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                 }
             }
         });
+
+        UwbManager.getInstance(getContext())
+                .setModuleInfoListener(new IModuleInfoListener() {
+                    @Override
+                    public void onGetModuleId(int devId) {
+                        HardwareModuleDetectionHandler.this.getStatusProcessBus().stop(PS_DETECTION_LOCATION_UWB_TIME_OUT);
+                        HardwareModuleDetectionHandler.this.dispatchEvent(new EventHardwareModuleStatusDetectionResult()
+                                .setStatusId(HM_STATUS_BE_EQUIPPED_NORMAL)
+                                .setTypeId(HM_TYPE_INPUT_LOCATION_UWB)
+                                .setRemote(false));
+
+                        final int uwbIdSoftware = Integer.valueOf(HardwareModuleDetectionHandler.this.getDeviceConfig().getUwbId());
+                        if (uwbIdSoftware != devId) {
+                            HardwareModuleDetectionHandler.this.getStatusProcessBus().start(PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT);
+                            UwbManager.getInstance(HardwareModuleDetectionHandler.this.getContext()).setId(uwbIdSoftware);
+                        }
+                    }
+
+                    @Override
+                    public void onSetModuleIdFinish(int devId, boolean result) {
+                        final String filePathDevUWB = "/sys/kernel/lactl/attr/uwb";
+                        FileUtils.writeInternalAntennaDevice(filePathDevUWB, "uwb_uart_off");
+                    }
+                });
     }
 
     @Override
@@ -143,6 +173,10 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                         .setStatusId(HM_STATUS_BE_EQUIPPED_NOT_DETECTED)
                         .setTypeId(HM_TYPE_INPUT_LOCATION_UWB));
                 return;
+            case PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT:
+                final String filePathDevUWB = "/sys/kernel/lactl/attr/uwb";
+                FileUtils.writeInternalAntennaDevice(filePathDevUWB, "uwb_uart_off");
+                return;
             default:
                 break;
         }
@@ -157,21 +191,11 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                 break;
 
             case HM_TYPE_INPUT_LOCATION_UWB:
-                UwbManager.getInstance(getContext(), new IModuleInfoListener() {
-                    @Override
-                    public void onGetModuleId(int devId) {
-                        HardwareModuleDetectionHandler.this.getStatusProcessBus().stop(PS_DETECTION_LOCATION_UWB_TIME_OUT);
-                        HardwareModuleDetectionHandler.this.dispatchEvent(new EventHardwareModuleStatusDetectionResult()
-                                .setStatusId(HM_STATUS_BE_EQUIPPED_NORMAL)
-                                .setTypeId(HM_TYPE_INPUT_LOCATION_UWB)
-                                .setRemote(false));
-                    }
-
-                    @Override
-                    public void onSetModuleIdFinish(int devId, boolean result) {
-
-                    }
-                });
+                final String filePathDevUWB = "/sys/kernel/lactl/attr/uwb";
+                FileUtils.writeInternalAntennaDevice(filePathDevUWB, "uwb_uart_on");
+                UwbManager.getInstance(getContext())
+                        .open()
+                        .performGetId();
                 getStatusProcessBus().start(PS_DETECTION_LOCATION_UWB_TIME_OUT);
                 break;
 

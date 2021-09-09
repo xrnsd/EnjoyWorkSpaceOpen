@@ -1,12 +1,12 @@
-package kuyou.common.ku09.status;
+package kuyou.common.status;
 
 import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import kuyou.common.ku09.status.basic.IStatusProcessBus;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.basic.IStatusProcessBus;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :提供状态的物流服务[将调度ID代理成用户指定状态ID]
@@ -16,7 +16,7 @@ import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
  * <p>
  */
 public abstract class StatusProcessBusImpl implements IStatusProcessBus {
-    protected final String TAG = "kuyou.common.ku09.status > StatusProcessBusImpl";
+    protected final String TAG = "kuyou.common.status > StatusProcessBusImpl";
 
     private IStatusProcessBus mStatusProcessBusFrame;
     private Map<Integer, Integer> mStatusProcessBusProxyStatusCodeList;

@@ -1,4 +1,4 @@
-package kuyou.common.ku09.status;
+package kuyou.common.status;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import kuyou.common.ku09.status.basic.IStatusProcessBus;
-import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
+import kuyou.common.status.basic.IStatusProcessBus;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :提供状态的物流服务[调度实现]
@@ -23,7 +23,7 @@ import kuyou.common.ku09.status.basic.IStatusProcessBusCallback;
  */
 public class StatusProcessBusFrame extends Handler implements IStatusProcessBus {
 
-    protected static final String TAG = "ckuyou.common.ku09.status > StatusProcessBusFrame";
+    protected static final String TAG = "ckuyou.common.status > StatusProcessBusFrame";
 
     private volatile static StatusProcessBusFrame instance;
 
