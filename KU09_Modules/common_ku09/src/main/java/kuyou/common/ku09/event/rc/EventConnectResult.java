@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 
 /**
  * action :事件[连接后台请求处理结果]
@@ -10,11 +10,11 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventConnectResult extends EventRemoteControlResult {
+public class EventConnectResult extends EventResult {
 
     @Override
     public int getCode() {
-        return CONNECT_RESULT;
+        return Code.CONNECT_RESULT;
     }
 
 }

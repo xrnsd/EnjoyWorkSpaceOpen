@@ -13,6 +13,9 @@ import kuyou.common.ku09.event.avc.basic.EventResult;
  */
 public class EventAudioVideoOperateResult extends EventResult {
 
+    protected static final String KEY_EVENT_DATA_TOKEN = "keyEventData.token";
+    protected static final String KEY_EVENT_DATA_FLOW_NUMBER = "keyEventData.flowNumber";
+
     @Override
     public int getCode() {
         return Code.AUDIO_VIDEO_OPERATE_RESULT;

@@ -27,7 +27,7 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
     protected static final String TAG = "com.kuyou.avc.ui.base > BaseAVCActivity";
 
     protected static final int RECREATE_COUNT_MAX = 3;
-    protected static final String KEY_RECREATE_COUNT = "ActivityOptionData.recreateCount";
+    protected static final String KEY_RECREATE_COUNT = "keyEventData.recreateCount";
 
     private PeergineConfig mConfig = null;
     private int mResult = -1;

@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  */
 public class EventTextToSpeechPlayRequest extends EventTextToSpeech {
 
-    protected final static String KEY_DATA_PLAT_TEXT = "keyEventData.dataPlayText";
+    public final static String KEY_DATA_PLAT_TEXT = "key.data.play.text";
 
     public EventTextToSpeechPlayRequest() {
         setRemote(false);

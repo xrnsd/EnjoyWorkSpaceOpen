@@ -13,6 +13,6 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 public class EventRCModuleLiveInitFinish extends EventRemoteControl {
     @Override
     public int getCode() {
-        return MODULE_INIT_FINISH;
+        return Code.MODULE_INIT_FINISH;
     }
 }

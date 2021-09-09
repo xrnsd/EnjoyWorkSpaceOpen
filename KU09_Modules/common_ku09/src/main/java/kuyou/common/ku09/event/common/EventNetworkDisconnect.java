@@ -1,5 +1,7 @@
 package kuyou.common.ku09.event.common;
 
+import kuyou.common.ku09.event.common.basic.EventCommon;
+
 /**
  * action :事件[网络断开]
  * <p>
@@ -11,6 +13,6 @@ package kuyou.common.ku09.event.common;
 public class EventNetworkDisconnect extends EventCommon {
     @Override
     public int getCode() {
-        return NETWORK_DISCONNECT;
+        return Code.NETWORK_DISCONNECT;
     }
 }

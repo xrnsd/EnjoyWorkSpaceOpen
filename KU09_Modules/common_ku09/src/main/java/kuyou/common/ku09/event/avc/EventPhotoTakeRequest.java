@@ -17,12 +17,12 @@ import kuyou.common.ku09.event.avc.basic.EventRequest;
  */
 public class EventPhotoTakeRequest extends EventRequest {
 
-    protected final static String KEY_IS_UPLOAD = "keyEventData.imgUpload";
-    protected final static String KEY_CONFIG_FILE_NAME = "keyEventData.configFileName";
-    protected final static String KEY_CONFIG_IMG_STORAGE_DIR = "keyEventData.configImgStorageDir";
-    protected final static String KEY_CONFIG_IMG_FORMAT_TYPE = "keyEventData.configImgFormatType";
-    protected final static String KEY_CONFIG_IMG_WIDTH = "keyEventData.configImgWidth";
-    protected final static String KEY_CONFIG_IMG_HEIGHT = "keyEventData.configImgHeight";
+    public final static String KEY_IS_UPLOAD = "key.img.upload";
+    public final static String KEY_CONFIG_FILE_NAME = "key.config.file.name";
+    public final static String KEY_CONFIG_IMG_STORAGE_DIR = "key.config.img.storage.dir";
+    public final static String KEY_CONFIG_IMG_FORMAT_TYPE = "key.config.img.format.type";
+    public final static String KEY_CONFIG_IMG_WIDTH = "key.config.img.width";
+    public final static String KEY_CONFIG_IMG_HEIGHT = "key.config.img.height";
 
     public EventPhotoTakeRequest setUpload(boolean val) {
         getData().putBoolean(KEY_IS_UPLOAD, val);

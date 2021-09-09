@@ -33,7 +33,7 @@ import kuyou.common.ku09.config.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.event.common.EventCommon;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
@@ -459,8 +459,8 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
             case PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT:
                 Log.i(TAG, "onReceiveProcessStatusNotice > 向平台发出音视频开启请求 > 失败：未响应");
                 onReceiveEventNotice(new EventAudioVideoParametersApplyResult()
-                        .setMediaType(mMediaTypeLocal)
                         .setResult(false)
+                        .setMediaType(mMediaTypeLocal)
                         .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_NO_RESPONSE));
                 break;
 
@@ -502,11 +502,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventCommon.NETWORK_CONNECTED, true);
-        registerHandleEvent(EventCommon.NETWORK_DISCONNECT, true);
+        registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, true);
+        registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, true);
 
-        registerHandleEvent(EventRemoteControl.LOCAL_DEVICE_STATUS, true);
-        registerHandleEvent(EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT, true);
+        registerHandleEvent(EventRemoteControl.Code.LOCAL_DEVICE_STATUS, true);
+        registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_REQUEST, true);
     }
 
@@ -630,14 +630,14 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     public boolean onReceiveEventNotice(RemoteEvent event) {
         String resultStr = null;
         switch (event.getCode()) {
-            case EventCommon.NETWORK_DISCONNECT:
+            case EventCommon.Code.NETWORK_DISCONNECT:
                 if (isItInHandlerState(HS_OPEN)) {//存在已打开通话
                     Log.i(TAG, "onReceiveEventNotice > 设备状态 > 设备已离线，存在已打开通话，开启超时关闭");
                     getStatusProcessBus().start(PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT);
                 }
                 break;
 
-            case EventRemoteControl.LOCAL_DEVICE_STATUS:
+            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
                 if (isItInHandlerState(HS_OPEN)) {//存在已打开通话
                     if (EventLocalDeviceStatus.Status.ON_LINE == EventLocalDeviceStatus.getDeviceStatus(event)) {
                         recoverAllLiveItem();
@@ -646,7 +646,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 }
                 break;
 
-            case EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
+            case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT:
                 //申请参数失败,或服务器异常
                 if (!EventAudioVideoParametersApplyResult.isResultSuccess(event)) {
                     getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);

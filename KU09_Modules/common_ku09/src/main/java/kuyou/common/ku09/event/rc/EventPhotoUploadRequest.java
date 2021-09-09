@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.rc;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlRequest;
+import kuyou.common.ku09.event.rc.basic.EventRequest;
 
 /**
  * action :事件[图片上传请求]
@@ -11,7 +11,8 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlRequest;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventPhotoUploadRequest extends EventRemoteControlRequest {
+public class EventPhotoUploadRequest extends EventRequest {
+    protected final static String KEY_IMG_PATH = "key.img.file.path";
 
     public String getImgFilePath() {
         return getData().getString(KEY_IMG_PATH);
@@ -24,7 +25,7 @@ public class EventPhotoUploadRequest extends EventRemoteControlRequest {
 
     @Override
     public int getCode() {
-        return PHOTO_UPLOAD_REQUEST;
+        return Code.PHOTO_UPLOAD_REQUEST;
     }
 
     public static String getImgFilePath(RemoteEvent event) {

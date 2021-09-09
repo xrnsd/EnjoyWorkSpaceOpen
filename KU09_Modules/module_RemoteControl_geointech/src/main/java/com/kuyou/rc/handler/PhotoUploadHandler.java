@@ -65,23 +65,23 @@ public class PhotoUploadHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventRemoteControl.LOCAL_DEVICE_STATUS, false);
-        registerHandleEvent(EventRemoteControl.PHOTO_UPLOAD_RESULT, false);
+        registerHandleEvent(EventRemoteControl.Code.LOCAL_DEVICE_STATUS, false);
+        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_RESULT, false);
 
         registerHandleEvent(EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT, true);
-        registerHandleEvent(EventRemoteControl.PHOTO_UPLOAD_REQUEST, true);
+        registerHandleEvent(EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST, true);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
 
-            case EventRemoteControl.LOCAL_DEVICE_STATUS:
+            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
                 isRemoteControlPlatformConnected =
                         EventLocalDeviceStatus.Status.ON_LINE == EventLocalDeviceStatus.getDeviceStatus(event);
                 break;
 
-            case EventRemoteControl.PHOTO_UPLOAD_RESULT:
+            case EventRemoteControl.Code.PHOTO_UPLOAD_RESULT:
                 boolean isUploadSuccess = EventPhotoUploadResult.isResultSuccess(event);
                 if (isUploadSuccess) {
                     Log.i(TAG, "onReceiveEventNotice > 照片上传成功");
@@ -130,7 +130,7 @@ public class PhotoUploadHandler extends BasicAssistHandler {
                 sendToRemoteControlPlatform(msgPhotoTakeResult);
                 break;
 
-            case EventRemoteControl.PHOTO_UPLOAD_REQUEST:
+            case EventRemoteControl.Code.PHOTO_UPLOAD_REQUEST:
                 //(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE == EventPhotoTakeResult.getEventType(data)
                 if (!isRemoteControlPlatformConnected) {
                     Log.w(TAG, "onReceiveEventNotice > 开始上传照片 > process fail : 网络检测,未连接");

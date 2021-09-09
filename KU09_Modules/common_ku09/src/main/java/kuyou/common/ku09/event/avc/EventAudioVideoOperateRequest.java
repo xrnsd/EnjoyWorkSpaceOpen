@@ -17,6 +17,12 @@ import kuyou.common.ku09.event.avc.basic.EventRequest;
  */
 public class EventAudioVideoOperateRequest extends EventRequest {
 
+    protected static final String KEY_MEDIA_TYPE = "keyEventData.mediaType";
+    protected static final String KEY_EVENT_TYPE = "keyEventData.eventType";
+    protected static final String KEY_EVENT_DATA_FLOW_NUMBER = "keyEventData.flowNumber";
+    protected static final String KEY_TOKEN = "keyEventData.token";
+    protected static final String KEY_CHANNEL_ID = "keyEventData.channelId";
+
     public static interface Action {
         public final static String OPEN = "event.action.open";
         public final static String CLOSE = "event.action.close";

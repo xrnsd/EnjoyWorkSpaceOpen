@@ -1,4 +1,6 @@
-package kuyou.common.ku09.event.common;
+package kuyou.common.ku09.event.rc.basic;
+
+import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
 
@@ -10,7 +12,9 @@ import kuyou.common.ipc.RemoteEvent;
  * date: 21-3-27 <br/>
  * </p>
  */
-public abstract class EventCommonResult extends EventCommon {
+public class EventResult extends EventRemoteControl {
+
+    public static final String KEY_RESULT_CODE = "result.code";
 
     public static interface ResultCode {
         public final static int FAIL = 0;
@@ -18,13 +22,21 @@ public abstract class EventCommonResult extends EventCommon {
         public final static int DIS = 2;
     }
 
-    public EventCommonResult setResultCode(int resultCode) {
+    public EventResult setResultCode(int resultCode) {
         getData().putInt(KEY_RESULT_CODE, resultCode);
-        return EventCommonResult.this;
+        return EventResult.this;
     }
 
-    public EventCommonResult setResult(boolean isSuccess) {
+    public EventResult setResult(boolean isSuccess) {
         return setResultCode(isSuccess ? ResultCode.SUCCESS : ResultCode.FAIL);
+    }
+
+    @Override
+    public int getCode() {
+        if (-1 == getCode()) {
+            Log.e(TAG, "getCode > process fail : eventCode is invalid");
+        }
+        return getCode();
     }
 
     public static int getResultCode(RemoteEvent event) {
@@ -32,6 +44,6 @@ public abstract class EventCommonResult extends EventCommon {
     }
 
     public static boolean isResultSuccess(RemoteEvent event) {
-        return ResultCode.SUCCESS == getResultCode(event);
+        return EventResult.ResultCode.SUCCESS == getResultCode(event);
     }
 }

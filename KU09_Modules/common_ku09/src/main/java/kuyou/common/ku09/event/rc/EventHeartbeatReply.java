@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc;
 import android.os.Bundle;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 
 /**
  * action :事件[连接后台请求处理结果]
@@ -13,11 +13,12 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventHeartbeatReply extends EventRemoteControlResult {
+public class EventHeartbeatReply extends EventResult {
+    protected static final String KEY_EVENT_DATA_FLOW_NUMBER = "keyEventData.flowNumber";
 
     @Override
     public int getCode() {
-        return HEARTBEAT_REPLY;
+        return Code.HEARTBEAT_REPLY;
     }
 
     public static long getFlowNumber(RemoteEvent event) {

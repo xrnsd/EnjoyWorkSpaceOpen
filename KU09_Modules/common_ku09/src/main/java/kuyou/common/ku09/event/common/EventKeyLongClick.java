@@ -1,4 +1,6 @@
-package kuyou.common.ku09.event.common.key;
+package kuyou.common.ku09.event.common;
+
+import kuyou.common.ku09.event.common.basic.EventKey;
 
 /**
  * action :事件[按键，长按]
@@ -11,7 +13,7 @@ package kuyou.common.ku09.event.common.key;
 public class EventKeyLongClick extends EventKey {
 
     public EventKeyLongClick() {
-        super(KEY_LONG_CLICK);
+        super(Code.KEY_LONG_CLICK);
     }
 
     public EventKeyLongClick(int keyCode) {
@@ -20,6 +22,6 @@ public class EventKeyLongClick extends EventKey {
 
     @Override
     public int getCode() {
-        return KEY_LONG_CLICK;
+        return Code.KEY_LONG_CLICK;
     }
 }

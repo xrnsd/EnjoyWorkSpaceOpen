@@ -13,6 +13,6 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 public class EventRCModuleLiveExit extends EventRemoteControl {
     @Override
     public int getCode() {
-        return MODULE_EXIT;
+        return Code.MODULE_EXIT;
     }
 }

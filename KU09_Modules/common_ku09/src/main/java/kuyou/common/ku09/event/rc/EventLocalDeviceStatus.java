@@ -1,7 +1,9 @@
 package kuyou.common.ku09.event.rc;
 
+import android.os.Bundle;
+
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlRequest;
+import kuyou.common.ku09.event.rc.basic.EventRequest;
 
 /**
  * action :事件[连接后台请求]
@@ -11,7 +13,9 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlRequest;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventLocalDeviceStatus extends EventRemoteControlRequest {
+public class EventLocalDeviceStatus extends EventRequest {
+
+    protected static final String KEY_EVENT_DATA_DEVICE_STATUS = "keyEventData.localDeviceStatus";
 
     public static interface Status {
         public final static int ON_LINE = 0;
@@ -21,7 +25,7 @@ public class EventLocalDeviceStatus extends EventRemoteControlRequest {
 
     @Override
     public int getCode() {
-        return LOCAL_DEVICE_STATUS;
+        return Code.LOCAL_DEVICE_STATUS;
     }
 
     public static int getDeviceStatus(RemoteEvent event) {

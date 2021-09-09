@@ -16,9 +16,9 @@ import kuyou.common.ku09.event.avc.basic.EventResult;
  */
 public class EventPhotoTakeResult extends EventResult {
 
-    protected final static String KEY_ERROR_INFO = "keyEventData.photoTakeErrorInfo";
-    protected final static String KEY_IS_UPLOAD = "keyEventData.imgUpload";
-    protected final static String KEY_IMG_PATH = "keyEventData.imgFilePath";
+    protected final static String KEY_ERROR_INFO = "key.photo.take.error.info";
+    protected final static String KEY_IS_UPLOAD = "key.img.upload";
+    protected final static String KEY_IMG_PATH = "key.img.file.path";
 
     public EventPhotoTakeResult setImgFilePath(String filePath) {
         getData().putString(KEY_IMG_PATH, filePath);

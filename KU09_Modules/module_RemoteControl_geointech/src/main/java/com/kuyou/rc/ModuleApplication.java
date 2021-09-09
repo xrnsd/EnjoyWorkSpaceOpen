@@ -9,7 +9,7 @@ import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.event.common.EventCommon;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.handler.ModuleCommonHandler;
 
 /**
@@ -84,11 +84,11 @@ public class ModuleApplication extends BasicModuleApplication {
                 @Override
                 protected void initReceiveEventNotices() {
                     super.initReceiveEventNotices();
-                    unRegisterHandleEvent(EventCommon.NETWORK_CONNECTED);
-                    unRegisterHandleEvent(EventCommon.NETWORK_DISCONNECT);
+                    unRegisterHandleEvent(EventCommon.Code.NETWORK_CONNECTED);
+                    unRegisterHandleEvent(EventCommon.Code.NETWORK_DISCONNECT);
 
-                    registerHandleEvent(EventCommon.NETWORK_CONNECTED, false);
-                    registerHandleEvent(EventCommon.NETWORK_DISCONNECT, false);
+                    registerHandleEvent(EventCommon.Code.NETWORK_CONNECTED, false);
+                    registerHandleEvent(EventCommon.Code.NETWORK_DISCONNECT, false);
                 }
             };
         }

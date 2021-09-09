@@ -12,6 +12,8 @@ import android.util.Log;
  */
 public class EventRequest extends EventVoiceControl {
 
+    public static final String KEY_REQUEST_CODE = "request.code";
+
     public EventRequest(){
 
     }

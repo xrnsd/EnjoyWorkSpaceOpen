@@ -26,7 +26,7 @@ import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.common.EventNetworkConnect;
 import kuyou.common.ku09.event.common.EventNetworkDisconnect;
 import kuyou.common.ku09.event.common.EventPowerChange;
-import kuyou.common.ku09.event.common.EventCommon;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
@@ -38,8 +38,8 @@ import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.event.common.EventCommonRequest;
-import kuyou.common.ku09.event.common.EventCommonResult;
+import kuyou.common.ku09.event.rc.basic.EventRequest;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
 import kuyou.common.utils.NetworkUtils;
@@ -234,21 +234,21 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
                     super.onSocketDisconnection(info, action, e);
                     PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventCommonResult.ResultCode.DIS));
+                            .setResultCode(EventResult.ResultCode.DIS));
                 }
 
                 @Override
                 public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
                     super.onSocketConnectionSuccess(info, action);
                     PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventCommonResult.ResultCode.SUCCESS));
+                            .setResultCode(EventResult.ResultCode.SUCCESS));
                 }
 
                 @Override
                 public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
                     super.onSocketConnectionFailed(info, action, e);
                     PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventCommonResult.ResultCode.FAIL));
+                            .setResultCode(EventResult.ResultCode.FAIL));
                 }
             });
         } catch (Exception e) {
@@ -288,20 +288,20 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventCommon.POWER_CHANGE, false);
+        registerHandleEvent(EventCommon.Code.POWER_CHANGE, false);
 
-        registerHandleEvent(EventRemoteControl.CONNECT_RESULT, false);
-        registerHandleEvent(EventRemoteControl.AUTHENTICATION_REQUEST, false);
-        registerHandleEvent(EventRemoteControl.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
+        registerHandleEvent(EventRemoteControl.Code.CONNECT_RESULT, false);
+        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
 
-        registerHandleEvent(EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
+        registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT, true);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventPowerChange.POWER_CHANGE:
+            case EventPowerChange.Code.POWER_CHANGE:
                 //关机时主动关闭心跳
                 if (EventPowerChange.POWER_STATUS.SHUTDOWN == EventPowerChange.getPowerStatus(event)) {
                     getPlatformConnectManager().disconnect();
@@ -310,7 +310,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }
                 break;
 
-            case EventRemoteControl.LOCAL_DEVICE_STATUS:
+            case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
                 final int status = EventLocalDeviceStatus.getDeviceStatus(event);
 
                 if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
@@ -319,8 +319,8 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }
                 break;
 
-            case EventRemoteControl.CONNECT_REQUEST:
-                if (EventCommonRequest.RequestCode.REOPEN == EventConnectRequest.getRequestCode(event)) {
+            case EventRemoteControl.Code.CONNECT_REQUEST:
+                if (EventRequest.RequestCode.REOPEN == EventConnectRequest.getRequestCode(event)) {
                     Log.d(TAG, "onReceiveEventNotice > 设备重新连接后台");
                     if (!isNetworkAvailable) {
                         Log.i(TAG, "onReceiveEventNotice > 设备重新连接后台 > 未联网，放弃操作");
@@ -330,7 +330,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }
                 break;
 
-            case EventRemoteControl.CONNECT_RESULT:
+            case EventRemoteControl.Code.CONNECT_RESULT:
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
                     Log.i(TAG, "onReceiveEventNotice > 连接服务器成功");
@@ -341,13 +341,13 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 } else {
                     Log.w(TAG, "onReceiveEventNotice > 服务器连接断开 > resultCode = " + EventConnectResult.getResultCode(event));
                     dispatchEvent(new EventHeartbeatRequest()
-                            .setRequestCode(EventCommonRequest.RequestCode.CLOSE)
+                            .setRequestCode(EventRequest.RequestCode.CLOSE)
                             .setRemote(false));
                 }
                 Log.w(TAG, "onReceiveEventNotice > 连接服务器失败");
                 break;
 
-            case EventRemoteControl.AUTHENTICATION_REQUEST:
+            case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
                 Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
@@ -364,11 +364,11 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }, 500);
                 break;
 
-            case EventRemoteControl.SEND_TO_REMOTE_CONTROL_PLATFORM:
+            case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:
                 sendToRemoteControlPlatform(EventSendToRemoteControlPlatformRequest.getMsg(event));
                 break;
 
-            case EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:
+            case EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST:
                 Log.i(TAG, "onReceiveEventNotice > 申请音视频参数和操作");
                 final int eventType = EventAudioVideoParametersApplyRequest.getEventType(event);
                 boolean isClose = IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType;

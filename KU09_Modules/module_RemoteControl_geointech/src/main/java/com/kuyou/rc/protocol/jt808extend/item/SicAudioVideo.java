@@ -44,8 +44,8 @@ public class SicAudioVideo extends SicBasic implements IJT808ExtensionProtocol {
 
     @Override
     public boolean isMatchEventCode(int eventCode) {
-        return eventCode == EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST
-                || eventCode == EventRemoteControl.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT
+        return eventCode == EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST
+                || eventCode == EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_RESULT
                 || eventCode == EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT;
     }
 

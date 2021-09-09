@@ -84,7 +84,7 @@ public class SicPhotoTake extends SicBasic {
     @Override
     public boolean isMatchEventCode(int eventCode) {
         return eventCode == EventAudioVideoCommunication.Code.PHOTO_TAKE_RESULT
-                || eventCode == EventRemoteControl.PHOTO_UPLOAD_RESULT;
+                || eventCode == EventRemoteControl.Code.PHOTO_UPLOAD_RESULT;
     }
 
     @Override

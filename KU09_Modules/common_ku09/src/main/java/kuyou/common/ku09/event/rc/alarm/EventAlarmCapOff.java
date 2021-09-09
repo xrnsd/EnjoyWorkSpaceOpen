@@ -11,6 +11,6 @@ package kuyou.common.ku09.event.rc.alarm;
 public class EventAlarmCapOff extends EventAlarm {
     @Override
     public int getCode() {
-        return ALARM_CAP_OFF;
+        return Code.ALARM_CAP_OFF;
     }
 }

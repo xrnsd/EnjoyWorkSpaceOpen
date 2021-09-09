@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.rc;
 
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 
 /**
  * action :事件[照片上传结果]
@@ -10,10 +10,10 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventPhotoUploadResult extends EventRemoteControlResult {
+public class EventPhotoUploadResult extends EventResult {
 
     @Override
     public int getCode() {
-        return PHOTO_UPLOAD_RESULT;
+        return Code.PHOTO_UPLOAD_RESULT;
     }
 }

@@ -13,6 +13,8 @@ import kuyou.common.ku09.event.avc.basic.EventRequest;
  */
 public class EventFlashlightRequest extends EventRequest {
 
+    protected static final String KEY_IS_SWITCH = "keyEventData.isSwitch";
+
     public EventFlashlightRequest setSwitch(boolean val) {
         getData().putBoolean(KEY_IS_SWITCH, val);
         return EventFlashlightRequest.this;

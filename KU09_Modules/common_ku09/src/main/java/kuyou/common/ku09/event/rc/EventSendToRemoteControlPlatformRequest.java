@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.rc;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
+import kuyou.common.ku09.event.rc.basic.EventResult;
 
 /**
  * action :事件[发送指令到平台的请求]
@@ -11,9 +11,9 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControlResult;
  * date: 21-3-27 <br/>
  * </p>
  */
-public class EventSendToRemoteControlPlatformRequest extends EventRemoteControlResult {
+public class EventSendToRemoteControlPlatformRequest extends EventResult {
 
-    protected final static String KEY_MSG_BUFFER = "keyEventData.msgBuffer";
+    protected final static String KEY_MSG_BUFFER = "key.msg.buffer";
 
     public EventSendToRemoteControlPlatformRequest() {
         applyCode();
@@ -31,7 +31,7 @@ public class EventSendToRemoteControlPlatformRequest extends EventRemoteControlR
 
     @Override
     public int getCode() {
-        return SEND_TO_REMOTE_CONTROL_PLATFORM;
+        return Code.SEND_TO_REMOTE_CONTROL_PLATFORM;
     }
 
     public static byte[] getMsg(RemoteEvent event) {

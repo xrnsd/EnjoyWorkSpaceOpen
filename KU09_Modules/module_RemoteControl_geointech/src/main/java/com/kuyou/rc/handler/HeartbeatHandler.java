@@ -44,24 +44,24 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventRemoteControl.AUTHENTICATION_REQUEST, false);
-        registerHandleEvent(EventRemoteControl.AUTHENTICATION_RESULT, false);
-        registerHandleEvent(EventRemoteControl.HEARTBEAT_REPORT_REQUEST, false);
-        //registerHandleEvent(EventRemoteControl.HEARTBEAT_REPORT, false);
-        registerHandleEvent(EventRemoteControl.HEARTBEAT_REPLY, false);
+        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.Code.AUTHENTICATION_RESULT, false);
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT_REQUEST, false);
+        //registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPLY, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventRemoteControl.AUTHENTICATION_REQUEST:
+            case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
                 getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
                 Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
                 //添加鉴权失败超时提示
                 getStatusProcessBus().start(PS_AUTHENTICATION_TIME_OUT);
                 break;
 
-            case EventRemoteControl.AUTHENTICATION_RESULT:
+            case EventRemoteControl.Code.AUTHENTICATION_RESULT:
                 isAuthenticationSuccess = EventAuthenticationResult.isResultSuccess(event);
 
                 if (isAuthenticationSuccess) {
@@ -74,7 +74,7 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
                         .toString());
                 break;
 
-            case EventRemoteControl.HEARTBEAT_REPORT_REQUEST:
+            case EventRemoteControl.Code.HEARTBEAT_REPORT_REQUEST:
                 Log.d(TAG, "onReceiveEventNotice > 心跳请求 ");
                 if (EventHeartbeatRequest.RequestCode.OPEN == EventHeartbeatRequest.getRequestCode(event)) {
                     start();
@@ -85,7 +85,7 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
                 }
                 break;
 
-            case EventRemoteControl.HEARTBEAT_REPLY:
+            case EventRemoteControl.Code.HEARTBEAT_REPLY:
                 mHeartbeatReplyFlowId = EventHeartbeatReply.getFlowNumber(event);
                 isHeartbeatReply = EventHeartbeatReply.isResultSuccess(event);
 

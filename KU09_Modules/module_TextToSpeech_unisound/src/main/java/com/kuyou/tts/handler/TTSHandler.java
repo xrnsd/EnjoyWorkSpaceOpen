@@ -196,7 +196,7 @@ public class TTSHandler extends BasicAssistHandler {
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventPowerChange.POWER_CHANGE:
+            case EventPowerChange.Code.POWER_CHANGE:
                 int status = EventPowerChange.getPowerStatus(event);
                 if (EventPowerChange.POWER_STATUS.SHUTDOWN == status) {
                     synchronized (mPendingPlaylist) {

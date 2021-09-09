@@ -1,6 +1,6 @@
 package kuyou.common.ku09.event.rc.alarm;
 
-import kuyou.common.ku09.event.common.EventCommon;
+import kuyou.common.ku09.event.common.basic.EventCommon;
 
 /**
  * action :事件[报警相关][抽象]

@@ -3,7 +3,6 @@ package kuyou.common.ku09.event.vc.basic;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.EventCommonResult;
 
 /**
  * action :事件[语音控制相关][请求处理结果][抽象]
@@ -14,6 +13,8 @@ import kuyou.common.ku09.event.common.EventCommonResult;
  * </p>
  */
 public class EventResult extends EventVoiceControl {
+
+    public static final String KEY_RESULT_CODE = "result.code";
 
     public static interface ResultCode {
         public final static int FAIL = 0;
@@ -45,6 +46,6 @@ public class EventResult extends EventVoiceControl {
     }
 
     public static boolean isResultSuccess(RemoteEvent event) {
-        return EventCommonResult.ResultCode.SUCCESS == getResultCode(event);
+        return kuyou.common.ku09.event.rc.basic.EventResult.ResultCode.SUCCESS == getResultCode(event);
     }
 }

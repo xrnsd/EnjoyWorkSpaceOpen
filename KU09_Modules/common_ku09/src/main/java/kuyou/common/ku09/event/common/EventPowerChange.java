@@ -1,7 +1,7 @@
 package kuyou.common.ku09.event.common;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.key.EventKey;
+import kuyou.common.ku09.event.common.basic.EventKey;
 
 /**
  * action :事件[电源状态变化]
@@ -20,8 +20,10 @@ public class EventPowerChange extends EventKey {
         public final static int CHARGE_DIS = 3;
     }
 
+    public static final String KEY_STATUS = "power.status.code";
+
     public EventPowerChange() {
-        super(POWER_CHANGE);
+        super(Code.POWER_CHANGE);
     }
 
     public EventPowerChange(int keyCode) {
@@ -29,16 +31,16 @@ public class EventPowerChange extends EventKey {
     }
 
     public EventPowerChange setPowerStatus(int val) {
-        getData().putInt(KEY_POWER_STATUS, val);
+        getData().putInt(KEY_STATUS, val);
         return EventPowerChange.this;
     }
 
     @Override
     public int getCode() {
-        return POWER_CHANGE;
+        return Code.POWER_CHANGE;
     }
 
     public static int getPowerStatus(RemoteEvent event) {
-        return event.getData().getInt(KEY_POWER_STATUS);
+        return event.getData().getInt(KEY_STATUS);
     }
 }
