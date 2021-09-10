@@ -10,7 +10,7 @@ import java.util.Arrays;
 import kuyou.common.protocol.Info;
 
 /**
- * action :
+ * action :协议编解码项[语音控制][抽象]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

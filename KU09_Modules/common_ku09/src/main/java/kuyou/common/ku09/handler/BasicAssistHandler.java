@@ -30,7 +30,7 @@ public abstract class BasicAssistHandler {
 
     private Context mContext;
 
-    private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+    protected Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
     protected Context getContext() {
         return mContext;
@@ -87,7 +87,7 @@ public abstract class BasicAssistHandler {
         return mStatusProcessBus;
     }
 
-    private void initStatusProcessBus() {
+    public void initStatusProcessBus() {
         if (null != mStatusProcessBus) {
             return;
         }
@@ -97,10 +97,10 @@ public abstract class BasicAssistHandler {
                 BasicAssistHandler.this.onReceiveProcessStatusNotice(statusCode, isRemove);
             }
         };
+        initReceiveProcessStatusNotices();
     }
 
-    public void initReceiveProcessStatusNotices() {
-        initStatusProcessBus();
+    protected void initReceiveProcessStatusNotices() {
     }
 
     protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {

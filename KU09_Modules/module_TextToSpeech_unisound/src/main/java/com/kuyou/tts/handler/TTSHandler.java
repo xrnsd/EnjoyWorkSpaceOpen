@@ -86,7 +86,7 @@ public class TTSHandler extends BasicAssistHandler {
     }
 
     @Override
-    public void initReceiveProcessStatusNotices() {
+    protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
         getStatusProcessBus().registerStatusNoticeCallback(PS_PLAY,
                 new StatusProcessBusCallbackImpl(false, 0)

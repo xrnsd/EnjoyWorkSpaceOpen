@@ -54,7 +54,7 @@ public class UsbDeviceHandler extends BroadcastReceiver {
     }
 
     protected void onUsbDevice(UsbDevice device, boolean attached) {
-        Log.d(TAG, (attached ? "onUsbDevice > attached device = " : "onUsbDevice > detached device ")
+        Log.d(TAG, (attached ? "onUsbDevice > attached device = " : "onUsbDevice > detached device = ")
                 + usbDevice.getProductName());
         if (null == mUsbDeviceListener) {
             Log.e(TAG, "dispatchEvent > process fail : mEventBusDispatchCallback is null");

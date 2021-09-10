@@ -134,7 +134,7 @@ public class Jt808ExtendProtocolCodec {
                     getAutoLoadAllInfoCallBack().getInfoClass())) {
                 instruction = (SicBasic) item.newInstance();
                 instruction.setDeviceConfig(config);
-                Log.d(TAG, "load > " + instruction.getTitle());
+                //Log.d(TAG, "load > " + instruction.getTitle());
                 mSicBasicList.add(instruction);
                 if (instruction.getFlag() > 0) {
                     mRequestParserList.put(instruction.getFlag(), instruction);

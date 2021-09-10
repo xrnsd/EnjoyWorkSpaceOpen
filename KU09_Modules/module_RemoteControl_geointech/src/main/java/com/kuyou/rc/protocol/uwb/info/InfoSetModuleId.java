@@ -11,7 +11,7 @@ import kuyou.common.bytes.ByteUtils;
 
 
 /**
- * action :
+ * action :单项指令编解码器[UWB][设置ID]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

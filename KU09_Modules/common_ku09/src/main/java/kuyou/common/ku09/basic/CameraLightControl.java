@@ -1,4 +1,4 @@
-package com.kuyou.avc.handler.basic;
+package kuyou.common.ku09.basic;
 
 import android.content.Context;
 import android.hardware.camera2.CameraCharacteristics;

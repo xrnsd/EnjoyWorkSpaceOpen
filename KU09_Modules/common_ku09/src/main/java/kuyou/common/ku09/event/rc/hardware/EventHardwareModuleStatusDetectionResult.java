@@ -19,7 +19,17 @@ public class EventHardwareModuleStatusDetectionResult extends EventHardwareModul
         return Code.HARDWARE_MODULE_STATUS_DETECTION_RESULT;
     }
 
+    @Override
+    public EventHardwareModuleBasic setTypeId(int val) {
+        return super.setTypeId(val);
+    }
+
     public EventHardwareModuleStatusDetectionResult setStatusId(int val) {
+        switch (val){
+            case HM_STATUS_BE_EQUIPPED_NORMAL:
+                
+                break;
+        }
         getData().putInt(KEY_HARDWARE_MODULE_STATUS_ID, val);
         return EventHardwareModuleStatusDetectionResult.this;
     }

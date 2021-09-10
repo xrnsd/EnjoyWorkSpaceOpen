@@ -65,7 +65,7 @@ public class PhotoTakeHandler extends BasicAssistHandler {
     }
 
     @Override
-    public void initReceiveProcessStatusNotices() {
+    protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
         getStatusProcessBus().registerStatusNoticeCallback(PS_TAKE_PHOTO_TIMEOUT,
                 new StatusProcessBusCallbackImpl(false, 3000)

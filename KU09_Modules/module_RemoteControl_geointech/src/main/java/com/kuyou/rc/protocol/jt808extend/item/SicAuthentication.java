@@ -32,8 +32,9 @@ public class SicAuthentication extends SicBasic {
 
     @Override
     public boolean isMatchEventCode(int eventCode) {
-        return eventCode == EventRemoteControl.Code.AUTHENTICATION_REQUEST ||
-                eventCode == EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_RESULT;
+        return eventCode == EventRemoteControl.Code.AUTHENTICATION_REQUEST
+                || eventCode == EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_RESULT
+                || eventCode == EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_FINISH;
     }
 
     @Override
@@ -69,8 +70,8 @@ public class SicAuthentication extends SicBasic {
             Log.e(TAG, "getItemAddition > process fail : peergine 多端视频服务SDK的采集端ID为空");
         }
 
-        if(null!=mItemAdditionHardwareModuleDetection){
-            return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes,mItemAdditionHardwareModuleDetection);
+        if (null != mItemAdditionHardwareModuleDetection) {
+            return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes, mItemAdditionHardwareModuleDetection);
         }
 
         return ByteUtils.byteMergerAll(uwbIdType, uwbIdBytes, pceiType, pceiBytes);

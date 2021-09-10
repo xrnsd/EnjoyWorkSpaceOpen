@@ -3,6 +3,7 @@ package kuyou.common.ku09.event.rc.hardware;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
+import kuyou.common.ku09.protocol.IHardwareModuleDetection;
 
 /**
  * action :事件[硬件模块检测结果][全部模块检测完成]
@@ -12,7 +13,7 @@ import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
  * date: 21-3-27 <br/>
  * </p>
  */
-public abstract class EventHardwareModuleBasic extends EventSendToRemoteControlPlatformRequest {
+public abstract class EventHardwareModuleBasic extends EventSendToRemoteControlPlatformRequest implements IHardwareModuleDetection {
 
     protected static final String KEY_HARDWARE_MODULE_TYPE_ID = "keyEventData.hardwareModuleTypeId";
 

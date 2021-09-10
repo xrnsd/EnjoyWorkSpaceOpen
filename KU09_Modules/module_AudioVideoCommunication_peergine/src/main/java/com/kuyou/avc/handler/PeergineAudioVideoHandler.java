@@ -14,10 +14,10 @@ import androidx.annotation.NonNull;
 import com.kuyou.avc.BuildConfig;
 import com.kuyou.avc.R;
 import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
-import com.kuyou.avc.handler.basic.CameraLightControl;
+import kuyou.common.ku09.basic.CameraLightControl;
 import com.kuyou.avc.handler.ringtone.LocalRingtoneHandler;
 import com.kuyou.avc.handler.ringtone.RingtoneHandler;
-import com.kuyou.avc.handler.thermal.ThermalCameraControl;
+import kuyou.common.ku09.basic.ThermalCameraControl;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
 import com.kuyou.avc.ui.MultiCaptureThermal;
@@ -403,7 +403,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     }
 
     @Override
-    public void initReceiveProcessStatusNotices() {
+    protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_REQUEST_BE_EXECUTING,

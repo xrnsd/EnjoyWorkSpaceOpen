@@ -1,11 +1,9 @@
 package com.kuyou.rc.handler;
 
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import com.kuyou.rc.handler.platform.PlatformConnectManager;
-import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
 import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
@@ -33,7 +31,6 @@ import kuyou.common.ku09.event.rc.EventAuthenticationRequest;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
 import kuyou.common.ku09.event.rc.EventConnectRequest;
 import kuyou.common.ku09.event.rc.EventConnectResult;
-import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
@@ -43,6 +40,8 @@ import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 import kuyou.common.utils.NetworkUtils;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.oksocket.client.sdk.client.ConnectionInfo;
@@ -64,20 +63,21 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
     protected boolean isNetworkAvailable = false;
 
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
-    private IHeartbeat mHeartbeatHandler;
+    private HeartbeatHandler mHeartbeatHandler;
+    private HardwareModuleDetectionHandler mHardwareModuleDetectionHandler;
 
-    protected IHeartbeat getHeartbeatHandler() {
+    protected HeartbeatHandler getHeartbeatHandler() {
+        if (null == mHeartbeatHandler) {
+            mHeartbeatHandler = new HeartbeatHandler();
+        }
         return mHeartbeatHandler;
     }
 
-    @Override
-    public List<BasicAssistHandler> getSubEventHandlers() {
-        List<BasicAssistHandler> handlers = new ArrayList<>();
-        Log.d(TAG, "getSubEventHandlers > ");
-        HeartbeatHandler handler = new HeartbeatHandler();
-        handlers.add(handler);
-        mHeartbeatHandler = handler;
-        return handlers;
+    protected HardwareModuleDetectionHandler getHardwareModuleDetectionHandler() {
+        if (null == mHardwareModuleDetectionHandler) {
+            mHardwareModuleDetectionHandler = new HardwareModuleDetectionHandler();
+        }
+        return mHardwareModuleDetectionHandler;
     }
 
     protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
@@ -210,7 +210,9 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         return PlatformConnectManager.getInstance(getDeviceConfig());
     }
 
-    public void initialConnect() {
+    public void initial() {
+        getHardwareModuleDetectionHandler().start();
+
         isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailable) {
             Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
@@ -269,7 +271,16 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
             return;
         }
         Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
-        getPlatformConnectManager().send(msg);
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            getPlatformConnectManager().send(msg);
+            return;
+        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                getPlatformConnectManager().send(msg);
+            }
+        });
     }
 
     protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
@@ -277,7 +288,10 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
             Log.e(TAG, "getSicByEventCode > process fail : event is null");
             return null;
         }
-        final int eventCode = event.getCode();
+        return getSingleInstructionParserByEventCode(event.getCode());
+    }
+
+    protected SicBasic getSingleInstructionParserByEventCode(int eventCode) {
         for (SicBasic singleInstructionParse : getJt808ExtendProtocolCodec().getSicBasicList()) {
             if (singleInstructionParse.isMatchEventCode(eventCode)) {
                 return singleInstructionParse;
@@ -285,6 +299,40 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         }
         Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + eventCode);
         return null;
+    }
+
+    protected final static int PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT = 1;
+
+    @Override
+    protected void initReceiveProcessStatusNotices() {
+        super.initReceiveProcessStatusNotices();
+
+        getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT,
+                new StatusProcessBusCallbackImpl(false, 10 * 1000)
+                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
+    }
+
+    @Override
+    protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+        super.onReceiveProcessStatusNotice(statusCode, isRemove);
+        switch (statusCode) {
+            case PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT:
+                Log.e(TAG, "onReceiveProcessStatusNotice > process fail : 鉴权等待超时，强制进行鉴权操作");
+                dispatchEvent(new EventAuthenticationRequest()
+                        .setRemote(false));
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public List<BasicAssistHandler> getSubEventHandlers() {
+        List<BasicAssistHandler> handlers = new ArrayList<>();
+
+        handlers.add(getHeartbeatHandler());
+        handlers.add(getHardwareModuleDetectionHandler());
+        return handlers;
     }
 
     @Override
@@ -335,9 +383,14 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
                     Log.i(TAG, "onReceiveEventNotice > 连接服务器成功");
-                    dispatchEvent(new EventAuthenticationRequest()
-                            .setEnableConsumeSeparately(false)
-                            .setRemote(false));
+                    if (getHardwareModuleDetectionHandler().isFinish()) {
+                        dispatchEvent(new EventAuthenticationRequest()
+                                .setEnableConsumeSeparately(false)
+                                .setRemote(false));
+                    } else {
+                        getStatusProcessBus().start(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT);
+                        Log.i(TAG, "onReceiveEventNotice > 取消鉴权,等待硬件检测完成");
+                    }
                     break;
                 } else {
                     Log.w(TAG, "onReceiveEventNotice > 服务器连接断开 > resultCode = " + EventConnectResult.getResultCode(event));
@@ -349,32 +402,29 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
+                SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(EventRemoteControl.Code.AUTHENTICATION_REQUEST);
+                if (null == singleInstructionParser) {
+                    Log.i(TAG, "onReceiveEventNotice > 鉴权,process fail : 找不到 SicBasic");
+                    break;
+                }
                 Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        SicBasic singleInstructionParser = PlatformInteractiveHandler.this.getSingleInstructionParserByEventCode(event);
-                        if (null == singleInstructionParser) {
-                            return;
-                        }
-                        SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
-                        authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
-                        authentication.setBodyConfig(SicBasic.BodyConfig.REQUEST);
-                        sendToRemoteControlPlatform(authentication.getBody());
-                    }
-                }, 500);
+                getStatusProcessBus().stop(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT);
+                SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
+                authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
+                if (getHardwareModuleDetectionHandler().isFinish()) {
+                    authentication.setItemAdditionHardwareModuleDetection(getHardwareModuleDetectionHandler().getBody());
+                } else {
+                    Log.w(TAG, "onReceiveEventNotice > 鉴权,硬件检测未完成");
+                }
+                sendToRemoteControlPlatform(authentication.getBody());
                 break;
 
             case EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_FINISH:
-                Log.i(TAG, "onReceiveEventNotice > 发送鉴权信息[已添加硬件搭载状态信息]");
-                SicBasic singleInstructionParser = PlatformInteractiveHandler.this.getSingleInstructionParserByEventCode(event);
-                if (null == singleInstructionParser) {
-                    break;
+                Log.i(TAG, "onReceiveEventNotice > 硬件检测完成");
+                if (isNetworkAvailable && getPlatformConnectManager().isConnect()) {
+                    dispatchEvent(new EventAuthenticationRequest()
+                            .setRemote(false));
                 }
-                SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
-                authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
-                authentication.setItemAdditionHardwareModuleDetection(EventHardwareModuleStatusDetectionResult.getMsg(event));
-                sendToRemoteControlPlatform(authentication.getBody());
                 break;
 
             case EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM:

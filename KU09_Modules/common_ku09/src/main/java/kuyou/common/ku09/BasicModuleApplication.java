@@ -383,7 +383,7 @@ public abstract class BasicModuleApplication extends Application {
             handler.setDispatchEventCallBack(getEventBusDispatchCallback());
             handler.setLiveControlCallback(getLiveControlCallback());
             handler.setDevicesConfig(getDeviceConfig());
-            handler.initReceiveProcessStatusNotices();
+            handler.initStatusProcessBus();
 
             List<BasicAssistHandler> sub = handler.getSubEventHandlers();
             if (null != sub && sub.size() > 0) {

@@ -5,6 +5,7 @@ import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PhotoUploadHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
+import com.kuyou.rc.handler.HardwareModuleDetectionHandler;
 import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
 
 import kuyou.common.ipc.RemoteEvent;
@@ -48,7 +49,7 @@ public class ModuleApplication extends BasicModuleApplication {
     @Override
     protected void init() {
         super.init();
-        getPlatformInteractiveHandler().initialConnect();
+        getPlatformInteractiveHandler().initial();
     }
 
     @Override
@@ -132,7 +133,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return mPlatformInteractiveHandler;
     }
 
-    public PhotoUploadHandler getPhotoUploadHandler() {
+    protected PhotoUploadHandler getPhotoUploadHandler() {
         if (null == mPhotoUploadHandler) {
             mPhotoUploadHandler = new PhotoUploadHandler();
         }

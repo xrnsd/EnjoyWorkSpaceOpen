@@ -97,7 +97,7 @@ public class FileUtils {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             dirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
-        Log.d(TAG, "getSdRootDirectory > dirPath=" + dirPath);
+        //Log.d(TAG, "getSdRootDirectory > dirPath=" + dirPath);
         return dirPath;
     }
 
@@ -410,7 +410,7 @@ public class FileUtils {
     public String readData(String fileRelativePath) {
         File file = getFileByRelativePath(fileRelativePath);
         if (null == file || !file.exists()) {
-            return null;
+            return "";
         }
         InputStream inputStream = null;
         try {
@@ -431,7 +431,7 @@ public class FileUtils {
                 }
             }
         }
-        return null;
+        return "";
     }
 
     /**

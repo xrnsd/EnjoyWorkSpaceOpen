@@ -3,7 +3,6 @@ package com.kuyou.rc.handler;
 import android.util.Log;
 
 import com.kuyou.rc.BuildConfig;
-import com.kuyou.rc.handler.platform.basic.IHeartbeat;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.EventAuthenticationResult;
@@ -25,7 +24,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  * date: 21-8-27 <br/>
  * </p>
  */
-public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
+public class HeartbeatHandler extends BasicAssistHandler {
 
     protected final static String TAG = "com.kuyou.rc.handler.platform > HeartbeatHandler";
 
@@ -56,7 +55,6 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
         switch (event.getCode()) {
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
                 getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
-                Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
                 //添加鉴权失败超时提示
                 getStatusProcessBus().start(PS_AUTHENTICATION_TIME_OUT);
                 break;
@@ -123,7 +121,7 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
     }
 
     @Override
-    public void initReceiveProcessStatusNotices() {
+    protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_TIME_OUT,
@@ -221,7 +219,6 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
         super.play(content);
     }
 
-    @Override
     public boolean isConnect() {
         if (!isAuthenticationSuccess) {
             Log.w(TAG, "isConnect > authentication is fail");
@@ -248,7 +245,6 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
         return heartbeatStatusResult;
     }
 
-    @Override
     public void start() {
         if (-1 == PS_HEARTBEAT_REPORT) {
             Log.e(TAG, "start > process fail : mHeartbeatHandlerMsgFlag is invalid");
@@ -260,7 +256,6 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
         getStatusProcessBus().start(PS_HEARTBEAT_REPORT_START_TIME_OUT);
     }
 
-    @Override
     public void stop() {
         if (-1 == PS_HEARTBEAT_REPORT) {
             Log.e(TAG, "stop > process fail : mHeartbeatHandlerMsgFlag is invalid");
@@ -274,7 +269,6 @@ public class HeartbeatHandler extends BasicAssistHandler implements IHeartbeat {
         getStatusProcessBus().start(PS_DEVICE_OFF_LINE, 0);
     }
 
-    @Override
     public boolean isStart() {
         if (null == getStatusProcessBus()
                 || -1 == PS_HEARTBEAT_REPORT) {

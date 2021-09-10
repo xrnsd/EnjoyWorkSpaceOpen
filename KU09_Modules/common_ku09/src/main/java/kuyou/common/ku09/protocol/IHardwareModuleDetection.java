@@ -8,7 +8,7 @@ package kuyou.common.ku09.protocol;
  * date: 21-9-9 <br/>
  * </p>
  */
-public interface IHardwareModule {
+public interface IHardwareModuleDetection {
 
     /**
      * action:协议头,附加信息: 设备硬件模块搭载状态信息
@@ -16,7 +16,7 @@ public interface IHardwareModule {
     public final static int HM_ADDITIONAL_ITEM_HEAD = (byte)0xE3;
 
     /**
-     * action:红外热成像摄像头
+     * action:红外热成像
      * */
     public final static int HM_TYPE_INPUT_CAMERA_INFRARED_THERMAL = 0;
     /**
@@ -24,11 +24,11 @@ public interface IHardwareModule {
      * */
     public final static int HM_TYPE_INPUT_LOCATION_UWB = 1;
     /**
-     * action:普通摄像头[红外夜视]
+     * action:普通后摄
      * */
     public final static int HM_TYPE_INPUT_CAMERA_NORMAL = 2;
     /**
-     * action:光波导[单目]
+     * action:光波导
      * */
     public final static int HM_TYPE_OUTPUT_SCREEN_UNIQUE_OPTICAL_WAVEGUIDE = 3;
     /**

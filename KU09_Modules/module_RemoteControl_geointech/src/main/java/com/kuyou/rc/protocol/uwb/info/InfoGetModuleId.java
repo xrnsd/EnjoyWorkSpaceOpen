@@ -8,7 +8,7 @@ import java.util.Arrays;
 import kuyou.common.bytes.ByteUtils;
 
 /**
- * action :
+ * action :单项指令编解码器[UWB][获取ID]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

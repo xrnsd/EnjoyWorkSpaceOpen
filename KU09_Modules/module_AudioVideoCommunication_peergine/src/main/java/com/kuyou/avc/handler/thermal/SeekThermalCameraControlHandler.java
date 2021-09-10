@@ -10,6 +10,7 @@ import com.thermal.seekware.SeekImage;
 import com.thermal.seekware.SeekImageView;
 
 import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ku09.basic.ThermalCameraControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**

@@ -14,16 +14,10 @@ import kuyou.common.utils.SystemPropertiesUtils;
  */
 public class DeviceConfigImpl implements IDeviceConfig {
     protected final String TAG = "kuyou.common.ku09.config > DevicesConfig";
-    
-    protected final static String KEY_HEARTBEAT_INTERVAL = "persist.kub.hm.hf";
 
-    protected final static String KEY_DEV_ID = "persist.kud.hm.di";
-    protected final static String KEY_COLLECTING_END_CODE = "persist.kud.hm.ci";
-    protected final static String KEY_UWB_ID = "persist.kud.hm.ui";
-    protected final static String KEY_SERVER_ADDRESS = "persist.kud.hm.sa";
-    protected final static String KEY_SERVER_ADDRESS_PHOTO = "persist.kud.hm.sa.po";
-    protected final static String KEY_SERVER_PORT = "persist.kud.hm.sap";
-    protected final static String KEY_AUTHENTICATION_CODE = "persist.kud.hm.ac";
+    protected final static int VAL_NONE = -1;
+    protected final static int VAL_ON = 1;
+    protected final static int VAL_NFF = 0;
 
     private String mDevId = null;
     private String mUwbId = null;
@@ -126,5 +120,11 @@ public class DeviceConfigImpl implements IDeviceConfig {
     @Override
     public String getDirPathStoragePhoto() {
         return "/sdcard/kuyou/img/";
+    }
+
+    @Override
+    public boolean isHardwareModuleCarry(int typeId) {
+        String result = SystemPropertiesUtils.get(KEY_HARDWARE_CARRY_FLAG + typeId, String.valueOf(VAL_NONE));
+        return result.equals(String.valueOf(VAL_ON));
     }
 }

@@ -1,4 +1,4 @@
-package com.kuyou.avc.handler.thermal;
+package kuyou.common.ku09.basic;
 
 import android.util.Log;
 

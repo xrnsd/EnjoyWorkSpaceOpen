@@ -3,7 +3,7 @@ package com.kuyou.avc.handler;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.avc.handler.basic.CameraLightControl;
+import kuyou.common.ku09.basic.CameraLightControl;
 import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
 
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;

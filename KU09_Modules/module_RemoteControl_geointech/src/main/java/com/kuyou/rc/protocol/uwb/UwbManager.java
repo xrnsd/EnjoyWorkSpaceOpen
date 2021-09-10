@@ -44,6 +44,7 @@ public class UwbManager {
 
     private static final String VAL_ON_SERIAL_PORT = "uwb_uart_on";
     private static final String VAL_OFF_SERIAL_PORT = "uwb_uart_off";
+    
 
     private Param mSerialPortParam;
     private SerialPortImpl mSerialPort;
