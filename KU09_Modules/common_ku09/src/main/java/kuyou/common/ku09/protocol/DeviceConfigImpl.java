@@ -14,7 +14,7 @@ import kuyou.common.utils.SystemPropertiesUtils;
  * </p>
  */
 public class DeviceConfigImpl implements IDeviceConfig {
-    protected final String TAG = "kuyou.common.ku09.config > DevicesConfig";
+    protected final String TAG = "kuyou.common.ku09.protocol > DevicesConfig";
 
     protected final static int VAL_NONE = -1;
     protected final static int VAL_ON = 1;

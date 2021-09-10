@@ -62,14 +62,14 @@ public class ModuleApplication extends BasicModuleApplication {
         getTTSHandler().onRequestTtsPlay(text);
     }
 
-    public LocalModuleCommonHandler getModuleBasicEventHandler() {
+    protected LocalModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mLocalModuleCommonHandler) {
             mLocalModuleCommonHandler = new LocalModuleCommonHandler();
         }
         return mLocalModuleCommonHandler;
     }
 
-    public TTSHandler getTTSHandler() {
+    protected TTSHandler getTTSHandler() {
         if (null == mTTSHandler) {
             mTTSHandler = new TTSHandler(getApplicationContext());
         }

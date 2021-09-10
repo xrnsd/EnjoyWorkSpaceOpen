@@ -7,7 +7,7 @@ import com.kuyou.vc.R;
 import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 public class MainActivity extends BasicPermissionsHandlerActivity {
-    protected final String TAG = "com.kuyou.voicecontrol > MainActivity";
+    protected final String TAG = "com.kuyou.vc.ui > MainActivity";
 
     @Override
     protected int getContentViewResId() {

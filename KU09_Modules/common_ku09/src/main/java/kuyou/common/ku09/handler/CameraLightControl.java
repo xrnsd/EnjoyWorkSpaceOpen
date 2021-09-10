@@ -24,7 +24,7 @@ import kuyou.common.utils.CommonUtils;
  */
 public class CameraLightControl {
 
-    protected static final String TAG = "com.kuyou.avc.util > CameraLightControl";
+    protected static final String TAG = "kuyou.common.ku09.handler > CameraLightControl";
 
     private volatile static CameraLightControl sInstance;
 

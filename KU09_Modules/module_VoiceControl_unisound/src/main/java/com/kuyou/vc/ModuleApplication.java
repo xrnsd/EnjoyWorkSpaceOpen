@@ -57,7 +57,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return super.getFeedTimeLong();
     }
 
-    public KeyHandler getKeyHandler() {
+    protected KeyHandler getKeyHandler() {
         if (null == mKeyHandler) {
             mKeyHandler = new KeyHandler() {
                 @Override
@@ -73,7 +73,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return mKeyHandler;
     }
 
-    public UnisoundVoiceControlHandler getVoiceControlHandler() {
+    protected UnisoundVoiceControlHandler getVoiceControlHandler() {
         if (null == mUnisoundVoiceControlHandler) {
             mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler(getApplicationContext());
             mUnisoundVoiceControlHandler.init(VoiceControl.TYPE.HARDWARE);

@@ -13,7 +13,8 @@ import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 public class MainActivity extends BasicPermissionsHandlerActivity {
 
-    private static final String TAG = "com.kuyou.tts > MainActivity";
+    private static final String TAG = "com.kuyou.tts.ui > MainActivity";
+
     private static final int REQUEST_PERMISSIONS_CODE = 99;
     private static final String KEY_IS_SYSTEM_BOOT_FIRST = "key.system.boot.first";
 

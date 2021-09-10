@@ -14,7 +14,7 @@ import kuyou.common.ku09.event.common.basic.EventCommon;
  */
 public class ModuleCommonHandler extends BasicAssistHandler {
 
-    protected final String TAG = "kuyou.common.ku09 > KeyHandler";
+    protected final String TAG = "kuyou.common.ku09.handler > KeyHandler";
 
     @Override
     protected void initReceiveEventNotices() {

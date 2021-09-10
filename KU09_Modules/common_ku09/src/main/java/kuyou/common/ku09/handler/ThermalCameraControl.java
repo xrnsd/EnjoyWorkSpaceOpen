@@ -13,7 +13,7 @@ import kuyou.common.file.FileUtils;
  * </p>
  */
 public class ThermalCameraControl {
-    private static final String TAG = "com.kuyou.avc.util > InfearedCameraControl";
+    private static final String TAG = "kuyou.common.ku09.handler > InfearedCameraControl";
 
     public static boolean open() {
         Log.d(TAG, "openInfearedCamera");

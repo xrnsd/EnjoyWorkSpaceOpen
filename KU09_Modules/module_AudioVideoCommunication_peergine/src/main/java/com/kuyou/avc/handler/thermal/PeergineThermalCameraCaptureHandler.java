@@ -29,7 +29,7 @@ public class PeergineThermalCameraCaptureHandler extends BasicAssistHandler
 
     private SeekThermalCameraControlHandler mThermalCameraControlHandler;
 
-    public SeekThermalCameraControlHandler getThermalCameraControlHandler() {
+    protected SeekThermalCameraControlHandler getThermalCameraControlHandler() {
         if (null == mThermalCameraControlHandler) {
             mThermalCameraControlHandler = new SeekThermalCameraControlHandler(getContext());
             mThermalCameraControlHandler.setPeergineCameraCaptureCallBack(new IPeergineCameraCaptureCallBack() {

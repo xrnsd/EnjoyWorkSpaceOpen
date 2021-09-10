@@ -9,6 +9,8 @@ import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 public class MainActivity extends BasicPermissionsHandlerActivity {
 
+    private static final String TAG = "com.kuyou.rc.ui > MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

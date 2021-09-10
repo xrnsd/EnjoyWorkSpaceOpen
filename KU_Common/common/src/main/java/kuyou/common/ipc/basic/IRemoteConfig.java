@@ -11,9 +11,6 @@ package kuyou.common.ipc.basic;
 public interface IRemoteConfig {
 
     public final static String ACTION_FLAG_FRAME_EVENT = "action.remote.event.frame";
-    public final static String ACTION_FLAG_EVENT = "action.remote.event.public";
-
-    public final static String PERMISSION_FLAG = "remote.event.permission";
 
     //0~2047
     public final static int FLAG_CODE = 0;

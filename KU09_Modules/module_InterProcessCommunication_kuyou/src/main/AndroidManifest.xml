@@ -3,10 +3,10 @@
     package="com.kuyou.ipc">
 
     <application
-        android:process="com.kuyou.ipc"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:process="com.kuyou.ipc"
         android:roundIcon="@mipmap/ic_launcher_round">
 
         <service
@@ -19,8 +19,7 @@
             </intent-filter>
         </service>
 
-        <receiver
-            android:name="kuyou.common.ipc.ProcessAwaken">
+        <receiver android:name="kuyou.common.ipc.ProcessAwaken">
             <intent-filter>
                 <action android:name="action.remote.event.frame" />
             </intent-filter>

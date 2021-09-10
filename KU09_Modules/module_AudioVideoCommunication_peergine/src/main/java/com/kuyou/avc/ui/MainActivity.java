@@ -9,9 +9,7 @@ import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
 public class MainActivity extends BasicPermissionsHandlerActivity {
 
-    protected final String TAG = "com.kuyou.peergine > MainActivity";
-
-    private static final String KEY_HSM_BOOT_MODE = "key.hsm.boot.mode";
+    protected final String TAG = "com.kuyou.avc.ui > MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

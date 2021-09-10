@@ -13,7 +13,7 @@ import kuyou.common.ku09.event.common.basic.EventKey;
  */
 public class KeyHandler extends BasicAssistHandler {
 
-    protected final String TAG = "kuyou.common.ku09 > KeyHandler";
+    protected final String TAG = "kuyou.common.ku09.handler > KeyHandler";
 
     @Override
     protected void initReceiveEventNotices() {

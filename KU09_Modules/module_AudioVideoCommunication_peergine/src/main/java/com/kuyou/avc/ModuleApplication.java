@@ -51,14 +51,14 @@ public class ModuleApplication extends BasicModuleApplication {
         return getAudioVideoRequestHandler();
     }
 
-    public LocalModuleCommonHandler getModuleBasicEventHandler() {
+    protected LocalModuleCommonHandler getModuleBasicEventHandler() {
         if (null == mModuleEventHandler) {
             mModuleEventHandler = new LocalModuleCommonHandler();
         }
         return mModuleEventHandler;
     }
 
-    public PhotoTakeHandler getPhotoTakeHandler() {
+    protected PhotoTakeHandler getPhotoTakeHandler() {
         if (null == mPhotoTakeHandler) {
             mPhotoTakeHandler = new PhotoTakeHandler();
             mPhotoTakeHandler.setContext(getApplicationContext());
@@ -67,7 +67,7 @@ public class ModuleApplication extends BasicModuleApplication {
         return mPhotoTakeHandler;
     }
 
-    public AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
+    protected AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
         if (null == mAudioVideoRequestHandler) {
             mAudioVideoRequestHandler = new PeergineAudioVideoHandler(getApplicationContext());
             mAudioVideoRequestHandler.setDevicesConfig(getDeviceConfig());
@@ -76,14 +76,14 @@ public class ModuleApplication extends BasicModuleApplication {
         return mAudioVideoRequestHandler;
     }
 
-    public FlashlightHandler getFlashlightHandler() {
+    protected FlashlightHandler getFlashlightHandler() {
         if (null == mFlashlightHandler) {
             mFlashlightHandler = new FlashlightHandler(getApplicationContext());
         }
         return mFlashlightHandler;
     }
 
-    public LocalKeyHandler getLocalKeyHandler() {
+    protected LocalKeyHandler getLocalKeyHandler() {
         if (null == mLocalKeyHandler) {
             mLocalKeyHandler = new LocalKeyHandler(getApplicationContext());
             mLocalKeyHandler.setAudioVideoRequestResult(getAudioVideoRequestHandler());
