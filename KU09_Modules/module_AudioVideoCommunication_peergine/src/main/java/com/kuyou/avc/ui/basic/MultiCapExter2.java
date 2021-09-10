@@ -14,7 +14,7 @@ import com.peergine.plugin.android.pgDevAudioOut;
 import com.peergine.plugin.android.pgDevVideoIn;
 import com.peergine.plugin.lib.pgLibJNINode;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 public abstract class MultiCapExter2 extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 

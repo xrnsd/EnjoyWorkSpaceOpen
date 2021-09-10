@@ -8,10 +8,10 @@ import android.util.Log;
 import com.kuyou.rc.handler.location.AMapLocationProvider;
 import com.kuyou.rc.handler.location.HMLocationProvider;
 import com.kuyou.rc.handler.location.NormalFilterLocationProvider;
-import com.kuyou.rc.handler.location.basic.ILocationProvider;
-import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
+import com.kuyou.rc.basic.location.ILocationProvider;
+import com.kuyou.rc.basic.location.ILocationProviderPolicy;
 import com.kuyou.rc.handler.location.filter.FilterController;
-import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
+import com.kuyou.rc.basic.location.filter.IFilterCallBack;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;

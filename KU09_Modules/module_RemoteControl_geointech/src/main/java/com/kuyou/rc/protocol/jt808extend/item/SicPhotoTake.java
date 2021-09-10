@@ -8,7 +8,7 @@ import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :JT808扩展的单项指令编解码器[拍照][抽象]

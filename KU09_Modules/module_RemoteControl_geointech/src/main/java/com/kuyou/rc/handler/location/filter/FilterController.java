@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.kuyou.rc.handler.location.HMLocationProvider;
 import com.kuyou.rc.handler.location.HMLocationProvider.IOnLocationChangeListener;
-import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
+import com.kuyou.rc.basic.location.filter.IFilterCallBack;
 import com.kuyou.rc.handler.location.filter.basic.TrackPoint;
 import com.kuyou.rc.handler.location.filter.basic.TrajectoryFilter;
 import com.kuyou.rc.handler.location.filter.kalman.TrajectoryKalmanFilter;

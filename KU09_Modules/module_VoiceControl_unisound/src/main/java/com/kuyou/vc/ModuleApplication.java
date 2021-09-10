@@ -4,7 +4,7 @@ import com.kuyou.vc.handler.UnisoundVoiceControlHandler;
 import com.kuyou.vc.protocol.basic.VoiceControl;
 
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.config.IKeyConfig;
+import kuyou.common.ku09.protocol.basic.IKeyConfig;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
 

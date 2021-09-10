@@ -4,10 +4,10 @@ import android.location.Location;
 import android.util.Log;
 
 import com.kuyou.rc.BuildConfig;
-import com.kuyou.rc.handler.location.basic.ILocationProvider;
+import com.kuyou.rc.basic.location.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

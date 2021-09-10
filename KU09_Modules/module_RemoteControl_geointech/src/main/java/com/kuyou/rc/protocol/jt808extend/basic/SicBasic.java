@@ -2,8 +2,8 @@ package com.kuyou.rc.protocol.jt808extend.basic;
 
 import java.util.Arrays;
 
-import kuyou.common.ku09.config.IDeviceConfig;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.sdk.jt808.basic.RemoteControlDeviceConfig;
 import kuyou.sdk.jt808.basic.jt808bean.JTT808Bean;
 import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;

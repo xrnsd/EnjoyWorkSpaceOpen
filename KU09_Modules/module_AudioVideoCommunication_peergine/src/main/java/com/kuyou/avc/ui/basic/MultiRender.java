@@ -23,7 +23,7 @@ import com.peergine.plugin.lib.pgLibJNINode;
 
 import java.util.Date;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 public abstract class MultiRender extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     protected final String TAG = "com.kuyou.avc.ui.custom > " + this.getClass().getSimpleName();

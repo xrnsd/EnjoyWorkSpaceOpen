@@ -11,8 +11,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.kuyou.rc.handler.location.amap.AmapLocationActivity;
-import com.kuyou.rc.handler.location.trace.TraceTestActivity;
+import com.kuyou.rc.ui.AmapLocationActivity;
+import com.kuyou.rc.ui.TraceTestActivity;
 
 /**
  * action :位置提供器[高德]

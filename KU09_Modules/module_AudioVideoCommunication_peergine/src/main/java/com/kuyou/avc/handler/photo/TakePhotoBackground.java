@@ -26,6 +26,8 @@ import android.view.WindowManager.LayoutParams;
 import androidx.core.app.NotificationCompat;
 
 import com.kuyou.avc.R;
+import com.kuyou.avc.ui.basic.ITakePhotoByCameraResultListener;
+import com.kuyou.avc.ui.photo.CameraViews;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,7 +38,7 @@ import java.nio.ByteBuffer;
 
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeResult;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 public class TakePhotoBackground extends Service {
 

@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
- * action :
+ * action :USB设备插拔监听
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -40,8 +40,8 @@ public class UsbDeviceHandler extends BroadcastReceiver {
         return sInstance;
     }
 
-    private UsbDevice usbDevice;
-    private UsbManager usbManager;
+    private UsbDevice mUsbDevice;
+    private UsbManager mUsbManager;
     private IUsbDeviceListener mUsbDeviceListener;
 
     public static interface IUsbDeviceListener {
@@ -55,7 +55,7 @@ public class UsbDeviceHandler extends BroadcastReceiver {
 
     protected void onUsbDevice(UsbDevice device, boolean attached) {
         Log.d(TAG, (attached ? "onUsbDevice > attached device = " : "onUsbDevice > detached device = ")
-                + usbDevice.getProductName());
+                + mUsbDevice.getProductName());
         if (null == mUsbDeviceListener) {
             Log.e(TAG, "dispatchEvent > process fail : mEventBusDispatchCallback is null");
             return;
@@ -71,11 +71,11 @@ public class UsbDeviceHandler extends BroadcastReceiver {
         if (TextUtils.isEmpty(action))
             return;
         if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-            usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-            onUsbDevice(usbDevice, true);
+            mUsbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            onUsbDevice(mUsbDevice, true);
             //requestUserPermission(context,usbDevice);
         } else if (action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-            onUsbDevice(usbDevice, false);
+            onUsbDevice(mUsbDevice, false);
             //设备拔下，资源释放
         } else if (action.equals(ACTION_USB_DEVICE_PERMISSION)) {
             //获取连接设备的权限
@@ -89,15 +89,15 @@ public class UsbDeviceHandler extends BroadcastReceiver {
     }
 
     private void requestUserPermission(Context context, UsbDevice usbDevice) {
-        if (null == usbManager) {
-            usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        if (null == mUsbManager) {
+            mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         }
-        if (usbManager.hasPermission(usbDevice)) {
+        if (mUsbManager.hasPermission(usbDevice)) {
             return;
         }
         PendingIntent mPendingIntent = PendingIntent.getBroadcast(
                 context, 0, new Intent(ACTION_USB_DEVICE_PERMISSION), 0);
-        usbManager.requestPermission(usbDevice, mPendingIntent);
+        mUsbManager.requestPermission(usbDevice, mPendingIntent);
     }
 
     public static UsbDeviceHandler register(Context context) {

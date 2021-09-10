@@ -3,7 +3,7 @@ package com.kuyou.tts.handler;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.tts.basic.TTSManager;
+import com.kuyou.tts.handler.tts.TTSManager;
 
 import java.util.LinkedList;
 import java.util.Queue;

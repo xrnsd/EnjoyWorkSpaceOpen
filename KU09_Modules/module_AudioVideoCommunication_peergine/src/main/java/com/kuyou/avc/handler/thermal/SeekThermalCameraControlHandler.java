@@ -3,14 +3,14 @@ package com.kuyou.avc.handler.thermal;
 import android.content.Context;
 import android.util.Log;
 
-import com.kuyou.avc.handler.thermal.basic.IPeergineCameraCaptureCallBack;
+import com.kuyou.avc.basic.thermal.IPeergineCameraCaptureCallBack;
 import com.thermal.seekware.SeekCamera;
 import com.thermal.seekware.SeekCameraManager;
 import com.thermal.seekware.SeekImage;
 import com.thermal.seekware.SeekImageView;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.ThermalCameraControl;
+import kuyou.common.ku09.handler.ThermalCameraControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 
 /**

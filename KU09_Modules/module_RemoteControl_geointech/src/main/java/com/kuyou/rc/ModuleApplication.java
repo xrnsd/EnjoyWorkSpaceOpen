@@ -6,7 +6,7 @@ import com.kuyou.rc.handler.LocationHandler;
 import com.kuyou.rc.handler.PhotoUploadHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.HardwareModuleDetectionHandler;
-import com.kuyou.rc.handler.location.basic.ILocationProviderPolicy;
+import com.kuyou.rc.basic.location.ILocationProviderPolicy;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
@@ -24,12 +24,13 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
 public class ModuleApplication extends BasicModuleApplication {
     private final String TAG = "com.kuyou.rc > ModuleApplication";
 
-    private ModuleCommonHandler mModuleCommonHandler;
-    private PlatformInteractiveHandler mPlatformInteractiveHandler;
-    private LocationHandler mLocationHandler;
     private AlarmHandler mAlarmHandler;
     private LocalKeyHandler mLocalKeyHandler;
+    private LocationHandler mLocationHandler;
     private PhotoUploadHandler mPhotoUploadHandler;
+    private ModuleCommonHandler mModuleCommonHandler;
+    private PlatformInteractiveHandler mPlatformInteractiveHandler;
+    private HardwareModuleDetectionHandler mHardwareModuleDetectionHandler;
 
     @Override
     protected String getApplicationName() {
@@ -44,12 +45,14 @@ public class ModuleApplication extends BasicModuleApplication {
         registerEventHandler(getPhotoUploadHandler());
         registerEventHandler(getAlarmHandler());
         registerEventHandler(getLocationHandler());
+        registerEventHandler(getHardwareModuleDetectionHandler());
     }
 
     @Override
     protected void init() {
         super.init();
-        getPlatformInteractiveHandler().initial();
+        getHardwareModuleDetectionHandler().start();
+        getPlatformInteractiveHandler().start();
     }
 
     @Override
@@ -138,5 +141,12 @@ public class ModuleApplication extends BasicModuleApplication {
             mPhotoUploadHandler = new PhotoUploadHandler();
         }
         return mPhotoUploadHandler;
+    }
+
+    protected HardwareModuleDetectionHandler getHardwareModuleDetectionHandler() {
+        if (null == mHardwareModuleDetectionHandler) {
+            mHardwareModuleDetectionHandler = new HardwareModuleDetectionHandler();
+        }
+        return mHardwareModuleDetectionHandler;
     }
 }

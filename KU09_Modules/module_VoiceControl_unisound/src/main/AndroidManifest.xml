@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.kuyou.vc">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -19,14 +20,18 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name="com.kuyou.vc.ModuleApplication"
+        android:name=".ModuleApplication"
         android:directBootAware="true"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:noHistory="true"
-        android:excludeFromRecents="true">
+        android:allowBackup="true"
+        android:excludeFromRecents="true"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
+
         <activity
-            android:name="com.kuyou.vc.MainActivity"
+            android:name="com.kuyou.vc.ui.MainActivity"
             android:screenOrientation="nosensor"
             android:theme="@style/translucent">
             <intent-filter>

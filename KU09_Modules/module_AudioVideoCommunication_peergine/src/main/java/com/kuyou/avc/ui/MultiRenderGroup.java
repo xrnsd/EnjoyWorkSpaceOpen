@@ -3,7 +3,7 @@ package com.kuyou.avc.ui;
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.basic.MultiRender;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :音视频通信[群组通话][采集端]

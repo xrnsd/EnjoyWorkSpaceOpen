@@ -3,7 +3,7 @@ package kuyou.common.ku09.event.rc.hardware;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
-import kuyou.common.ku09.protocol.IHardwareModuleDetection;
+import kuyou.common.ku09.protocol.basic.IHardwareModuleDetection;
 
 /**
  * action :事件[硬件模块检测结果][全部模块检测完成]

@@ -21,13 +21,13 @@ import kuyou.common.camera.CameraUtil;
 import kuyou.common.file.FileUtils;
 import kuyou.common.file.SdUtils;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.ThermalCameraControl;
+import kuyou.common.ku09.handler.ThermalCameraControl;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionFinish;
 import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionRequest;
 import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.protocol.IHardwareModuleDetection;
+import kuyou.common.ku09.protocol.basic.IHardwareModuleDetection;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 

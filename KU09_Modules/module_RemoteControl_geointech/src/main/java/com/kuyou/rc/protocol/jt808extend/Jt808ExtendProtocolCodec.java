@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import kuyou.common.bytes.ByteUtils;
-import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
 import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;

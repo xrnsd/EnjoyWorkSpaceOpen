@@ -4,7 +4,7 @@ import android.content.Context;
 import android.location.Location;
 
 import com.kuyou.rc.handler.location.filter.FilterController;
-import com.kuyou.rc.handler.location.filter.basic.IFilterCallBack;
+import com.kuyou.rc.basic.location.filter.IFilterCallBack;
 
 /**
  * action :默认使用滤波器的位置提供器

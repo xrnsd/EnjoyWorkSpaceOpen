@@ -3,8 +3,8 @@ package com.kuyou.avc.handler.thermal;
 import android.util.Log;
 import android.view.View;
 
-import com.kuyou.avc.handler.thermal.basic.IPeergineCameraCaptureCallBack;
-import com.kuyou.avc.handler.thermal.basic.IPeergineCameraCaptureHandler;
+import com.kuyou.avc.basic.thermal.IPeergineCameraCaptureCallBack;
+import com.kuyou.avc.basic.thermal.IPeergineCameraCaptureHandler;
 import com.peergine.plugin.android.pgDevVideoIn;
 
 import kuyou.common.ipc.RemoteEvent;

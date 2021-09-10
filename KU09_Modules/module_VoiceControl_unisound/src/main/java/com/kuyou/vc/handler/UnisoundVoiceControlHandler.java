@@ -16,7 +16,7 @@ import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :协处理器[语音控制][Unisound]

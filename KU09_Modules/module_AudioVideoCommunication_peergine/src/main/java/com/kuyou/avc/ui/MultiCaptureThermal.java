@@ -7,7 +7,7 @@ import com.kuyou.avc.handler.thermal.PeergineThermalCameraCaptureHandler;
 import com.kuyou.avc.ui.basic.MultiCapExter2;
 
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :红外[基于Peergine]

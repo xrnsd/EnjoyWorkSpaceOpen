@@ -10,7 +10,7 @@ import com.kuyou.avc.ui.basic.MultiCapture;
 import java.util.ArrayList;
 import java.util.List;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :群组通话[基于Peergine,采集端]

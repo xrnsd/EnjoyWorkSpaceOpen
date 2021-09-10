@@ -1,7 +1,7 @@
 package com.kuyou.avc.ui;
 
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
+import com.kuyou.avc.basic.photo.ITakePhotoByScreenshotResultCallback;
 import com.kuyou.avc.ui.basic.MultiCapture;
 
 import org.greenrobot.eventbus.EventBus;
@@ -10,7 +10,7 @@ import org.greenrobot.eventbus.Subscribe;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :视频通话[基于Peergine]

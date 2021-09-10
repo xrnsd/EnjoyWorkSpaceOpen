@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.basic.ILiveControlCallback;
-import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.ILiveControlCallback;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.status.StatusProcessBusImpl;
@@ -41,6 +41,13 @@ public abstract class BasicAssistHandler {
     }
 
     //协处理器 相关
+    public void start(){
+
+    }
+
+    public void stop(){
+
+    }
 
     /**
      * action: 嵌套的协处理器列表 <br/>

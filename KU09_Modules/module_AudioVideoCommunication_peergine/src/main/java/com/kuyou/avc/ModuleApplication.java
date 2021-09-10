@@ -5,7 +5,7 @@ import com.kuyou.avc.handler.LocalKeyHandler;
 import com.kuyou.avc.handler.LocalModuleCommonHandler;
 import com.kuyou.avc.handler.PeergineAudioVideoHandler;
 import com.kuyou.avc.handler.PhotoTakeHandler;
-import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
+import com.kuyou.avc.handler.AudioVideoRequestResultHandler;
 
 import kuyou.common.ipc.RemoteEventBus;
 import kuyou.common.ku09.BasicModuleApplication;

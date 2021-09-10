@@ -23,7 +23,7 @@ import com.peergine.android.livemulti.pgLibLiveMultiCapture;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.plugin.lib.pgLibJNINode;
 
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 
 public abstract class MultiCapture extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {

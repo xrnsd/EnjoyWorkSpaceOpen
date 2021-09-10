@@ -38,8 +38,9 @@ import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
+import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionFinish;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 import kuyou.common.utils.NetworkUtils;
@@ -60,24 +61,18 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
     protected final String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
 
+    protected final static int PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT = 1;
+
     protected boolean isNetworkAvailable = false;
 
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
-    private HeartbeatHandler mHeartbeatHandler;
-    private HardwareModuleDetectionHandler mHardwareModuleDetectionHandler;
+    protected HeartbeatHandler mHeartbeatHandler;
 
     protected HeartbeatHandler getHeartbeatHandler() {
         if (null == mHeartbeatHandler) {
             mHeartbeatHandler = new HeartbeatHandler();
         }
         return mHeartbeatHandler;
-    }
-
-    protected HardwareModuleDetectionHandler getHardwareModuleDetectionHandler() {
-        if (null == mHardwareModuleDetectionHandler) {
-            mHardwareModuleDetectionHandler = new HardwareModuleDetectionHandler();
-        }
-        return mHardwareModuleDetectionHandler;
     }
 
     protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
@@ -210,9 +205,9 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         return PlatformConnectManager.getInstance(getDeviceConfig());
     }
 
-    public void initial() {
-        getHardwareModuleDetectionHandler().start();
-
+    @Override
+    public void start() {
+        super.start();
         isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailable) {
             Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
@@ -264,6 +259,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
     // =====================  事件处理 =============================
 
     private boolean isRemoteControlPlatformConnected = false;
+    private boolean isHardwareModuleDetectionFinish = false;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
         if (null == msg || msg.length <= 0) {
@@ -301,8 +297,6 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         return null;
     }
 
-    protected final static int PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT = 1;
-
     @Override
     protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
@@ -317,7 +311,8 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         super.onReceiveProcessStatusNotice(statusCode, isRemove);
         switch (statusCode) {
             case PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT:
-                Log.e(TAG, "onReceiveProcessStatusNotice > process fail : 鉴权等待超时，强制进行鉴权操作");
+                Log.w(TAG, "onReceiveProcessStatusNotice > process fail : 鉴权等待超时，强制进行鉴权操作");
+                isHardwareModuleDetectionFinish = true;
                 dispatchEvent(new EventAuthenticationRequest()
                         .setRemote(false));
                 break;
@@ -331,7 +326,6 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         List<BasicAssistHandler> handlers = new ArrayList<>();
 
         handlers.add(getHeartbeatHandler());
-        handlers.add(getHardwareModuleDetectionHandler());
         return handlers;
     }
 
@@ -364,6 +358,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
                 if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
                     //Log.d(TAG, "onReceiveEventNotice > 设备离线，断开后台连接");
+                    isRemoteControlPlatformConnected = false;
                     getPlatformConnectManager().disconnect();
                 }
                 break;
@@ -383,7 +378,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 isRemoteControlPlatformConnected = EventConnectResult.isResultSuccess(event);
                 if (isRemoteControlPlatformConnected) {
                     Log.i(TAG, "onReceiveEventNotice > 连接服务器成功");
-                    if (getHardwareModuleDetectionHandler().isFinish()) {
+                    if (isHardwareModuleDetectionFinish) {
                         dispatchEvent(new EventAuthenticationRequest()
                                 .setEnableConsumeSeparately(false)
                                 .setRemote(false));
@@ -402,7 +397,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 break;
 
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
-                SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(EventRemoteControl.Code.AUTHENTICATION_REQUEST);
+                SicBasic singleInstructionParser = getSingleInstructionParserByEventCode(event);
                 if (null == singleInstructionParser) {
                     Log.i(TAG, "onReceiveEventNotice > 鉴权,process fail : 找不到 SicBasic");
                     break;
@@ -411,16 +406,19 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 getStatusProcessBus().stop(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT);
                 SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
                 authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
-                if (getHardwareModuleDetectionHandler().isFinish()) {
-                    authentication.setItemAdditionHardwareModuleDetection(getHardwareModuleDetectionHandler().getBody());
-                } else {
-                    Log.w(TAG, "onReceiveEventNotice > 鉴权,硬件检测未完成");
-                }
                 sendToRemoteControlPlatform(authentication.getBody());
                 break;
 
             case EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_FINISH:
+                isHardwareModuleDetectionFinish = true;
                 Log.i(TAG, "onReceiveEventNotice > 硬件检测完成");
+                singleInstructionParser = getSingleInstructionParserByEventCode(event);
+                if (null != singleInstructionParser) {
+                    Log.w(TAG, "onReceiveEventNotice > 硬件检测完成,process fail : 找不到 SicBasic");
+                    break;
+                }
+                authentication = (SicAuthentication) singleInstructionParser;
+                authentication.setItemAdditionHardwareModuleDetection(EventHardwareModuleStatusDetectionFinish.getMsg(event));
                 if (isNetworkAvailable && getPlatformConnectManager().isConnect()) {
                     dispatchEvent(new EventAuthenticationRequest()
                             .setRemote(false));

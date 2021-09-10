@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
 import kuyou.sdk.jt808.basic.protocol.JT808ReaderProtocol;
 import kuyou.sdk.jt808.basic.socketbean.PulseData;

@@ -3,14 +3,14 @@ package com.kuyou.avc.handler;
 import android.content.Context;
 import android.util.Log;
 
-import kuyou.common.ku09.basic.CameraLightControl;
-import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
+import kuyou.common.ku09.handler.CameraLightControl;
+import com.kuyou.avc.basic.photo.IAudioVideoRequestCallback;
 
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.handler.KeyHandler;
-import kuyou.common.ku09.config.IKeyConfig;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IKeyConfig;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :实体按键事件协处理器

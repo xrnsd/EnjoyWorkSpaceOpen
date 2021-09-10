@@ -6,10 +6,10 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
-import com.kuyou.rc.handler.location.basic.ILocationProvider;
+import com.kuyou.rc.basic.location.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
-import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 
 /**
  * action :位置提供器

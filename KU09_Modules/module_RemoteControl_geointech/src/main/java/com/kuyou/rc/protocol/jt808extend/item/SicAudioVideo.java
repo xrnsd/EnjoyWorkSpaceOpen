@@ -10,7 +10,7 @@ import java.util.Arrays;
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.sdk.jt808.basic.jt808coding.JTT808Coding;
 
 /**

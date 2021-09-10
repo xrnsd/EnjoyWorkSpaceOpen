@@ -3,14 +3,14 @@ package com.kuyou.rc.handler;
 import android.util.Log;
 
 import com.kuyou.rc.handler.alarm.ALARM;
-import com.kuyou.rc.handler.location.basic.ILocationProvider;
+import com.kuyou.rc.basic.location.ILocationProvider;
 import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :协处理器[报警]

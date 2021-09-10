@@ -3,7 +3,7 @@ package com.kuyou.rc.handler;
 import android.util.Log;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.config.IKeyConfig;
+import kuyou.common.ku09.protocol.basic.IKeyConfig;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmGas;
 import kuyou.common.ku09.event.rc.alarm.EventAlarmNearPower;

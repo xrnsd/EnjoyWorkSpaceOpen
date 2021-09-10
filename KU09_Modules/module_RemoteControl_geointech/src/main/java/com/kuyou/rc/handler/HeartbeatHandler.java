@@ -245,7 +245,9 @@ public class HeartbeatHandler extends BasicAssistHandler {
         return heartbeatStatusResult;
     }
 
+    @Override
     public void start() {
+        super.start();
         if (-1 == PS_HEARTBEAT_REPORT) {
             Log.e(TAG, "start > process fail : mHeartbeatHandlerMsgFlag is invalid");
             return;
@@ -256,7 +258,9 @@ public class HeartbeatHandler extends BasicAssistHandler {
         getStatusProcessBus().start(PS_HEARTBEAT_REPORT_START_TIME_OUT);
     }
 
+    @Override
     public void stop() {
+        super.stop();
         if (-1 == PS_HEARTBEAT_REPORT) {
             Log.e(TAG, "stop > process fail : mHeartbeatHandlerMsgFlag is invalid");
             return;

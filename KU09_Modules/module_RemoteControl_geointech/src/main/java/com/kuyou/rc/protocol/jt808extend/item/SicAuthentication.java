@@ -79,6 +79,10 @@ public class SicAuthentication extends SicBasic {
 
     private byte[] mItemAdditionHardwareModuleDetection;
 
+    public byte[] getmItemAdditionHardwareModuleDetection() {
+        return mItemAdditionHardwareModuleDetection;
+    }
+
     public SicAuthentication setItemAdditionHardwareModuleDetection(byte[] itemAddition) {
         mItemAdditionHardwareModuleDetection = itemAddition;
         return SicAuthentication.this;

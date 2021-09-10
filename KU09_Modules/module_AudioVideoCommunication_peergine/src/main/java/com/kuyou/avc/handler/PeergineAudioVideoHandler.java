@@ -13,11 +13,11 @@ import androidx.annotation.NonNull;
 
 import com.kuyou.avc.BuildConfig;
 import com.kuyou.avc.R;
-import com.kuyou.avc.handler.basic.AudioVideoRequestResultHandler;
-import kuyou.common.ku09.basic.CameraLightControl;
+
+import kuyou.common.ku09.handler.CameraLightControl;
 import com.kuyou.avc.handler.ringtone.LocalRingtoneHandler;
 import com.kuyou.avc.handler.ringtone.RingtoneHandler;
-import kuyou.common.ku09.basic.ThermalCameraControl;
+import kuyou.common.ku09.handler.ThermalCameraControl;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
 import com.kuyou.avc.ui.MultiCaptureThermal;
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.config.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
@@ -38,7 +38,7 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 

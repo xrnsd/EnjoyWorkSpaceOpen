@@ -3,9 +3,9 @@ package com.kuyou.avc.handler;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.kuyou.avc.handler.basic.IAudioVideoRequestCallback;
-import com.kuyou.avc.handler.photo.ITakePhotoByCameraResultListener;
-import com.kuyou.avc.handler.photo.ITakePhotoByScreenshotResultCallback;
+import com.kuyou.avc.basic.photo.IAudioVideoRequestCallback;
+import com.kuyou.avc.ui.basic.ITakePhotoByCameraResultListener;
+import com.kuyou.avc.basic.photo.ITakePhotoByScreenshotResultCallback;
 import com.kuyou.avc.handler.photo.TakePhotoBackground;
 
 import kuyou.common.ipc.RemoteEvent;
@@ -15,7 +15,7 @@ import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
 import kuyou.common.ku09.event.rc.EventPhotoUploadRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
-import kuyou.common.ku09.protocol.IJT808ExtensionProtocol;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 
