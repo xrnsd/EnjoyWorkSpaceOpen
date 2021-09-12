@@ -452,8 +452,16 @@ public abstract class BasicModuleApplication extends Application {
     }
 
     // =========================== 设备配置等==============================
+    private String mAppName = null;
 
-    protected abstract String getApplicationName();
+    protected String getApplicationName() {
+        if (null == mAppName) {
+            int resId = getResources().getIdentifier("app_name", "string", getPackageName());
+            if (0 < resId)
+                mAppName = getApplicationContext().getString(resId);
+        }
+        return mAppName;
+    }
 
     private IDeviceConfig mDeviceConfig;
 

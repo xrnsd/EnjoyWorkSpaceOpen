@@ -27,11 +27,6 @@ public class ModuleApplication extends BasicModuleApplication {
     private UnisoundVoiceControlHandler mUnisoundVoiceControlHandler;
 
     @Override
-    protected String getApplicationName() {
-        return "VoiceControl_unisound";
-    }
-
-    @Override
     protected void initRegisterEventHandlers() {
         registerEventHandler(getKeyHandler());
         registerEventHandler(getVoiceControlHandler());

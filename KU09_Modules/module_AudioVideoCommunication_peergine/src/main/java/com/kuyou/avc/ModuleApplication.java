@@ -28,11 +28,6 @@ public class ModuleApplication extends BasicModuleApplication {
     private PhotoTakeHandler mPhotoTakeHandler;
 
     @Override
-    protected String getApplicationName() {
-        return "AudioVideoCommunication_peergine";
-    }
-
-    @Override
     protected void initRegisterEventHandlers() {
         registerEventHandler(getModuleBasicEventHandler());
         registerEventHandler(getLocalKeyHandler());

@@ -23,11 +23,6 @@ public class ModuleApplication extends BasicModuleApplication {
     private TTSHandler mTTSHandler;
 
     @Override
-    protected String getApplicationName() {
-        return "TextToSpeech_unisound";
-    }
-
-    @Override
     protected void initRegisterEventHandlers() {
         registerEventHandler(getTTSHandler());
         registerEventHandler(getModuleBasicEventHandler());

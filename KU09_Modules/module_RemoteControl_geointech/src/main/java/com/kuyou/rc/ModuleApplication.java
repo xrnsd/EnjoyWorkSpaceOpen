@@ -33,11 +33,6 @@ public class ModuleApplication extends BasicModuleApplication {
     private HardwareModuleDetectionHandler mHardwareModuleDetectionHandler;
 
     @Override
-    protected String getApplicationName() {
-        return "RemoteControl_geointech";
-    }
-
-    @Override
     protected void initRegisterEventHandlers() {
         registerEventHandler(getModuleBasicEventHandler());
         registerEventHandler(getLocalKeyHandler());
