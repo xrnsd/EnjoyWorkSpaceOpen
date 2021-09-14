@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="test_touch"/>
+    <item type="id" name="test_lcd"/>
+    <item type="id" name="test_gps"/>
+    <item type="id" name="test_power"/>
+    <item type="id" name="test_key"/>
+    <item type="id" name="test_loudspeaker"/>
+    <item type="id" name="test_headset"/>
+    <item type="id" name="test_microphone"/>
+    <item type="id" name="test_receiver"/>
+    <item type="id" name="test_wifi"/>
+    <item type="id" name="test_bluetooth"/>
+    <item type="id" name="test_vibrate"/>
+    <item type="id" name="test_sim"/>
+    <item type="id" name="test_backlight"/>
+    <item type="id" name="test_ram"/>
+    <item type="id" name="test_gsensor"/>
+    <item type="id" name="test_esensor"/>
+    <item type="id" name="test_lsensor"/>
+    <item type="id" name="test_rangesensor"/>
+    <item type="id" name="test_tfcard"/>
+    <item type="id" name="test_bcamera"/>
+    <item type="id" name="test_fcamera"/>
+    <item type="id" name="test_radio"/>
+    <item type="id" name="test_phone"/>
+    <item type="id" name="test_bd1"/>
+    <item type="id" name="test_compass"/>
+    <item type="id" name="test_flash_light"/>
+    <item type="id" name="test_version"/>
+    <item type="id" name="test_nfc"/>
+    <item type="id" name="test_led_light"/>
+
+    <item type="id" name="test_aging"/>
+</resources>

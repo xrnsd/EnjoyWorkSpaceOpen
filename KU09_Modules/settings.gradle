@@ -9,6 +9,6 @@ include ':module_RemoteControl_geointech:sdk_public_jt808'
 include ':module_RemoteControl_geointech'
 
 include ':module_AudioVideoCommunication_peergine'
-//include ':module_AudioVideoCommunication_agora'
+include ':module_FactoryTest_kuyou'
 
 

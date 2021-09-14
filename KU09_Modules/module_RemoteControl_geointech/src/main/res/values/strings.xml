@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">RemoteControl_geointech</string>
-
     <string name="hm_status_none">未知</string>
     <string name="hm_status_be_equipped_normal">搭载,工作正常</string>
     <string name="hm_status_be_equipped_exception">搭载,工作异常</string>

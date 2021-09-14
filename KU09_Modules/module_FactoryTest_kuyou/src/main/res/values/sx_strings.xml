@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="test_bd_ais_buadrate">当前串口波特率:</string>
+    <string name="test_ais">船舶AIS 测试</string>
+    <string name="test_bd">北斗 测试</string>
+    <string name="test_tt">天通模块 测试</string>
+    <string name="test_sensor_calculate">正在计算...</string>
+    <string name="test_sensor_temperature">温度</string>
+    <string name="test_sensor_humidity">湿度</string>
+    <string name="test_sensor_pressure">气压</string>
+    <string name="test_sensor_highness">高度</string>
+    <string name="test_sensor_magnetic">地磁场</string>
+    <string name="test_sensor_gyro_magnetic">陀螺仪、地磁场</string>
+    <string name="test_sensor_gyro">陀螺仪</string>
+    <string name="test_sensor">温湿度气压计</string>
+    <string name="str_switch_ear">语音切到听筒</string>
+    <string name="str_switch_speaker">切到功放</string>
+    <string name="str_switch_headset">切到耳机</string>
+    <string name="str_open">打开</string>
+    <string name="str_close">关闭</string>
+
+    <string name="test_fingerprint">指纹</string>
+    <string name="str_fingerprint_indicate">指纹设备检测结果：</string>
+    <string name="str_fingerprint_invalid">未检测到可用的指纹设备</string>
+    <string name="str_fingerprint_valid">检测到机器装备有可用的指纹设备</string>
+    <string name="testkey_physicalkey">物理按键 ：</string>
+    <string name="testkey_fingerprintkey">指纹模拟按键 ：</string>
+    <string name="testkey_virtualkey">虚拟按键 ：</string>
+    
+    <string name="key_recentapp">任务键</string>
+    <string name="ethernet_infostate">以太网状态:</string>
+    <string name="ethernet_state_closed">以太网已关闭</string>
+    <string name="ethernet_state_opened">以太网已打开</string>
+    <string name="ethernet_state_opening">以太网正在打开...</string>
+    <string name="ethernet_state_connected">以太网已连接，正在打开网页</string>
+    <string name="ethernet_state_disconnected">以太网未连接，请接上以太网接口线</string>
+    <string name="phone_ethernet">以太网</string>
+    <string name="nfc_test">NFC</string>
+    <string name="nfc_info_state">NFC信息:</string>
+    <string name="encrypt_info_state">Encrypt:</string>
+    <string name="encrypt_test">加密芯片</string>
+    <string name="encrypt_read_version">读取加密芯片版本号</string>
+
+    <string name="fingerprint_info">请将手指放到指纹模块上，并持续三秒以上，点击开始检测指纹选项后开始检测</string>
+    <string name="fingerprint_button_test">开始检测指纹</string>
+    <string name="fingerprint_button_test_process">正在检测指纹</string>
+    <string name="fingerprint_button_test_end">检测指纹结束</string>
+    <string name="fingerprint_result_success">成功检测指纹，并录制部分指纹</string>
+    <string name="fingerprint_result_fail">超时，未检测到指纹，可点击开始检测指纹选项再次测试</string>
+    <string name="fingerprint_test_success">录制指纹成功</string>
+</resources>

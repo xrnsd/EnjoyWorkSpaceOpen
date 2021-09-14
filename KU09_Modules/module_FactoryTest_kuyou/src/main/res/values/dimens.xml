@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="hint_y_offset">64.0dip</dimen>
+    <dimen name="button_item_textsize">10.0sp</dimen>
+    <dimen name="textview_textsize">10.0sp</dimen>
+    
+    <dimen name="button_success_textsize">20.0sp</dimen>
+    <dimen name="button_layout_margin">5dip</dimen>
+</resources>

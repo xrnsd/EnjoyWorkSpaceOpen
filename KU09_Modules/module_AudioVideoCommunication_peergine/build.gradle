@@ -38,6 +38,7 @@ android {
         }
         //混淆开关
         buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
+        resValue "string", "app_name", "${project.moduleName}"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

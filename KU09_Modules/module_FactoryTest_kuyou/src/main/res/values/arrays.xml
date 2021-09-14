@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="self_test_list_aries">
+        <item>@string/melody_test_aries</item>
+        <item>@string/vibration_test_aries</item>
+        <item>@string/speaker_test_aries</item>
+        <item>@string/dimming_test_aries</item>
+        <item>@string/camera_test_aries</item>
+        <item>@string/vt_camera_test_aries</item>
+        <item>@string/bluetooth_test_aries</item>
+        <item>@string/tsp_dot_test_aries</item>
+        <item>@string/tsp_grid_test_aries</item>
+        <item>@string/acc_sensor_test_aries</item>
+        <item>@string/proximity_sensor_test_aries</item>
+        <item>@string/light_sensor_test_aries</item>
+    </string-array>
+
+    <string-array name="spinnerArray">
+        <item>4 directions mode</item>
+        <item>Horizontal mode</item>
+        <item>Vertical mode</item>
+    </string-array>
+</resources>

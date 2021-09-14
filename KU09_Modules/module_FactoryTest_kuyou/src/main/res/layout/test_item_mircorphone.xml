@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+        <com.kuyou.ft.basic.microphone.MicrophoneVUMeterTestView
+            android:id="@+id/uvMeter"
+            android:layout_width="375dip"
+            android:layout_height="150dip"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/micor_start"
+            android:layout_width="match_parent"
+            android:layout_height="80.0dip"
+            android:text="@string/start_luyin" />
+
+    </LinearLayout>
+</merge>

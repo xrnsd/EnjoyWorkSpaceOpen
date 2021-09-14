@@ -37,11 +37,6 @@ public class ModuleApplication extends BasicModuleApplication {
     }
 
     @Override
-    protected long getFeedTimeLong() {
-        return 30 * 1000;
-    }
-
-    @Override
     protected RemoteEventBus.IFrameLiveListener getIpcFrameLiveListener() {
         return getAudioVideoRequestHandler();
     }

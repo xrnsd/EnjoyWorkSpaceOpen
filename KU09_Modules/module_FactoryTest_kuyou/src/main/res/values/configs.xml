@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ethernet ..  -->
+    <dimen name="ethernet_text_margin_top">10dp</dimen>
+    <dimen name="ethernet_text_fontsize">20sp</dimen>
+    <dimen name="nfc_text_fontsize">20sp</dimen>
+    <dimen name="encrypt_text_fontsize">20sp</dimen>
+</resources>
