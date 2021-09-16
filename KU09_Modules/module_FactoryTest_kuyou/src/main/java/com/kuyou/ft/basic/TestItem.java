@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -24,6 +25,14 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import kuyou.common.ipc.RemoteEvent;
+import kuyou.common.ipc.RemoteEventBus;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
+import kuyou.common.status.StatusProcessBusCallbackImpl;
+import kuyou.common.status.StatusProcessBusImpl;
+import kuyou.common.status.basic.IStatusProcessBus;
+import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
  * action :测试功能项[抽象]
@@ -42,11 +51,19 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
     public static final int POLICY_TEST_AUTO = (1 << 1);
     public static final int POLICY_TEST_AGING = (1 << 2);
 
+    protected final static int PS_TIMING = 2048;
+    protected TextView mTvTiming;
+    private int mTiming = -1;
+
     protected ViewGroup mContent, mBtns;
     protected Button mBtnItem, mBtnSuccess, mBtnFailed;
+    protected TextView mTvTitle;
 
     private Handler mHandlerAging;
     private List<Runnable> mRunnableListAging;
+    private IStatusProcessBus mStatusProcessBus;
+
+    private IDeviceConfig mDeviceConfig;
 
     public int getTestPolicy() {
         int policy = 0;
@@ -61,6 +78,68 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
     public abstract int getSubContentId();
 
     public abstract String getTestTitle(Context context);
+
+    public IStatusProcessBus getStatusProcessBus() {
+        initStatusProcessBus();
+        return mStatusProcessBus;
+    }
+
+    public void initStatusProcessBus() {
+        if (null != mStatusProcessBus) {
+            return;
+        }
+        mStatusProcessBus = new StatusProcessBusImpl() {
+            @Override
+            protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+                TestItem.this.onReceiveProcessStatusNotice(statusCode, isRemove);
+            }
+        };
+        initReceiveProcessStatusNotices();
+    }
+
+    protected void initReceiveProcessStatusNotices() {
+        if (-1 != getTimingFlag()) {
+            mTiming = getTimingFlag() - 1;
+            getStatusProcessBus().registerStatusNoticeCallback(PS_TIMING, new StatusProcessBusCallbackImpl(true, 1000)
+                    .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
+                    .setEnableReceiveRemoveNotice(true));
+        }
+    }
+
+    protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
+        if (PS_TIMING == statusCode && -1 != getTimingFlag()) {
+            runOnUiThread(() -> refreshTiming(isRemove));
+        }
+    }
+
+    protected void refreshTiming(boolean isRemove) {
+        if (null == mTvTiming) {
+            return;
+        }
+        if (isRemove || mTiming <= 0) {
+            mTvTiming.setVisibility(View.GONE);
+            return;
+        }
+        mTvTiming.setText(String.valueOf(mTiming));
+        mTiming -= 1;
+        return;
+    }
+
+    protected int getTimingFlag() {
+        return -1;
+    }
+
+    public void onReceiveEventNotice(RemoteEvent event) {
+
+    }
+
+    protected IDeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
+    }
+
+    public void setDeviceConfig(IDeviceConfig deviceConfig) {
+        mDeviceConfig = deviceConfig;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,10 +229,22 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
         }
     }
 
+    protected void dispatchEvent(RemoteEvent event) {
+        RemoteEventBus.getInstance().dispatch(event);
+    }
+
     protected void initWindowConfig() {
         requestWindowFeature(1);
         getWindow().addFlags(1024);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    protected void setTestResultTitle(String result) {
+        if (null == mTvTitle) {
+            Log.e(TAG, "setTestResultTitle > process fail : mTvTitle null");
+            return;
+        }
+        runOnUiThread(() -> mTvTitle.setText(result));
     }
 
     protected void initViews() {
@@ -181,7 +272,16 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
         finish();
     }
 
+    protected int getHardwareModuleTypeId() {
+        return -1;
+    }
+
     public boolean isEnableTest() {
+        if (-1 != getHardwareModuleTypeId()
+                && null != getDeviceConfig()
+                && !getDeviceConfig().isHardwareModuleCarry(getHardwareModuleTypeId())) {
+            return false;
+        }
         return (getTestPolicy() & POLICY_TEST) != 0;
     }
 

@@ -23,6 +23,7 @@ import com.kuyou.ft.item.TestItemHeadset;
 import com.kuyou.ft.item.TestItemHwSwInfo;
 import com.kuyou.ft.item.TestItemKey;
 import com.kuyou.ft.item.TestItemLSensor;
+import com.kuyou.ft.item.TestItemLaserLight;
 import com.kuyou.ft.item.TestItemLcd;
 import com.kuyou.ft.item.TestItemLed;
 import com.kuyou.ft.item.TestItemLoudspeaker;
@@ -33,6 +34,9 @@ import com.kuyou.ft.item.TestItemRangeSensor;
 import com.kuyou.ft.item.TestItemReceiver;
 import com.kuyou.ft.item.TestItemSdcard;
 import com.kuyou.ft.item.TestItemSim;
+import com.kuyou.ft.item.TestItemThermalCamera;
+import com.kuyou.ft.item.TestItemUWB;
+import com.kuyou.ft.item.TestItemVoiceControl;
 import com.kuyou.ft.item.TestItemWifi;
 
 /**
@@ -82,6 +86,10 @@ public class TestEntranceAuto extends TestEntrance {
         classes.add(TestItemSim.class);
         classes.add(TestItemWifi.class);
         classes.add(TestItemHwSwInfo.class);
+        classes.add(TestItemUWB.class);
+        classes.add(TestItemLaserLight.class);
+        classes.add(TestItemVoiceControl.class);
+        classes.add(TestItemThermalCamera.class);
 
         return classes;
     }

@@ -11,7 +11,7 @@ public interface IDeviceConfig {
     public final static String KEY_SERVER_PORT = "persist.kud.hm.sap";
     public final static String KEY_AUTHENTICATION_CODE = "persist.kud.hm.ac";
 
-    public final static String KEY_HARDWARE_CARRY_FLAG = "persist.kuh.";
+    public final static String KEY_HARDWARE_CARRY = "persist.kuh.hmc";
 
     public String getDevId();
 

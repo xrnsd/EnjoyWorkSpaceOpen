@@ -22,14 +22,18 @@
     <item type="id" name="test_tfcard"/>
     <item type="id" name="test_bcamera"/>
     <item type="id" name="test_fcamera"/>
+    <item type="id" name="test_tcamera"/>
     <item type="id" name="test_radio"/>
     <item type="id" name="test_phone"/>
     <item type="id" name="test_bd1"/>
     <item type="id" name="test_compass"/>
     <item type="id" name="test_flash_light"/>
+    <item type="id" name="test_laser_light"/>
     <item type="id" name="test_version"/>
     <item type="id" name="test_nfc"/>
     <item type="id" name="test_led_light"/>
+    <item type="id" name="test_uwb"/>
+    <item type="id" name="test_voice_control"/>
 
     <item type="id" name="test_aging"/>
 </resources>

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.utils.SystemPropertiesUtils;
 
 /**
@@ -34,6 +35,8 @@ public abstract class TestEntrance extends Activity {
 
     protected final static String KEY_AGING_MODE = "persist.ft.mode";
     protected static Map<Integer, TestItem> sTestItemList = new HashMap<Integer, TestItem>();
+
+    private IDeviceConfig mDeviceConfig;
 
     /**
      * action:当前测试流程的测试类型
@@ -81,9 +84,7 @@ public abstract class TestEntrance extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addFlag();
-        loadAllTestItem(getApplicationContext());
         EventBus.getDefault().register(this);
-        initViews();
     }
 
     @Override
@@ -99,6 +100,17 @@ public abstract class TestEntrance extends Activity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         clearFlag();
+    }
+
+    protected IDeviceConfig getDeviceConfig() {
+        return mDeviceConfig;
+    }
+
+    public void setDeviceConfig(IDeviceConfig deviceConfig) {
+        mDeviceConfig = deviceConfig;
+
+        loadAllTestItem(getApplicationContext());
+        initViews();
     }
 
     protected void loadAllTestItem(Context context) {
@@ -118,6 +130,7 @@ public abstract class TestEntrance extends Activity {
             }
             for (Class item : list) {
                 testItem = (TestItem) item.newInstance();
+                testItem.setDeviceConfig(getDeviceConfig());
                 if (!testItem.isEnableTest() || !testItem.isEnableTestByFlag(getTestProcessType())) {
                     Log.w(TAG, "loadAllTestItem > 测试项已关闭 : " + testItem.getTestTitle(context));
                     continue;

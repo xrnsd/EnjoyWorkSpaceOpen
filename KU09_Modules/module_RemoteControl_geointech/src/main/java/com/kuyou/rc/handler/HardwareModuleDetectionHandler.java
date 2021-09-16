@@ -6,10 +6,8 @@ import android.hardware.usb.UsbDevice;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.kuyou.rc.R;
-import com.kuyou.rc.handler.hmd.UsbDeviceHandler;
-import com.kuyou.rc.protocol.uwb.UwbManager;
-import com.kuyou.rc.protocol.uwb.basic.IModuleInfoListener;
+import com.kuyou.rc.protocol.jt808extend.uwb.UwbManager;
+import com.kuyou.rc.protocol.jt808extend.uwb.basic.IModuleInfoListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +19,13 @@ import kuyou.common.camera.CameraUtil;
 import kuyou.common.file.FileUtils;
 import kuyou.common.file.SdUtils;
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.handler.ThermalCameraControl;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
-import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionFinish;
-import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionRequest;
-import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionResult;
+import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionFinish;
+import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionRequest;
+import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
+import kuyou.common.ku09.handler.ThermalCameraControl;
+import kuyou.common.ku09.handler.UsbDeviceHandler;
 import kuyou.common.ku09.protocol.basic.IHardwareModuleDetection;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
@@ -40,6 +39,8 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  * </p>
  */
 public class HardwareModuleDetectionHandler extends BasicAssistHandler implements IHardwareModuleDetection {
+
+    public final static boolean IS_ENABLE = false;
 
     protected final static String TAG = "com.kuyou.rc.handler > HardwareModuleDetectionHandler";
 
@@ -86,7 +87,7 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
         }
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_CAMERA_INFRARED_THERMAL_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 3000)
+                new StatusProcessBusCallbackImpl(false, 2000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_TIME_OUT,
                 new StatusProcessBusCallbackImpl(false, 3000)
@@ -122,7 +123,8 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                         HardwareModuleDetectionHandler.this.dispatchEvent(new EventHardwareModuleStatusDetectionResult()
                                 .setStatusId(HM_STATUS_BE_EQUIPPED_NORMAL)
                                 .setTypeId(HM_TYPE_INPUT_LOCATION_UWB)
-                                .setRemote(false));
+                                .setPolicyDispatch2Myself(true)
+                                .setRemote(true));
 
                         final int uwbIdSoftware = Integer.valueOf(HardwareModuleDetectionHandler.this.getDeviceConfig().getUwbId());
                         if (uwbIdSoftware != devId) {
@@ -136,6 +138,12 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                         UwbManager.getInstance(getContext()).closeSerialPort();
                     }
                 });
+    }
+
+    @Override
+    protected void initReceiveEventNotices() {
+        super.initReceiveEventNotices();
+        registerHandleEvent(EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_REQUEST, true);
     }
 
     @Override
@@ -172,7 +180,9 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                         .setStatusId(getDeviceConfig().isHardwareModuleCarry(HM_TYPE_INPUT_LOCATION_UWB)
                                 ? HM_STATUS_BE_EQUIPPED_NOT_DETECTED
                                 : HM_STATUS_NOT_EQUIPPED)
-                        .setTypeId(HM_TYPE_INPUT_LOCATION_UWB));
+                        .setTypeId(HM_TYPE_INPUT_LOCATION_UWB)
+                        .setPolicyDispatch2Myself(true)
+                        .setRemote(true));
                 return;
             case PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT:
                 UwbManager.getInstance(getContext()).closeSerialPort();
@@ -197,6 +207,7 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                 break;
 
             case HM_TYPE_INPUT_LOCATION_UWB:
+                Log.d(TAG, "onReceiveProcessStatusNotice > HM_TYPE_INPUT_LOCATION_UWB");
                 UwbManager.getInstance(getContext())
                         .open()
                         .performGetId();
@@ -212,6 +223,10 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                 break;
 
             case HM_TYPE_OUTPUT_SCREEN_UNIQUE_OPTICAL_WAVEGUIDE:
+                if (null == FileUtils.getInstance(getContext())) {
+                    Log.w(TAG, "onReceiveProcessStatusNotice > HM_TYPE_OUTPUT_SCREEN_UNIQUE_OPTICAL_WAVEGUIDE >  fileUtils is null");
+                    break;
+                }
                 final String filePathDevUniqueOptical = "/sys/class/op02220ba/op02220ba/val";
                 final String resultDevUniqueOptical = FileUtils.getInstance(getContext()).readData(filePathDevUniqueOptical);
                 boolean isExistDevUniqueOptical = resultDevUniqueOptical.equals("1");
@@ -223,6 +238,10 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
 
             case HM_TYPE_INPUT_GAS_DETECTION_CARBON_MONOXIDE:
             case HM_TYPE_INPUT_GAS_DETECTION_METHANE:
+                if (null == FileUtils.getInstance(getContext())) {
+                    Log.w(TAG, "onReceiveProcessStatusNotice > HM_TYPE_INPUT_GAS_DETECTION >  fileUtils is null");
+                    break;
+                }
                 final String filePathDevGasDetection = "/sys/kernel/lactl/attr/gas";
                 final String resultDevGasDetection = FileUtils.getInstance(getContext()).readData(filePathDevGasDetection);
                 boolean isExistDevGasDetection = resultDevGasDetection.contains("gas_pwr_on");
@@ -233,8 +252,13 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
                 break;
 
             case HM_TYPE_INPUT_SIM:
-                TelephonyManager tm = (TelephonyManager) getContext().getSystemService("phone");
-                String simSerialNumber = tm.getSimSerialNumber();
+                String simSerialNumber = null;
+                try {
+                    TelephonyManager tm = (TelephonyManager) getContext().getSystemService("phone");
+                    simSerialNumber = tm.getSimSerialNumber();
+                } catch (Exception e) {
+                    Log.e(TAG, Log.getStackTraceString(e));
+                }
                 final boolean isSimInsert = simSerialNumber != null && !simSerialNumber.equals("");
                 dispatchEvent(new EventHardwareModuleStatusDetectionResult()
                         .setStatusId(isSimInsert ? HM_STATUS_BE_EQUIPPED_NORMAL : HM_STATUS_BE_EQUIPPED_NOT_DETECTED)
@@ -277,28 +301,9 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
         }
         final int typeId = EventHardwareModuleStatusDetectionResult.getTypeId(event);
         final String hardwareModuleName = mHardwareModuleTypeInfoMap.get(Integer.valueOf(typeId));
-        String hardwareModuleInfo = getContext().getString(R.string.hm_status_none);
 
-        switch (EventHardwareModuleStatusDetectionResult.getStatusId(event)) {
-            case HM_STATUS_BE_EQUIPPED_NORMAL:
-                hardwareModuleInfo = getContext().getString(R.string.hm_status_be_equipped_normal);
-                break;
-            case HM_STATUS_BE_EQUIPPED_EXCEPTION:
-                hardwareModuleInfo = getContext().getString(R.string.hm_status_be_equipped_exception);
-                break;
-            case HM_STATUS_BE_EQUIPPED_NOT_DETECTED:
-                hardwareModuleInfo = getContext().getString(R.string.hm_status_be_equipped_not_detected);
-                break;
-            case HM_STATUS_BE_EQUIPPED_DISABLE:
-                hardwareModuleInfo = getContext().getString(R.string.hm_status_be_equipped_disable);
-                break;
-            case HM_STATUS_NOT_EQUIPPED:
-                hardwareModuleInfo = getContext().getString(R.string.hm_status_not_equipped);
-                break;
-            default:
-                break;
-        }
-        Log.d(TAG, String.format("模块: %-15s\n -->状态:%-10s\n", hardwareModuleName, hardwareModuleInfo));
+        Log.d(TAG, String.format("模块: %-15s\n -->状态:%-10s\n",
+                hardwareModuleName, EventHardwareModuleStatusDetectionResult.getStatusConnect(event)));
     }
 
     protected void addHardwareModuleInfo(int typeId, byte[] info) {
@@ -312,6 +317,10 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler implement
     }
 
     public void start() {
+        if (!IS_ENABLE) {
+            Log.i(TAG, "start > process : handler is disable");
+            return;
+        }
         for (int typeId : mHardwareModuleTypeIdList) {
             onReceiveEventNotice(new EventHardwareModuleStatusDetectionRequest()
                     .setTypeId(typeId)

@@ -52,8 +52,8 @@ public class FactoryTest extends Activity {
 
     public void onClickReset(View v) {
         AlertDialog.Builder b = new AlertDialog.Builder(FactoryTest.this);
-        b.setTitle(R.string.test_factoryreset_title);
-        b.setMessage(R.string.test_factoryreset_or_not);
+        b.setTitle(R.string.test_factoryreset_reset_device_title);
+        b.setMessage(R.string.test_factoryreset_reset_device_readme);
         b.setPositiveButton(R.string.test_factoryreset_ok,
                 new DialogInterface.OnClickListener() {
                     @Override

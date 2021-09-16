@@ -125,7 +125,16 @@ public class DeviceConfigImpl implements IDeviceConfig {
 
     @Override
     public boolean isHardwareModuleCarry(int typeId) {
-        String result = SystemPropertiesUtils.get(KEY_HARDWARE_CARRY_FLAG + typeId, String.valueOf(VAL_NONE));
-        return result.equals(String.valueOf(VAL_ON));
+        String result = SystemPropertiesUtils.get(KEY_HARDWARE_CARRY, String.valueOf(VAL_NONE));
+        if (result.equals(String.valueOf(VAL_NONE))) {
+            return false;
+        }
+        try {
+            String resultType = result.substring(typeId, typeId + 1);
+            return resultType.equals(String.valueOf(VAL_ON));
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+        return false;
     }
 }

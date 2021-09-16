@@ -3,7 +3,6 @@ package com.kuyou.ft.item;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncResult;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
@@ -41,6 +40,8 @@ public class TestItemHwSwInfo extends TestItemIpc {
     private static final int MSG_ID_GET_BARCODE = 0x01;
 
     private static int bResult = -1;
+
+    private boolean isUiInitFinish = false;
 
     private String mStrBbChip,
             mStrMsBoard,
@@ -127,8 +128,13 @@ public class TestItemHwSwInfo extends TestItemIpc {
     protected void initViews() {
         super.initViews();
         mVersionLayout = findViewById(R.id.version_layout);
-        if (null != mDeviceConfig)
-            buildVersionContent(mDeviceConfig);
+        buildVersionContent();
+    }
+
+    @Override
+    public void setDeviceConfig(IDeviceConfig deviceConfig) {
+        super.setDeviceConfig(deviceConfig);
+        buildVersionContent();
     }
 
     public void getInfoFromBuilder() {
@@ -152,32 +158,36 @@ public class TestItemHwSwInfo extends TestItemIpc {
         mPhone.invokeOemRilRequestStrings(cmd, mATCmdHander.obtainMessage(MSG_ID_GET_BARCODE));
     }
 
-    IDeviceConfig mDeviceConfig;
-
-    public void buildVersionContent(IDeviceConfig config) {
+    protected void buildVersionContent() {
         Log.d(TAG, "mPhone qsl=buildVersionContent ");
-        mDeviceConfig = config;
+        if (isUiInitFinish) {
+            return;
+        }
         if (null == mVersionLayout) {
             return;
         }
+        if (null == getDeviceConfig()) {
+            return;
+        }
+        isUiInitFinish = true;
         LinearLayout LlTemp;
         mVersionLayout.removeAllViews();
 
         getInfoFromBuilder();
 
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_dev_id), config.getDevId(), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_dev_id), getDeviceConfig().getDevId(), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_uwb_id), config.getUwbId(), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_uwb_id), getDeviceConfig().getUwbId(), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_collecting_end_id), config.getCollectingEndId(), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_collecting_end_id), getDeviceConfig().getCollectingEndId(), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_control_server_address), config.getRemoteControlServerAddress(), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_control_server_address), getDeviceConfig().getRemoteControlServerAddress(), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_control_server_port), String.valueOf(config.getRemoteControlServerPort()), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_control_server_port), String.valueOf(getDeviceConfig().getRemoteControlServerPort()), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_photo_server_address), config.getRemotePhotoServerAddress(), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_remote_photo_server_address), getDeviceConfig().getRemotePhotoServerAddress(), false);
         mVersionLayout.addView(LlTemp);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_heartbeat_interval), String.valueOf(config.getHeartbeatInterval()), false);
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.title_heartbeat_interval), String.valueOf(getDeviceConfig().getHeartbeatInterval()), false);
         mVersionLayout.addView(LlTemp);
         LlTemp = createItem(getApplicationContext(), " ", " ", false);
         mVersionLayout.addView(LlTemp);
@@ -205,7 +215,7 @@ public class TestItemHwSwInfo extends TestItemIpc {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         //LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.test_version_screensize), dm.widthPixels + " X " + dm.heightPixels, false);
-        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.test_version_screensize), 
+        LlTemp = createItem(getApplicationContext(), getResources().getString(R.string.test_version_screensize),
                 SystemPropertiesUtils.get("ro.screensize", "Unknown"), false);
         mVersionLayout.addView(LlTemp);
         if (null == mTM) {

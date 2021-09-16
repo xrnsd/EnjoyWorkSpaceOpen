@@ -62,7 +62,7 @@
 -keep class com.kuyou.rc.protocol.jt808extend.**  {*;}
 
 #uwb protocol
--keep class com.kuyou.rc.protocol.uwb.**  {*;}
+-keep class kuyou.common.ku09.protocol.uwb.**  {*;}
 
 -keep class com.amap.api.**  {*;}     
 -keep class com.autonavi.**  {*;}

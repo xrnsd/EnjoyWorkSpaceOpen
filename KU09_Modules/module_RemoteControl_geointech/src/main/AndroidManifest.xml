@@ -47,7 +47,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="com.kuyou.rc.MainActivity"
+            android:name=".MainActivity"
             android:label="RC_MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"
@@ -56,11 +56,12 @@
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="kuyou.intent.category.HELMETMODULE" />
             </intent-filter>
         </activity>
         
         <activity
-            android:name=".handler.location.amap.AmapLocationActivity"
+            android:name=".ui.AmapLocationActivity"
             android:label="RC_LocationActivity"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"

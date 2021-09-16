@@ -38,7 +38,7 @@ import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
-import kuyou.common.ku09.event.rc.hardware.EventHardwareModuleStatusDetectionFinish;
+import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionFinish;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
@@ -259,7 +259,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
     // =====================  事件处理 =============================
 
     private boolean isRemoteControlPlatformConnected = false;
-    private boolean isHardwareModuleDetectionFinish = false;
+    private boolean isHardwareModuleDetectionFinish = !HardwareModuleDetectionHandler.IS_ENABLE;
 
     public void sendToRemoteControlPlatform(byte[] msg) {
         if (null == msg || msg.length <= 0) {

@@ -55,3 +55,5 @@
 -keep class kuyou.common.ku09.config.**  {*;}
 
 # ================== private =====================
+-keep class android.app.**  {*;}
+-keep class com.thermal.**  {*;}
