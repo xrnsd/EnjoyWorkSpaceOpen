@@ -16,7 +16,6 @@ import kuyou.common.utils.SystemPropertiesUtils;
 public class DeviceConfigImpl implements IDeviceConfig {
     protected final String TAG = "kuyou.common.ku09.protocol > DevicesConfig";
 
-    protected final static int VAL_NONE = -1;
     protected final static int VAL_ON = 1;
     protected final static int VAL_NFF = 0;
 
@@ -32,7 +31,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     @Override
     public String getDevId() {
         if (null == mDevId) {
-            mDevId = SystemPropertiesUtils.get(KEY_DEV_ID, "015651821852");
+            mDevId = SystemPropertiesUtils.get(KEY_DEV_ID, VAL_NONE);
         }
         return mDevId;
     }
@@ -45,7 +44,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     @Override
     public String getUwbId() {
         if (null == mUwbId) {
-            mUwbId = SystemPropertiesUtils.get(KEY_UWB_ID, "12345678");
+            mUwbId = SystemPropertiesUtils.get(KEY_UWB_ID, VAL_NONE);
         }
         return mUwbId;
     }
@@ -58,7 +57,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     @Override
     public String getCollectingEndId() {
         if (null == mCollectingEndId) {
-            mCollectingEndId = SystemPropertiesUtils.get(KEY_COLLECTING_END_CODE, "hzjy070609");
+            mCollectingEndId = SystemPropertiesUtils.get(KEY_COLLECTING_END_CODE, VAL_NONE);
         }
         return mCollectingEndId;
     }
@@ -78,7 +77,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     @Override
     public String getRemoteControlServerAddress() {
         if (null == mRemoteServerAddress) {
-            mRemoteServerAddress = SystemPropertiesUtils.get(KEY_SERVER_ADDRESS, "centos40.geointech.cn");
+            mRemoteServerAddress = SystemPropertiesUtils.get(KEY_SERVER_ADDRESS, VAL_NONE);
         }
         return mRemoteServerAddress;
     }
@@ -87,7 +86,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     public int getRemoteControlServerPort() {
         if (-1 == mRemoteServerPort) {
             try {
-                mRemoteServerPort = Integer.valueOf(SystemPropertiesUtils.get(KEY_SERVER_PORT, "8110"));
+                mRemoteServerPort = Integer.valueOf(SystemPropertiesUtils.get(KEY_SERVER_PORT, VAL_NONE));
             } catch (Exception e) {
                 Log.e(TAG, Log.getStackTraceString(e));
                 return -1;
@@ -100,7 +99,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     public String getRemotePhotoServerAddress() {
         if (null == mRemoteServerAddressPhoto) {
             mRemoteServerAddressPhoto = SystemPropertiesUtils.get(KEY_SERVER_ADDRESS_PHOTO,
-                    "https://centos40.geointech.cn:8019/smart-cap/api/aqm/photo/savePhotoToCos");
+                    VAL_NONE);
         }
         return mRemoteServerAddressPhoto;
     }

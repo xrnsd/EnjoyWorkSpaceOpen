@@ -18,6 +18,7 @@ import kuyou.common.ku09.event.rc.EventPhotoUploadResult;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 
 /**
  * action :协处理器[照片上传]
@@ -151,6 +152,11 @@ public class PhotoUploadHandler extends BasicAssistHandler {
                             .setResult(false)
                             .setEventType(EventPhotoUploadRequest.getEventType(event))
                             .setRemote(false));
+                    break;
+                }
+                if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getDevId())
+                        || IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getRemotePhotoServerAddress())) {
+                    play("拍照失败，设备配置无效");
                     break;
                 }
                 UploadUtil.getInstance()

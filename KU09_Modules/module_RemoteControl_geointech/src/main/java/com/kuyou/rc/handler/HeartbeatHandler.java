@@ -13,6 +13,7 @@ import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 
@@ -56,6 +57,10 @@ public class HeartbeatHandler extends BasicAssistHandler {
         switch (event.getCode()) {
             case EventRemoteControl.Code.AUTHENTICATION_REQUEST:
                 getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
+                if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getDevId())) {
+                    play("上线失败，设备配置无效");
+                    break;
+                }
                 //添加鉴权失败超时提示
                 getStatusProcessBus().start(PS_AUTHENTICATION_TIME_OUT);
                 break;

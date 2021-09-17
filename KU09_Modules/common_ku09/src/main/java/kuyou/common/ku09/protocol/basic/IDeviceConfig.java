@@ -13,6 +13,8 @@ public interface IDeviceConfig {
     public final static String KEY_UWB_ID = "persist.kud.hm.ui";
     public final static String KEY_COLLECTING_END_CODE = "persist.kud.hm.ci";
 
+    public final static String VAL_NONE = "-1";
+
     public String getDevId();
 
     public String getUwbId();

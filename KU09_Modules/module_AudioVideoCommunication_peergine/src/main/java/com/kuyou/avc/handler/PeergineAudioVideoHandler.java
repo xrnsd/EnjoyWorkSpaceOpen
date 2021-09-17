@@ -13,11 +13,8 @@ import androidx.annotation.NonNull;
 
 import com.kuyou.avc.BuildConfig;
 import com.kuyou.avc.R;
-
-import kuyou.common.ku09.handler.CameraLightControl;
 import com.kuyou.avc.handler.ringtone.LocalRingtoneHandler;
 import com.kuyou.avc.handler.ringtone.RingtoneHandler;
-import kuyou.common.ku09.handler.ThermalCameraControl;
 import com.kuyou.avc.ui.MultiCaptureAudio;
 import com.kuyou.avc.ui.MultiCaptureGroup;
 import com.kuyou.avc.ui.MultiCaptureThermal;
@@ -29,7 +26,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventAudioVideoOperateResult;
 import kuyou.common.ku09.event.avc.basic.EventAudioVideoCommunication;
@@ -38,6 +34,9 @@ import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyResult;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
+import kuyou.common.ku09.handler.CameraLightControl;
+import kuyou.common.ku09.handler.ThermalCameraControl;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
@@ -226,6 +225,10 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     public void setDevicesConfig(IDeviceConfig deviceConfig) {
         super.setDevicesConfig(deviceConfig);
         mCollectingEndIdLocal = deviceConfig.getCollectingEndId();
+        if (null == mCollectingEndIdLocal
+                && IDeviceConfig.VAL_NONE.equals(deviceConfig.getCollectingEndId())) {
+            play("采集端ID无效");
+        }
         Log.i(TAG, "setDevicesConfig > 获取设备配置 > 本地采集端ID = " + mCollectingEndIdLocal);
     }
 

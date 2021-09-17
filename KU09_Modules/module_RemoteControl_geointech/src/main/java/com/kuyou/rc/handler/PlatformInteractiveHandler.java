@@ -40,6 +40,7 @@ import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
 import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionFinish;
 import kuyou.common.ku09.handler.BasicAssistHandler;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
@@ -220,6 +221,10 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         if (getPlatformConnectManager().isConnect()) {
             Log.e(TAG, "connect > process fail : HelmetSocketManager is connected");
             return true;
+        }
+        if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getRemoteControlServerAddress())) {
+            play("上线失败，设备配置无效");
+            return false;
         }
         try {
             getPlatformConnectManager().connect(new SocketActionAdapter() {
@@ -404,6 +409,9 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 }
                 Log.i(TAG, "onReceiveEventNotice > 开始鉴权 ");
                 getStatusProcessBus().stop(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT);
+                if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getDevId())) {
+                    break;
+                }
                 SicAuthentication authentication = (SicAuthentication) singleInstructionParser;
                 authentication.setDeviceConfig(PlatformInteractiveHandler.this.getDeviceConfig());
                 sendToRemoteControlPlatform(authentication.getBody());
