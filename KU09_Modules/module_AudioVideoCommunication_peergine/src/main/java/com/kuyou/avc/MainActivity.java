@@ -1,10 +1,7 @@
 package com.kuyou.avc;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Bundle;
-
-import com.kuyou.avc.R;
 
 import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 

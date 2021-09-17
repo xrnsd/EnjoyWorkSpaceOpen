@@ -34,6 +34,7 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected final static int PS_HEARTBEAT_REPORT_START_TIME_OUT = 3;
     protected final static int PS_DEVICE_OFF_LINE = 43;
 
+    protected final static int DEVICE_OFF_LINE_FLAG = 5;
     private boolean isAuthenticationSuccess = false;
     private boolean isHeartbeatReply = false;
     private boolean isDeviceOnLine = false;
@@ -163,14 +164,11 @@ public class HeartbeatHandler extends BasicAssistHandler {
                 break;
 
             case PS_HEARTBEAT_REPORT:
-                if (Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) >= 3) {
+                if (Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) >= DEVICE_OFF_LINE_FLAG) {
                     Log.w(TAG, "onReceiveProcessStatusNotice > 心跳异常，主动离线");
                     stop();
                     break;
                 }
-
-//                if (!getStatusProcessBus().isStart(PS_DEVICE_OFF_LINE))
-//                    getStatusProcessBus().start(PS_DEVICE_OFF_LINE);
 
                 mHeartbeatReportFlowId += 1;
                 dispatchEvent(new EventHeartbeatReport().setRemote(false));

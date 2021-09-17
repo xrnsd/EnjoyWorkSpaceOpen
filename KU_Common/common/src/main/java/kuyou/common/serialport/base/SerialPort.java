@@ -116,7 +116,7 @@ public abstract class SerialPort {
     protected void dispatchEvent2Listener(byte[] val) {
         if (null == getListener())
             return;
-        Log.d(TAG, "dispatchEvent2Listener > val = "+ByteUtils.bytes2hex(val));
+        Log.d(TAG, "dispatchEvent2Listener > val = " + ByteUtils.bytes2hex(val));
         getListener().onReceiveData(val);
     }
 
@@ -138,11 +138,15 @@ public abstract class SerialPort {
             Log.d(TAG, "sendCmds > process fail : OutputStream is null");
             return false;
         }
+        if (null == body) {
+            Log.d(TAG, "sendCmds > process fail : body is null");
+            return false;
+        }
         Log.d(TAG, "sendCmds > cmd = " + ByteUtils.bytes2hex(body));
         try {
             getOutputStream().write(body);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             dispatchEvent2Listener(e);
         }
         return false;

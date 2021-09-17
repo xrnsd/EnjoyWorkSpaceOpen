@@ -155,7 +155,6 @@ public class StatusProcessBusFrame extends Handler implements IStatusProcessBus 
         }
         if (hasMessages(processFlag)) {
             removeMessages(processFlag);
-            return;
         }
         if (!mStatusProcessBusCallbackList.get(processFlag).isEnableReceiveRemoveNotice()) {
             return;

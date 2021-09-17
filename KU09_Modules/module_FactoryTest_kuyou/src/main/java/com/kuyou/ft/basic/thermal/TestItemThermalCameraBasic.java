@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.hardware.usb.UsbDevice;
 import android.util.Log;
 import android.view.View;
 
@@ -16,6 +17,7 @@ import com.thermal.seekware.SeekImageView;
 import com.thermal.seekware.SeekUtility;
 
 import kuyou.common.ku09.handler.ThermalCameraControl;
+import kuyou.common.ku09.handler.UsbDeviceHandler;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 
@@ -29,7 +31,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  */
 public abstract class TestItemThermalCameraBasic extends TestItem {
 
-    protected final static int OPEN_TIMEING_FLAG = 10;
+    protected final static int OPEN_TIMEING_FLAG = 5;
 
     protected final static int PS_OPEN_TIME_OUT = 0;
     protected final static int PS_SHOW = 1;
@@ -49,7 +51,6 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
     private SeekCameraManager mSeekCameraManager;
     private SeekImageView mSeekImageView;
 
-
     @Override
     public int getSubContentId() {
         return R.layout.test_item_thermal;
@@ -61,6 +62,18 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
         mTvTitle = findViewById(R.id.tv_test_title);
         mTvTitle.setText(getString(R.string.title_thermal_camera_normal, OPEN_TIMEING_FLAG));
         mTvTiming = findViewById(R.id.tv_time);
+
+        UsbDeviceHandler.register(getApplicationContext()).setUsbDeviceListener(new UsbDeviceHandler.IUsbDeviceListener() {
+            @Override
+            public void onUsbDevice(UsbDevice device, boolean attached) {
+                if (device.getProductName().contains("Thermal") && attached) {
+                    getStatusProcessBus().stop(PS_OPEN_TIME_OUT);
+                    TestItemThermalCameraBasic.this.initSeekCamera();
+                } else {
+                    Log.d(TestItemThermalCameraBasic.this.TAG, "onUsbDevice > " + device.getProductName());
+                }
+            }
+        });
     }
 
     @Override
@@ -72,6 +85,7 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
     @Override
     protected void onDestroy() {
         ThermalCameraControl.close();
+        UsbDeviceHandler.unregister(getApplicationContext());
         super.onDestroy();
     }
 
@@ -103,7 +117,9 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
                 getStatusProcessBus().stop(PS_OPEN_TIME_OUT);
                 getStatusProcessBus().stop(PS_TIMING);
                 Log.d(TAG, "onReceiveProcessStatusNotice > 已打开");
-                mSeekImageView.setVisibility(View.GONE);
+                mTvTitle.setVisibility(View.GONE);
+                mSeekImageView.setVisibility(View.VISIBLE);
+
                 mSeekCamera.setAspectRatio(SeekCamera.AspectRatio.MATCH_WIDTH);
                 //mSeekImageView.setRotation(90f);
                 mSeekCamera.createSeekCameraCaptureSession(mSeekImageView);
@@ -117,14 +133,6 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
     @Override
     protected int getTimingFlag() {
         return OPEN_TIMEING_FLAG;
-    }
-
-    protected void open() {
-        getStatusProcessBus().start(PS_OPEN_TIME_OUT);
-        getStatusProcessBus().start(PS_TIMING);
-        isConfirm = true;
-        initSeekCamera();
-        ThermalCameraControl.open();
     }
 
     protected void showOpenUsbConfirmDialog(Context context) {
@@ -150,6 +158,15 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
                     }
                 });
         b.create().show();
+    }
+
+    protected void open() {
+        SeekUtility.PermissionHandler.requestStoragePermission(this);
+
+        getStatusProcessBus().start(PS_OPEN_TIME_OUT);
+        getStatusProcessBus().start(PS_TIMING);
+        isConfirm = true;
+        ThermalCameraControl.open();
     }
 
     private void initSeekCamera() {
@@ -205,11 +222,9 @@ public abstract class TestItemThermalCameraBasic extends TestItem {
 
             @Override
             public void onError(SeekCamera seekCamera, Exception e) {
-
+                Log.e(TestItemThermalCameraBasic.this.TAG, Log.getStackTraceString(e));
             }
         });
-
-        SeekUtility.PermissionHandler.requestStoragePermission(this);
     }
 
     private void setPalette(int lut) {
