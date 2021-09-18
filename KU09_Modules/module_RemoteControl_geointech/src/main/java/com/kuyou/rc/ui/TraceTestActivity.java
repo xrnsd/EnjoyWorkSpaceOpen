@@ -19,7 +19,7 @@ import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceListener;
 import com.amap.api.trace.TraceLocation;
 import com.kuyou.rc.R;
-import com.kuyou.rc.handler.location.filter.basic.TrackPoint;
+import com.kuyou.rc.basic.location.filter.TrackPoint;
 
 import java.util.ArrayList;
 import java.util.List;

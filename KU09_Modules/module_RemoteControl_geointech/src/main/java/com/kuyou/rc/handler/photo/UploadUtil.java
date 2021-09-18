@@ -21,7 +21,7 @@ import okhttp3.Response;
  * @author tom
  */
 public class UploadUtil {
-    private static final String TAG = "kuyou.sdk.jt808 > UploadUtil";
+    private static final String TAG = "com.kuyou.rc.handler.photo > UploadUtil";
 
 
     private static UploadUtil sMain;

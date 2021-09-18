@@ -3,7 +3,7 @@ package com.kuyou.rc;
 import com.kuyou.rc.handler.AlarmHandler;
 import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
-import com.kuyou.rc.handler.PhotoUploadHandler;
+import com.kuyou.rc.handler.photo.PhotoUploadHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
 import com.kuyou.rc.handler.HardwareModuleDetectionHandler;
 import com.kuyou.rc.basic.location.ILocationProviderPolicy;

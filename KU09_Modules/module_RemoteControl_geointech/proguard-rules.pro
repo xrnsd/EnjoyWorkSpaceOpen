@@ -68,6 +68,6 @@
 -keep class com.autonavi.**  {*;}
 -keep class com.a.a.**  {*;}
 
--keep class * extends com.kuyou.rc.handler.location.HMLocationProvider {
+-keep class * extends com.kuyou.rc.basic.location.provider.HMLocationProvider {
     *;
 }

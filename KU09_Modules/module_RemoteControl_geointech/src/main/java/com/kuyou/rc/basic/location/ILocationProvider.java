@@ -2,7 +2,7 @@ package com.kuyou.rc.basic.location;
 
 import android.location.Location;
 
-import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
+import com.kuyou.rc.basic.jt808extend.item.SicLocationAlarm;
 
 /**
  * action :位置提供[接口]

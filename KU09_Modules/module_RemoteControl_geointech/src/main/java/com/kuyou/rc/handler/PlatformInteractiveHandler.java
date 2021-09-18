@@ -3,14 +3,14 @@ package com.kuyou.rc.handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.kuyou.rc.handler.platform.PlatformConnectManager;
-import com.kuyou.rc.protocol.jt808extend.Jt808ExtendProtocolCodec;
-import com.kuyou.rc.protocol.jt808extend.basic.InstructionParserListener;
-import com.kuyou.rc.protocol.jt808extend.basic.SicBasic;
-import com.kuyou.rc.protocol.jt808extend.item.SicAudioVideo;
-import com.kuyou.rc.protocol.jt808extend.item.SicAuthentication;
-import com.kuyou.rc.protocol.jt808extend.item.SicPhotoTake;
-import com.kuyou.rc.protocol.jt808extend.item.SicTextMessage;
+import com.kuyou.rc.basic.jt808extend.InstructionParserListener;
+import com.kuyou.rc.basic.jt808extend.Jt808ExtendProtocolCodec;
+import com.kuyou.rc.basic.jt808extend.PlatformConnectManager;
+import com.kuyou.rc.basic.jt808extend.item.SicAudioVideo;
+import com.kuyou.rc.basic.jt808extend.item.SicAuthentication;
+import com.kuyou.rc.basic.jt808extend.item.SicBasic;
+import com.kuyou.rc.basic.jt808extend.item.SicPhotoTake;
+import com.kuyou.rc.basic.jt808extend.item.SicTextMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,7 +203,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
     }
 
     private PlatformConnectManager getPlatformConnectManager() {
-        return PlatformConnectManager.getInstance(getDeviceConfig());
+        return PlatformConnectManager.getInstance();
     }
 
     @Override
@@ -227,33 +227,37 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
             return false;
         }
         try {
-            getPlatformConnectManager().connect(new SocketActionAdapter() {
-                @Override
-                public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
-                    PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
-                }
+            getPlatformConnectManager().connect(
+                    getDeviceConfig().getRemoteControlServerAddress(),
+                    getDeviceConfig().getRemoteControlServerPort(),
+                    getDeviceConfig().getHeartbeatInterval(),
+                    new SocketActionAdapter() {
+                        @Override
+                        public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
+                            PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
+                        }
 
-                @Override
-                public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-                    super.onSocketDisconnection(info, action, e);
-                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventResult.ResultCode.DIS));
-                }
+                        @Override
+                        public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
+                            super.onSocketDisconnection(info, action, e);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.DIS));
+                        }
 
-                @Override
-                public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-                    super.onSocketConnectionSuccess(info, action);
-                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventResult.ResultCode.SUCCESS));
-                }
+                        @Override
+                        public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
+                            super.onSocketConnectionSuccess(info, action);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.SUCCESS));
+                        }
 
-                @Override
-                public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-                    super.onSocketConnectionFailed(info, action, e);
-                    PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                            .setResultCode(EventResult.ResultCode.FAIL));
-                }
-            });
+                        @Override
+                        public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
+                            super.onSocketConnectionFailed(info, action, e);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.FAIL));
+                        }
+                    });
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
             return false;

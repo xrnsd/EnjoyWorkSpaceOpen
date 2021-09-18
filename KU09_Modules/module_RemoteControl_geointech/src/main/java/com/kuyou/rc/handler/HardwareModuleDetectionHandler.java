@@ -6,8 +6,8 @@ import android.hardware.usb.UsbDevice;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.kuyou.rc.protocol.jt808extend.uwb.UwbManager;
-import com.kuyou.rc.protocol.jt808extend.uwb.basic.IModuleInfoListener;
+import com.kuyou.rc.basic.uwb.UwbManager;
+import com.kuyou.rc.basic.uwb.basic.IModuleInfoListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -2,7 +2,7 @@ package com.kuyou.rc.basic.location.filter;
 
 import android.location.Location;
 
-import com.kuyou.rc.handler.location.HMLocationProvider;
+import com.kuyou.rc.basic.location.provider.HMLocationProvider;
 
 /**
  * action :轨迹过滤配置

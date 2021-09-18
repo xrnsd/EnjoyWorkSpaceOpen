@@ -2,9 +2,9 @@ package com.kuyou.rc.handler;
 
 import android.util.Log;
 
-import com.kuyou.rc.handler.alarm.ALARM;
+import com.kuyou.rc.basic.alarm.ALARM;
 import com.kuyou.rc.basic.location.ILocationProvider;
-import com.kuyou.rc.protocol.jt808extend.item.SicLocationAlarm;
+import com.kuyou.rc.basic.jt808extend.item.SicLocationAlarm;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.EventPowerChange;

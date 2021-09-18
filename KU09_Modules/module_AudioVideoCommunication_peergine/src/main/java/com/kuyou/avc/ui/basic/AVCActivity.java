@@ -101,7 +101,9 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
 //                    .setExitType(EventAVCModuleLiveExit.ExitType.REBOOT)
 //                    .setRemote(false));
 //            return;
-        }else if (!isRecovering && !isLoginSuccess) {
+        }
+
+        if (!isRecovering && !isLoginSuccess) {
             playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
         }
 

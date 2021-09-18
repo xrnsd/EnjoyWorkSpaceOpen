@@ -99,7 +99,7 @@
         </activity>
 
         <service
-            android:name=".handler.photo.TakePhotoBackground"
+            android:name=".basic.photo.TakePhotoBackground"
             android:enabled="true"
             android:exported="true">
         </service>

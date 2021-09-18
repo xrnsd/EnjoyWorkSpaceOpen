@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.kuyou.avc.basic.photo.IAudioVideoRequestCallback;
+import com.kuyou.avc.basic.photo.TakePhotoBackground;
 import com.kuyou.avc.ui.basic.ITakePhotoByCameraResultListener;
 import com.kuyou.avc.basic.photo.ITakePhotoByScreenshotResultCallback;
-import com.kuyou.avc.handler.photo.TakePhotoBackground;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
