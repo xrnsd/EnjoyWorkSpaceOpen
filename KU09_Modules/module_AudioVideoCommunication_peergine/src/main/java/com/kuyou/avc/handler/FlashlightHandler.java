@@ -22,7 +22,7 @@ import kuyou.common.ku09.handler.BasicAssistHandler;
  * </p>
  */
 public class FlashlightHandler extends BasicAssistHandler {
-    protected final String TAG = "com.kuyou.avc.handle > FlashlightHandler";
+    protected final String TAG = "com.kuyou.avc.handler > FlashlightHandler";
 
     public FlashlightHandler(Context context) {
         setContext(context.getApplicationContext());

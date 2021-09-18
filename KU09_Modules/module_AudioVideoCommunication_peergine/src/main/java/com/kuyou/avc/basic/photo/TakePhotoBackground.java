@@ -40,7 +40,7 @@ import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 
 public class TakePhotoBackground extends Service {
 
-    protected static final String TAG = "com.kuyou.avc.photo > TakePhotoBackground";
+    protected static final String TAG = "com.kuyou.avc.basic.photo > TakePhotoBackground";
 
     private static Intent sTakePhotoServer = null;
 

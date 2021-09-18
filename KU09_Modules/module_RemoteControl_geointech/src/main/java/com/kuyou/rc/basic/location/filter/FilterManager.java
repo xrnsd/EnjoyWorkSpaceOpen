@@ -17,20 +17,19 @@ import com.kuyou.rc.basic.location.filter.kalman.TrajectoryKalmanFilter;
  * date: 21-7-6 <br/>
  * </p>
  */
-public abstract class FilterController implements IFilterCallBack {
-    protected final String TAG = "com.kuyou.rc.location.filter > " + this.getClass().getSimpleName();
+public abstract class FilterManager implements IFilterCallBack {
+    protected final String TAG = "com.kuyou.rc.basic.location.filter > " + this.getClass().getSimpleName();
 
     private TrajectoryFilter mTrajectoryFluctuationFilter, mTrajectoryKalmanFilter;
     private HMLocationProvider.IOnLocationChangeListener mOnLocationChangeListener;
 
-    private static FilterController sMain;
     private int mFilterPolicy = -1;
 
     private IFilterPolicyCallBack mFilterPolicyCallBack;
 
     protected abstract boolean isValidLocation();
 
-    public FilterController initFilters(Context context) {
+    public FilterManager initFilters(Context context) {
         mTrajectoryKalmanFilter = new TrajectoryKalmanFilter(context.getApplicationContext(), new TrajectoryFilter.OnDataFilterListener() {
             @Override
             public void onDataAfterFilter(TrackPoint point) {
@@ -58,12 +57,12 @@ public abstract class FilterController implements IFilterCallBack {
                 return policy;
             }
         });
-        return FilterController.this;
+        return FilterManager.this;
     }
 
-    public FilterController setFilterPolicyCallBack(IFilterPolicyCallBack filterPolicyCallBack) {
+    public FilterManager setFilterPolicyCallBack(IFilterPolicyCallBack filterPolicyCallBack) {
         mFilterPolicyCallBack = filterPolicyCallBack;
-        return FilterController.this;
+        return FilterManager.this;
     }
 
     @Override
@@ -100,7 +99,7 @@ public abstract class FilterController implements IFilterCallBack {
     @Override
     public IFilterCallBack setLocationChangeListener(IOnLocationChangeListener listener) {
         mOnLocationChangeListener = listener;
-        return FilterController.this;
+        return FilterManager.this;
     }
 
     @Override

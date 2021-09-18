@@ -22,7 +22,7 @@ import kuyou.common.ku09.handler.BasicAssistHandler;
  * </p>
  */
 public class SeekThermalCameraControlHandler extends BasicAssistHandler implements SeekCamera.StateCallback {
-    protected final String TAG = "com.kuyou.avc.handler.infeare > SeekThermalImagingCameraHandler";
+    protected final String TAG = "com.kuyou.avc.handler.thermal > SeekThermalImagingCameraHandler";
 
     private SeekCamera mSeekCamera;
     private SeekCameraManager mSeekCameraManager;

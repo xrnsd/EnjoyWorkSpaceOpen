@@ -28,7 +28,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  * </p>
  */
 public class Jt808ExtendProtocolCodec {
-    protected static final String TAG = "com.kuyou.rc.protocol > Jt808ExtendProtocolCodec";
+    protected static final String TAG = "com.kuyou.rc.basic.jt808extend > Jt808ExtendProtocolCodec";
 
     private volatile static Jt808ExtendProtocolCodec sInstance;
 

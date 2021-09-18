@@ -30,6 +30,8 @@ public abstract class AudioVideoRequestResultHandler extends BasicAssistHandler 
         Application.ActivityLifecycleCallbacks,
         RemoteEventBus.IFrameLiveListener {
 
+    protected final String TAG = "com.kuyou.avc.handler.av > AudioVideoRequestResultHandler";
+
     protected Map<Integer, AVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
 

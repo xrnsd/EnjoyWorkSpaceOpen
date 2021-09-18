@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.kuyou.rc.basic.location.ILocationProvider;
 import com.kuyou.rc.basic.location.ILocationProviderPolicy;
-import com.kuyou.rc.basic.location.filter.FilterController;
+import com.kuyou.rc.basic.location.filter.FilterManager;
 import com.kuyou.rc.basic.location.filter.IFilterCallBack;
 import com.kuyou.rc.basic.jt808extend.item.SicLocationAlarm;
 import com.kuyou.rc.basic.location.provider.AMapLocationProvider;
@@ -69,7 +69,7 @@ public class LocationHandler extends BasicAssistHandler implements ILocationProv
 
         //位置过滤器
         mLocationProviderFilter = NormalFilterLocationProvider.getInstance(context)
-                .setFilter(new FilterController.IFilterPolicyCallBack() {
+                .setFilter(new FilterManager.IFilterPolicyCallBack() {
                     @Override
                     public int getFilterPolicy() {
                         int policy = 0;

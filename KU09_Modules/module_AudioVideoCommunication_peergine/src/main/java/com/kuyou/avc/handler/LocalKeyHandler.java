@@ -21,7 +21,7 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
  * </p>
  */
 public class LocalKeyHandler extends KeyHandler {
-    protected final String TAG = "com.kuyou.avc.handle > KeyHandler";
+    protected final String TAG = "com.kuyou.avc.handler > KeyHandler";
 
     private Context mContext;
     private IAudioVideoRequestCallback mAudioVideoHandler;

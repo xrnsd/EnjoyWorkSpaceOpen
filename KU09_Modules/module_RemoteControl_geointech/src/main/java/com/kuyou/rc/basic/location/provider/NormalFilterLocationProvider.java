@@ -3,7 +3,7 @@ package com.kuyou.rc.basic.location.provider;
 import android.content.Context;
 import android.location.Location;
 
-import com.kuyou.rc.basic.location.filter.FilterController;
+import com.kuyou.rc.basic.location.filter.FilterManager;
 import com.kuyou.rc.basic.location.filter.IFilterCallBack;
 
 /**
@@ -36,21 +36,22 @@ public class NormalFilterLocationProvider extends HMLocationProvider {
         return mFilterCallBack;
     }
 
-    public NormalFilterLocationProvider setFilter(FilterController.IFilterPolicyCallBack filterCallBack) {
-        mFilterCallBack = new FilterController() {
+    public NormalFilterLocationProvider setFilter(FilterManager.IFilterPolicyCallBack filterCallBack) {
+        FilterManager fm = new FilterManager() {
             @Override
             protected boolean isValidLocation() {
                 return NormalFilterLocationProvider.this.isEffectivePositioning();
             }
-        }
-                .initFilters(getContext())
-                .setFilterPolicyCallBack(filterCallBack)
-                .setLocationChangeListener(new IOnLocationChangeListener() {
-                    @Override
-                    public void onLocationChange(Location location) {
-                        NormalFilterLocationProvider.this.dispatchLocationSuper(location);
-                    }
-                });
+        };
+        fm.initFilters(getContext());
+        fm.setFilterPolicyCallBack(filterCallBack);
+        fm.setLocationChangeListener(new IOnLocationChangeListener() {
+            @Override
+            public void onLocationChange(Location location) {
+                NormalFilterLocationProvider.this.dispatchLocationSuper(location);
+            }
+        });
+        mFilterCallBack = fm;
         return NormalFilterLocationProvider.this;
     }
 

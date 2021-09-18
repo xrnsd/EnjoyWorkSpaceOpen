@@ -21,7 +21,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 public class PhotoTakeHandler extends BasicAssistHandler {
 
-    protected final static String TAG = "com.kuyou.avc.handle > PhotoTakeHandler";
+    protected final static String TAG = "com.kuyou.avc.handler > PhotoTakeHandler";
 
     protected final static int PS_TAKE_PHOTO_TIMEOUT = 0;
 

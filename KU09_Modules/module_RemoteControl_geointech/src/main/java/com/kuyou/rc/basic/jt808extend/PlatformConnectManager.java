@@ -17,7 +17,7 @@ import kuyou.sdk.jt808.oksocket.client.sdk.client.connection.IConnectionManager;
 
 public class PlatformConnectManager {
 
-    private static final String TAG = "com.kuyou.rc > PlatformConnectManager";
+    private static final String TAG = "com.kuyou.rc.basic.jt808extend > PlatformConnectManager";
 
     private static PlatformConnectManager INSTANCE;
     private static final Object SingleInstanceLocker = new Object();

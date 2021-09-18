@@ -18,7 +18,7 @@ import com.kuyou.avc.R;
  */
 public class LocalRingtonePlayer extends RingtonePlayer {
 
-    protected final String TAG = "com.kuyou.avc.handler > LocalRingtoneHandler";
+    protected final String TAG = "com.kuyou.avc.basic.ringtone > LocalRingtoneHandler";
 
     private Ringtone mRingtone;
 

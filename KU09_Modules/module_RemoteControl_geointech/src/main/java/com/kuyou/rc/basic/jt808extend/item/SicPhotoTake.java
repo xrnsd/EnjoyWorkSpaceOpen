@@ -18,7 +18,7 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
  * </p>
  */
 public class SicPhotoTake extends SicBasic {
-    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicPhotoTake";
+    protected final String TAG = "com.kuyou.rc.basic.jt808extend.item > SicPhotoTake";
 
     private static final int FILE_FORMAT_TYPE_CODE_DEF = 0; //JPEG
     private static final long MEDIA_ID_BASE = 1601485261000L;//2020/10/1 1:1:1

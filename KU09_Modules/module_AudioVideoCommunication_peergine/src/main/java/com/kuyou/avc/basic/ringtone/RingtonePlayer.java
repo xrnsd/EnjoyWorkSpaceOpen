@@ -15,7 +15,7 @@ import android.util.Log;
  * </p>
  */
 public class RingtonePlayer {
-    protected final String TAG = "com.kuyou.avc.handler > RingtoneHandler";
+    protected final String TAG = "com.kuyou.avc.basic.ringtone > RingtoneHandler";
     
     private Context mContext;
     private Uri mUriDefaultRingtone;

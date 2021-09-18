@@ -17,7 +17,7 @@ import kuyou.sdk.jt808.utils.Base64Util;
  * </p>
  */
 public class SicAuthentication extends SicBasic {
-    protected final String TAG = "com.kuyou.rc.protocol.jt808extend.item > SicAuthentication";
+    protected final String TAG = "com.kuyou.rc.basic.jt808extend.item > SicAuthentication";
 
     @Override
     public String getTitle() {

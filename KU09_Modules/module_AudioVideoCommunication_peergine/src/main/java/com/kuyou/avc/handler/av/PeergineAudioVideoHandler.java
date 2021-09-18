@@ -51,7 +51,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  */
 public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
-    protected final static String TAG = "com.kuyou.avc.handle > PeergineAudioVideoHandler";
+    protected final static String TAG = "com.kuyou.avc.handler.av > PeergineAudioVideoHandler";
     protected final static String KEY_HANDLER_STATUS = "HandlerStatus";
     protected final static String KEY_MEDIA_TYPE = "MediaType";
     protected final static String KEY_GROUP_OWNER = "GroupOwner";
