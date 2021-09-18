@@ -24,7 +24,7 @@ public class LocalModuleCommonHandler extends ModuleCommonHandler {
             case EventAudioVideoCommunication.Code.MODULE_EXIT:
                 if (EventAVCModuleLiveExit.isReboot(event)) {
                     Log.i(TAG, "onReceiveEventNotice > 模块即将重启");
-                    rebootModule(500);
+                    rebootModule(200);
                 } else {
                     Log.i(TAG, "onReceiveEventNotice > 模块即将关闭");
                     android.os.Process.killProcess(android.os.Process.myPid());

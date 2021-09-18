@@ -97,13 +97,11 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
                 return;
             }
             Log.e(TAG, "onResult > 模块视频服务异常，重新打开多次无效，放弃快速重置");
-            dispatchEvent(new EventAVCModuleLiveExit()
-                    .setExitType(EventAVCModuleLiveExit.ExitType.REBOOT)
-                    .setRemote(false));
-            return;
-        }
-
-        if (!isRecovering && !isLoginSuccess) {
+//            dispatchEvent(new EventAVCModuleLiveExit()
+//                    .setExitType(EventAVCModuleLiveExit.ExitType.REBOOT)
+//                    .setRemote(false));
+//            return;
+        }else if (!isRecovering && !isLoginSuccess) {
             playTitleByResId(IJT808ExtensionProtocol.RESULT_SUCCESS == result ? R.string.media_request_open_success : R.string.media_request_open_handle_fail);
         }
 

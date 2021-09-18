@@ -129,9 +129,9 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                     Log.d(TAG, "pgLibLiveMultiCapture.OnEventListener > sInfo = " + sInfo);
                     onResult(IJT808ExtensionProtocol.RESULT_SUCCESS);
                 } else {
-                    if ("8".equals(sData)) {//用户无效，也有可能是授权到期
+                    if ("1".equals(sData) || "8".equals(sData)) {//用户无效，也有可能是授权到期
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
-                    }if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
+                    }else if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
                         //onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
                     } else {
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
@@ -685,7 +685,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
     @Override
     public void recover() {
         super.recover();
-        if (null!=m_Live) {
+        if (null != m_Live) {
             m_Live.LoginNow(0);
         }
     }

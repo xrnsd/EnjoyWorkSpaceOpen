@@ -30,9 +30,8 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected final static String TAG = "com.kuyou.rc.handler.platform > HeartbeatHandler";
 
     protected final static int PS_AUTHENTICATION_TIME_OUT = 0;
-    protected final static int PS_AUTHENTICATION_TIME_OUT_HANDLE = 1;
-    protected final static int PS_HEARTBEAT_REPORT = 2;
-    protected final static int PS_HEARTBEAT_REPORT_START_TIME_OUT = 3;
+    protected final static int PS_HEARTBEAT_REPORT = 1;
+    protected final static int PS_HEARTBEAT_REPORT_START_TIME_OUT = 2;
     protected final static int PS_DEVICE_OFF_LINE = 43;
 
     protected final static int DEVICE_OFF_LINE_FLAG = 5;
@@ -91,13 +90,13 @@ public class HeartbeatHandler extends BasicAssistHandler {
 
             case EventRemoteControl.Code.HEARTBEAT_REPLY:
                 mHeartbeatReplyFlowId = EventHeartbeatReply.getFlowNumber(event);
+                mHeartbeatReportFlowId = mHeartbeatReplyFlowId;//防止明明心跳正常，数字对不上导致心跳连接判断异常
                 isHeartbeatReply = EventHeartbeatReply.isResultSuccess(event);
 
                 if (getStatusProcessBus().isStart(PS_HEARTBEAT_REPORT_START_TIME_OUT)) {
                     getStatusProcessBus().stop(PS_HEARTBEAT_REPORT_START_TIME_OUT);
                     getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
                     if (isHeartbeatReply) {
-                        mHeartbeatReportFlowId = mHeartbeatReplyFlowId;//防止明明心跳正常，数字对不上导致心跳连接判断异常
                         isDeviceOnLine = true;
 
                         dispatchEvent(new EventLocalDeviceStatus()
@@ -134,10 +133,6 @@ public class HeartbeatHandler extends BasicAssistHandler {
                 new StatusProcessBusCallbackImpl(false, 2000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_TIME_OUT_HANDLE,
-                new StatusProcessBusCallbackImpl(false, 1000)
-                        .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
-
         getStatusProcessBus().registerStatusNoticeCallback(PS_HEARTBEAT_REPORT,
                 new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval())
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
@@ -155,28 +150,25 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
         super.onReceiveProcessStatusNotice(statusCode, isRemove);
         switch (statusCode) {
+            case PS_HEARTBEAT_REPORT:
+                if (Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) < DEVICE_OFF_LINE_FLAG) {
+                    mHeartbeatReportFlowId += 1;
+                    dispatchEvent(new EventHeartbeatReport().setRemote(false));
+                    //Log.d(TAG, String.format("onReceiveProcessStatusNotice > 心跳 mHeartbeatReportFlowId = %s , mHeartbeatReportFlowId = %s"
+                    //, mHeartbeatReportFlowId, mHeartbeatReplyFlowId));
+                    break;
+                }
+                Log.w(TAG, "onReceiveProcessStatusNotice > 心跳异常，主动离线");
+                stop();
+                break;
+
             case PS_AUTHENTICATION_TIME_OUT:
                 getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
                 Log.e(TAG, "onReceiveProcessStatusNotice > process fail : 鉴权失败，请重新尝试");
                 play("设备上线失败,错误1");
-                getStatusProcessBus().start(PS_AUTHENTICATION_TIME_OUT_HANDLE);
-                break;
-
-            case PS_AUTHENTICATION_TIME_OUT_HANDLE:
                 dispatchEvent(new EventConnectRequest()
                         .setRequestCode(EventConnectRequest.RequestCode.REOPEN)
                         .setRemote(false));
-                break;
-
-            case PS_HEARTBEAT_REPORT:
-                if (Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) >= DEVICE_OFF_LINE_FLAG) {
-                    Log.w(TAG, "onReceiveProcessStatusNotice > 心跳异常，主动离线");
-                    stop();
-                    break;
-                }
-
-                mHeartbeatReportFlowId += 1;
-                dispatchEvent(new EventHeartbeatReport().setRemote(false));
                 break;
 
             case PS_HEARTBEAT_REPORT_START_TIME_OUT:
