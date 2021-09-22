@@ -52,6 +52,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
 public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
     protected final static String TAG = "com.kuyou.avc.handler.av > PeergineAudioVideoHandler";
+
     protected final static String KEY_HANDLER_STATUS = "HandlerStatus";
     protected final static String KEY_MEDIA_TYPE = "MediaType";
     protected final static String KEY_GROUP_OWNER = "GroupOwner";
@@ -65,17 +66,16 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
     protected final static int PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT = PS_FLAG + 6;
     protected final static int PS_CACHE_STATUS_CHECK = PS_FLAG + 7;
 
-    private RingtonePlayer mRingtonePlayer;
-    private SharedPreferences mSPHandleStatus;
-
     private int mMediaTypeLocal = IJT808ExtensionProtocol.MEDIA_TYPE_DEFAULT;
 
     //用于群组通话，区分设备是否为采集端,本地和远程分配的相同就是，不同不是
     private String mCollectingEndIdLocal = null,//本地采集端ID
             mCollectingEndIdRemote = null;//远程分配的采集端ID
 
-    public PeergineAudioVideoHandler(Context context) {
-        setContext(context.getApplicationContext());
+    private RingtonePlayer mRingtonePlayer;
+    private SharedPreferences mSPHandleStatus;
+
+    public PeergineAudioVideoHandler() {
         ThermalCameraControl.close();
     }
 

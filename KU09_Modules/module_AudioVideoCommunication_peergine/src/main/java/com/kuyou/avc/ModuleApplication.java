@@ -21,11 +21,11 @@ import kuyou.common.ku09.BasicModuleApplication;
 public class ModuleApplication extends BasicModuleApplication {
     private static final String TAG = "com.kuyou.avc > ModuleApplication";
 
-    private LocalModuleCommonHandler mModuleEventHandler;
-    private FlashlightHandler mFlashlightHandler;
     private LocalKeyHandler mLocalKeyHandler;
-    private AudioVideoRequestResultHandler mAudioVideoRequestHandler;
     private PhotoTakeHandler mPhotoTakeHandler;
+    private FlashlightHandler mFlashlightHandler;
+    private LocalModuleCommonHandler mModuleEventHandler;
+    private AudioVideoRequestResultHandler mAudioVideoRequestHandler;
 
     @Override
     protected void initRegisterEventHandlers() {
@@ -51,7 +51,6 @@ public class ModuleApplication extends BasicModuleApplication {
     protected PhotoTakeHandler getPhotoTakeHandler() {
         if (null == mPhotoTakeHandler) {
             mPhotoTakeHandler = new PhotoTakeHandler();
-            mPhotoTakeHandler.setContext(getApplicationContext());
             mPhotoTakeHandler.setAudioVideoRequestCallback(getAudioVideoRequestHandler());
         }
         return mPhotoTakeHandler;
@@ -59,7 +58,7 @@ public class ModuleApplication extends BasicModuleApplication {
 
     protected AudioVideoRequestResultHandler getAudioVideoRequestHandler() {
         if (null == mAudioVideoRequestHandler) {
-            mAudioVideoRequestHandler = new PeergineAudioVideoHandler(getApplicationContext());
+            mAudioVideoRequestHandler = new PeergineAudioVideoHandler();
             mAudioVideoRequestHandler.setDevicesConfig(getDeviceConfig());
             registerActivityLifecycleCallbacks(mAudioVideoRequestHandler);
         }
@@ -68,14 +67,14 @@ public class ModuleApplication extends BasicModuleApplication {
 
     protected FlashlightHandler getFlashlightHandler() {
         if (null == mFlashlightHandler) {
-            mFlashlightHandler = new FlashlightHandler(getApplicationContext());
+            mFlashlightHandler = new FlashlightHandler();
         }
         return mFlashlightHandler;
     }
 
     protected LocalKeyHandler getLocalKeyHandler() {
         if (null == mLocalKeyHandler) {
-            mLocalKeyHandler = new LocalKeyHandler(getApplicationContext());
+            mLocalKeyHandler = new LocalKeyHandler();
             mLocalKeyHandler.setAudioVideoRequestResult(getAudioVideoRequestHandler());
         }
         return mLocalKeyHandler;

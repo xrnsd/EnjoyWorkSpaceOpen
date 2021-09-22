@@ -37,7 +37,6 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected final static int DEVICE_OFF_LINE_FLAG = 5;
 
     private boolean isAuthenticationSuccess = false;
-    private boolean isHeartbeatReply = false;
     private boolean isDeviceOnLine = false;
 
     private long mHeartbeatReplyFlowId = 0;
@@ -92,12 +91,12 @@ public class HeartbeatHandler extends BasicAssistHandler {
             case EventRemoteControl.Code.HEARTBEAT_REPLY:
                 mHeartbeatReplyFlowId = EventHeartbeatReply.getFlowNumber(event);
                 mHeartbeatReportFlowId = mHeartbeatReplyFlowId;//防止明明心跳正常，数字对不上导致心跳连接判断异常
-                isHeartbeatReply = EventHeartbeatReply.isResultSuccess(event);
+                boolean isHeartbeatReplySuccess = EventHeartbeatReply.isResultSuccess(event);
 
                 if (getStatusProcessBus().isStart(PS_HEARTBEAT_REPORT_START_TIME_OUT)) {
                     getStatusProcessBus().stop(PS_HEARTBEAT_REPORT_START_TIME_OUT);
                     getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
-                    if (isHeartbeatReply) {
+                    if (isHeartbeatReplySuccess) {
                         dispatchEvent(new EventLocalDeviceStatus()
                                 .setDeviceStatus(EventLocalDeviceStatus.Status.ON_LINE)
                                 .setPolicyDispatch2Myself(true)
@@ -109,13 +108,13 @@ public class HeartbeatHandler extends BasicAssistHandler {
                     } else {
                         play("设备上线失败,错误3");
                     }
-                } else if (isHeartbeatReply) {
+                } else if (isHeartbeatReplySuccess) {
                     getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
                 }
 
                 Log.i(TAG, new StringBuilder(256)
                         .append("<<<<<<<<<<  流水号：").append(mHeartbeatReplyFlowId)
-                        .append(",服务器回复:").append(isHeartbeatReply ? "成功" : "失败")
+                        .append(",服务器回复:").append(isHeartbeatReplySuccess ? "成功" : "失败")
                         .append("  <<<<<<<<<<\n\n")
                         .toString());
                 break;
@@ -275,7 +274,6 @@ public class HeartbeatHandler extends BasicAssistHandler {
 
     private void resetFlags() {
         isAuthenticationSuccess = false;
-        isHeartbeatReply = false;
         isDeviceOnLine = false;
 
         mHeartbeatReplyFlowId = 0;

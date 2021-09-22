@@ -32,8 +32,8 @@ public abstract class AudioVideoRequestResultHandler extends BasicAssistHandler 
 
     protected final String TAG = "com.kuyou.avc.handler.av > AudioVideoRequestResultHandler";
 
-    protected Map<Integer, AVCActivity> mItemListOnline = new HashMap<>();
     protected int mHandlerStatus;
+    protected Map<Integer, AVCActivity> mItemListOnline = new HashMap<>();
 
     @Override
     public Map<Integer, AVCActivity> getOnlineList() {

@@ -55,7 +55,7 @@ public class SicGeneralReply extends SicBasic {
         return getPackToJt808(C2S_REPLY, body);
     }
 
-    protected int getMsgId() {
+    public int getMsgId() {
         return mMsgId;
     }
 
@@ -63,11 +63,19 @@ public class SicGeneralReply extends SicBasic {
         mMsgId = msgId;
     }
 
-    protected int getResultCode() {
+    public int getResultCode() {
         return mResultCode;
     }
 
     public void setResultCode(int resultCode) {
         mResultCode = resultCode;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(1024);
+        sb.append("mMsgId = ").append(mMsgId);
+        sb.append("\nmResultCode = ").append(mResultCode);
+        return sb.toString();
     }
 }

@@ -23,7 +23,6 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 public class AlarmHandler extends BasicAssistHandler implements ALARM {
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
-    private static AlarmHandler sMain;
     private ILocationProvider mLocationProvider;
 
     public AlarmHandler setLocationProvider(ILocationProvider locationProvider) {

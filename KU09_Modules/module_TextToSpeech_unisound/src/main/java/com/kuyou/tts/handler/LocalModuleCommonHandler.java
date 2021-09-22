@@ -18,7 +18,6 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
 public class LocalModuleCommonHandler extends ModuleCommonHandler {
 
     public LocalModuleCommonHandler() {
-        
     }
 
     @Override

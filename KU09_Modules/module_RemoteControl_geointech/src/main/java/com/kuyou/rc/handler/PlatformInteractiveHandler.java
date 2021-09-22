@@ -66,252 +66,11 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
     protected final static int PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT = 1;
 
     protected boolean isNetworkAvailable = false;
+    protected boolean isRemoteControlPlatformConnected = false;
+    protected boolean isHardwareModuleDetectionFinish = !HardwareModuleDetectionHandler.IS_ENABLE;
 
-    protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
     protected HeartbeatHandler mHeartbeatHandler;
-
-    protected HeartbeatHandler getHeartbeatHandler() {
-        if (null == mHeartbeatHandler) {
-            mHeartbeatHandler = new HeartbeatHandler();
-        }
-        return mHeartbeatHandler;
-    }
-
-    protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
-        if (null == mJt808ExtendProtocolCodec) {
-            mJt808ExtendProtocolCodec = Jt808ExtendProtocolCodec.getInstance(getContext());
-            mJt808ExtendProtocolCodec.setInstructionParserListener(new InstructionParserListener() {
-                @Override
-                public void onRemote2LocalBasic(JTT808Bean bean, byte[] data) {
-                    switch (bean.getMsgId()) {
-                        case IJT808ExtensionProtocol.S2C_RESULT_CONNECT_REPLY:
-                            if (0 != bean.getReplyFlowNumber()) {
-                                PlatformInteractiveHandler.this.dispatchEvent(new EventHeartbeatReply()
-                                        .setFlowNumber(bean.getReplyFlowNumber())
-                                        .setResult(0 == bean.getReplyResult())
-                                        .setRemote(false));
-                                break;
-                            }
-                        case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
-                            dispatchEvent(new EventAuthenticationResult()
-                                    .setResult(0 == bean.getReplyResult())
-                                    .setEnableConsumeSeparately(false)
-                                    .setRemote(false));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                @Override
-                public void onRemote2LocalExpandFail(Exception e) {
-                    Log.e(TAG, Log.getStackTraceString(e));
-                }
-
-                @Override
-                public void onRemote2LocalExpand(SicGeneralReply instruction) {
-                    Log.d(TAG, "onRemote2LocalExpand > 自动回复：");
-                    PlatformInteractiveHandler.this.sendToRemoteControlPlatform(instruction.getBody());
-                }
-
-                @Override
-                public void onRemote2LocalExpand(SicTextMessage instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
-                        Log.e(TAG, "onRemote2LocalExpand > SicTextMessage > process fail : 设备心跳异常，放弃处理服务器请求 \n"
-                                + instruction.toString());
-                        return;
-                    }
-                    PlatformInteractiveHandler.this.play(instruction.getText());
-                }
-
-                @Override
-                public void onRemote2LocalExpand(SicAudioVideo instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
-                        Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n"
-                                + instruction.toString());
-                        return;
-                    }
-                    Log.d(TAG, "onRemote2LocalExpand > SICAudioVideo");
-                    EventAudioVideoOperateRequest event = null;
-                    event = new EventAudioVideoOperateRequest()
-                            .setFlowNumber(instruction.getFlowNumber())
-                            .setMediaType(instruction.getMediaType())
-                            .setToken(instruction.getToken())
-                            .setChannelId(String.valueOf(instruction.getChannelId()))
-                            .setEventType(instruction.getEventType());
-                    event.setRemote(true);
-                    dispatchEvent(event);
-                }
-
-                @Override
-                public void onRemote2LocalExpand(SicPhotoTake instruction) {
-                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
-                        Log.e(TAG, "onRemote2LocalExpand > SicPhotoTake > process fail : 设备心跳异常，放弃处理服务器请求 \n"
-                                + instruction.toString());
-                        return;
-                    }
-                    instruction.setMediaId(System.currentTimeMillis());
-                    dispatchEvent(new EventPhotoTakeRequest()
-                            .setFileName(instruction.getFileName())
-                            .setUpload(true)
-                            .setRemote(true));
-                }
-            }).load(PlatformInteractiveHandler.this.getDeviceConfig());
-        }
-        return mJt808ExtendProtocolCodec;
-    }
-
-    public String isReady() {
-        //网络检测
-        boolean isNetworkAvailableNow = NetworkUtils.isNetworkAvailable(getContext());
-        if (!isNetworkAvailableNow) {
-            Log.w(TAG, "isReady > 网络:未连接 > 放弃平台连接状态检查和模块自动重置 ");
-
-            //服务器断开没有正常回调时，强制停止心跳
-            if (null != getHeartbeatHandler() && getHeartbeatHandler().isStart()) {
-                getHeartbeatHandler().stop();
-            }
-            if (!getPlatformConnectManager().isClean()) {
-                getPlatformConnectManager().disconnect();
-            }
-
-            return null;
-        }
-
-        if (!isNetworkAvailable && isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkConnect()
-                    .setPolicyDispatch2Myself(true)
-                    .setRemote(true));
-        } else if (isNetworkAvailable && !isNetworkAvailableNow) {
-            dispatchEvent(new EventNetworkDisconnect()
-                    .setPolicyDispatch2Myself(true)
-                    .setRemote(true));
-        }
-        isNetworkAvailable = isNetworkAvailableNow;
-
-        //网络连接后以socketManager连接状态为准
-        if (isNetworkAvailable) {
-            if (getPlatformConnectManager().isConnect()) {
-                if (!getHeartbeatHandler().isConnect()) {
-                    Log.w(TAG, "isReady > 网络:已连接,平台:已连接,心跳:未连接 ");
-                    return "心跳:未连接";
-                }
-                Log.i(TAG, "isReady > 网络:已连接,平台:已连接,心跳:已连接 ");
-                return null;
-            }
-            Log.w(TAG, "isReady >  网络:已连接,平台:未连接 > 尝试连接平台 ");
-            if (!connect()) {
-                return "平台:连接异常";
-            }
-            return null;
-        }
-
-        return null;
-    }
-
-    private PlatformConnectManager getPlatformConnectManager() {
-        return PlatformConnectManager.getInstance();
-    }
-
-    @Override
-    public void start() {
-        super.start();
-        isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
-        if (!isNetworkAvailable) {
-            Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
-            return;
-        }
-        connect();
-    }
-
-    protected boolean connect() {
-        if (getPlatformConnectManager().isConnect()) {
-            Log.e(TAG, "connect > process fail : HelmetSocketManager is connected");
-            return true;
-        }
-        if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getRemoteControlServerAddress())) {
-            play("上线失败，设备配置无效");
-            return false;
-        }
-        try {
-            getPlatformConnectManager().connect(
-                    getDeviceConfig().getRemoteControlServerAddress(),
-                    getDeviceConfig().getRemoteControlServerPort(),
-                    getDeviceConfig().getHeartbeatInterval(),
-                    new SocketActionAdapter() {
-                        @Override
-                        public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
-                            PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
-                        }
-
-                        @Override
-                        public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-                            super.onSocketDisconnection(info, action, e);
-                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                                    .setResultCode(EventResult.ResultCode.DIS));
-                        }
-
-                        @Override
-                        public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-                            super.onSocketConnectionSuccess(info, action);
-                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                                    .setResultCode(EventResult.ResultCode.SUCCESS));
-                        }
-
-                        @Override
-                        public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-                            super.onSocketConnectionFailed(info, action, e);
-                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
-                                    .setResultCode(EventResult.ResultCode.FAIL));
-                        }
-                    });
-        } catch (Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-            return false;
-        }
-        return true;
-    }
-
-    // =====================  事件处理 =============================
-
-    private boolean isRemoteControlPlatformConnected = false;
-    private boolean isHardwareModuleDetectionFinish = !HardwareModuleDetectionHandler.IS_ENABLE;
-
-    public void sendToRemoteControlPlatform(byte[] msg) {
-        if (null == msg || msg.length <= 0) {
-            Log.e(TAG, "sendToRemoteControlPlatform > process fail : msg is none");
-            return;
-        }
-        Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            getPlatformConnectManager().send(msg);
-            return;
-        }
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                getPlatformConnectManager().send(msg);
-            }
-        });
-    }
-
-    protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
-        if (null == event) {
-            Log.e(TAG, "getSicByEventCode > process fail : event is null");
-            return null;
-        }
-        return getSingleInstructionParserByEventCode(event.getCode());
-    }
-
-    protected SicBasic getSingleInstructionParserByEventCode(int eventCode) {
-        for (SicBasic singleInstructionParse : getJt808ExtendProtocolCodec().getSicBasicList()) {
-            if (singleInstructionParse.isMatchEventCode(eventCode)) {
-                return singleInstructionParse;
-            }
-        }
-        Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + eventCode);
-        return null;
-    }
+    protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
 
     @Override
     protected void initReceiveProcessStatusNotices() {
@@ -354,6 +113,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         registerHandleEvent(EventRemoteControl.Code.SEND_TO_REMOTE_CONTROL_PLATFORM, false);
 
         registerHandleEvent(EventRemoteControl.Code.AUDIO_VIDEO_PARAMETERS_APPLY_REQUEST, true);
+
         registerHandleEvent(EventAudioVideoCommunication.Code.AUDIO_VIDEO_OPERATE_RESULT, true);
     }
 
@@ -373,7 +133,6 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 final int status = EventLocalDeviceStatus.getDeviceStatus(event);
 
                 if (EventLocalDeviceStatus.Status.OFF_LINE == status) {
-                    //Log.d(TAG, "onReceiveEventNotice > 设备离线，断开后台连接");
                     isRemoteControlPlatformConnected = false;
                     getPlatformConnectManager().disconnect();
                 }
@@ -493,5 +252,242 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
+        if (!isNetworkAvailable) {
+            Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
+            return;
+        }
+        connect();
+    }
+
+    protected boolean connect() {
+        if (getPlatformConnectManager().isConnect()) {
+            Log.e(TAG, "connect > process fail : HelmetSocketManager is connected");
+            return true;
+        }
+        if (IDeviceConfig.VAL_NONE.equals(getDeviceConfig().getRemoteControlServerAddress())) {
+            play("上线失败，设备配置无效");
+            return false;
+        }
+        try {
+            getPlatformConnectManager().connect(
+                    getDeviceConfig().getRemoteControlServerAddress(),
+                    getDeviceConfig().getRemoteControlServerPort(),
+                    getDeviceConfig().getHeartbeatInterval(),
+                    new SocketActionAdapter() {
+                        @Override
+                        public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
+                            PlatformInteractiveHandler.this.getJt808ExtendProtocolCodec().handler(data);
+                        }
+
+                        @Override
+                        public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
+                            super.onSocketDisconnection(info, action, e);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.DIS));
+                        }
+
+                        @Override
+                        public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
+                            super.onSocketConnectionSuccess(info, action);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.SUCCESS));
+                        }
+
+                        @Override
+                        public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
+                            super.onSocketConnectionFailed(info, action, e);
+                            PlatformInteractiveHandler.this.onReceiveEventNotice(new EventConnectResult()
+                                    .setResultCode(EventResult.ResultCode.FAIL));
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+            return false;
+        }
+        return true;
+    }
+
+    protected HeartbeatHandler getHeartbeatHandler() {
+        if (null == mHeartbeatHandler) {
+            mHeartbeatHandler = new HeartbeatHandler();
+        }
+        return mHeartbeatHandler;
+    }
+
+    protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
+        if (null == mJt808ExtendProtocolCodec) {
+            mJt808ExtendProtocolCodec = Jt808ExtendProtocolCodec.getInstance(getContext());
+            mJt808ExtendProtocolCodec.setInstructionParserListener(new InstructionParserListener() {
+                @Override
+                public void onRemote2LocalBasic(JTT808Bean bean, byte[] data) {
+                    switch (bean.getMsgId()) {
+                        case IJT808ExtensionProtocol.S2C_RESULT_CONNECT_REPLY:
+                            if (0 != bean.getReplyFlowNumber()) {
+                                PlatformInteractiveHandler.this.dispatchEvent(new EventHeartbeatReply()
+                                        .setFlowNumber(bean.getReplyFlowNumber())
+                                        .setResult(0 == bean.getReplyResult())
+                                        .setRemote(false));
+                                break;
+                            }
+                        case IJT808ExtensionProtocol.S2C_RESULT_AUTHENTICATION_REPLY:
+                            PlatformInteractiveHandler.this.dispatchEvent(new EventAuthenticationResult()
+                                    .setResult(0 == bean.getReplyResult())
+                                    .setEnableConsumeSeparately(false)
+                                    .setRemote(false));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                @Override
+                public void onRemote2LocalExpandFail(Exception e) {
+                    Log.e(TAG, Log.getStackTraceString(e));
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicGeneralReply instruction) {
+                    Log.d(TAG, "onRemote2LocalExpand > 自动回复：" + instruction.toString());
+                    PlatformInteractiveHandler.this.sendToRemoteControlPlatform(instruction.getBody());
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicTextMessage instruction) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SicTextMessage > process fail : 设备心跳异常，放弃处理服务器请求 \n"
+                                + instruction.toString());
+                        return;
+                    }
+                    PlatformInteractiveHandler.this.play(instruction.getText());
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicAudioVideo instruction) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SICAudioVideo > process fail : 设备心跳异常，放弃处理服务器请求 \n"
+                                + instruction.toString());
+                        return;
+                    }
+                    Log.d(TAG, "onRemote2LocalExpand > SICAudioVideo");
+                    EventAudioVideoOperateRequest event = new EventAudioVideoOperateRequest()
+                            .setFlowNumber(instruction.getFlowNumber())
+                            .setMediaType(instruction.getMediaType())
+                            .setToken(instruction.getToken())
+                            .setChannelId(String.valueOf(instruction.getChannelId()))
+                            .setEventType(instruction.getEventType());
+                    event.setRemote(true);
+                    PlatformInteractiveHandler.this.dispatchEvent(event);
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicPhotoTake instruction) {
+                    if (!PlatformInteractiveHandler.this.getHeartbeatHandler().isConnect()) {
+                        Log.e(TAG, "onRemote2LocalExpand > SicPhotoTake > process fail : 设备心跳异常，放弃处理服务器请求 \n"
+                                + instruction.toString());
+                        return;
+                    }
+                    instruction.setMediaId(System.currentTimeMillis());
+                    PlatformInteractiveHandler.this.dispatchEvent(new EventPhotoTakeRequest()
+                            .setFileName(instruction.getFileName())
+                            .setUpload(true)
+                            .setRemote(true));
+                }
+            }).load(PlatformInteractiveHandler.this.getDeviceConfig());
+        }
+        return mJt808ExtendProtocolCodec;
+    }
+
+    public String isReady() {
+        //网络检测
+        boolean isNetworkAvailableNow = NetworkUtils.isNetworkAvailable(getContext());
+        if (!isNetworkAvailableNow) {
+            Log.w(TAG, "isReady > 网络:未连接 > 放弃平台连接状态检查和模块自动重置 ");
+
+            //服务器断开没有正常回调时，强制停止心跳
+            if (null != getHeartbeatHandler() && getHeartbeatHandler().isStart()) {
+                getHeartbeatHandler().stop();
+            }
+            if (!getPlatformConnectManager().isClean()) {
+                getPlatformConnectManager().disconnect();
+            }
+
+            return null;
+        }
+
+        if (!isNetworkAvailable && isNetworkAvailableNow) {
+            dispatchEvent(new EventNetworkConnect()
+                    .setPolicyDispatch2Myself(true)
+                    .setRemote(true));
+        } else if (isNetworkAvailable && !isNetworkAvailableNow) {
+            dispatchEvent(new EventNetworkDisconnect()
+                    .setPolicyDispatch2Myself(true)
+                    .setRemote(true));
+        }
+        isNetworkAvailable = isNetworkAvailableNow;
+
+        //网络连接后以socketManager连接状态为准
+        if (isNetworkAvailable) {
+            if (getPlatformConnectManager().isConnect()) {
+                if (!getHeartbeatHandler().isConnect()) {
+                    Log.w(TAG, "isReady > 网络:已连接,平台:已连接,心跳:未连接 ");
+                    return "心跳:未连接";
+                }
+                Log.i(TAG, "isReady > 网络:已连接,平台:已连接,心跳:已连接 ");
+                return null;
+            }
+            Log.w(TAG, "isReady >  网络:已连接,平台:未连接 > 尝试连接平台 ");
+            if (!connect()) {
+                return "平台:连接异常";
+            }
+            return null;
+        }
+
+        return null;
+    }
+
+    private PlatformConnectManager getPlatformConnectManager() {
+        return PlatformConnectManager.getInstance();
+    }
+
+    public void sendToRemoteControlPlatform(byte[] msg) {
+        if (null == msg || msg.length <= 0) {
+            Log.e(TAG, "sendToRemoteControlPlatform > process fail : msg is none");
+            return;
+        }
+        Log.d(TAG, "sendToRemoteControlPlatform > " + ByteUtils.bytes2Hex(msg));
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            getPlatformConnectManager().send(msg);
+            return;
+        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                getPlatformConnectManager().send(msg);
+            }
+        });
+    }
+
+    protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
+        if (null == event) {
+            Log.e(TAG, "getSicByEventCode > process fail : event is null");
+            return null;
+        }
+        return getSingleInstructionParserByEventCode(event.getCode());
+    }
+
+    protected SicBasic getSingleInstructionParserByEventCode(int eventCode) {
+        for (SicBasic singleInstructionParse : getJt808ExtendProtocolCodec().getSicBasicList()) {
+            if (singleInstructionParse.isMatchEventCode(eventCode)) {
+                return singleInstructionParse;
+            }
+        }
+        Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + eventCode);
+        return null;
     }
 }

@@ -40,9 +40,9 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  */
 public class HardwareModuleDetectionHandler extends BasicAssistHandler implements IHardwareModuleDetection {
 
-    public final static boolean IS_ENABLE = false;
-
     protected final static String TAG = "com.kuyou.rc.handler > HardwareModuleDetectionHandler";
+
+    public final static boolean IS_ENABLE = false;
 
     protected final static int PS_DETECTION_CAMERA_INFRARED_THERMAL_TIME_OUT = 1024;
     protected final static int PS_DETECTION_LOCATION_UWB_TIME_OUT = 1025;

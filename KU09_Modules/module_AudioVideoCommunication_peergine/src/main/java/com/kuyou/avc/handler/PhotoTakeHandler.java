@@ -25,8 +25,8 @@ public class PhotoTakeHandler extends BasicAssistHandler {
 
     protected final static int PS_TAKE_PHOTO_TIMEOUT = 0;
 
-    private IAudioVideoRequestCallback mAudioVideoRequestCallback;
     private RemoteEvent mRemoteEventHandled;
+    private IAudioVideoRequestCallback mAudioVideoRequestCallback;
 
     public IAudioVideoRequestCallback getAudioVideoRequestCallback() {
         return mAudioVideoRequestCallback;
@@ -136,11 +136,11 @@ public class PhotoTakeHandler extends BasicAssistHandler {
 
                 ////后台相机拍照
                 TakePhotoBackground.perform(getContext(), event.getData(), new ITakePhotoByCameraResultListener() {
-                                    @Override
-                                    public void onTakePhotoResult(boolean result, String info, Bundle data) {
-                                        PhotoTakeHandler.this.handlerTakePhotoResult(result,info,data);
-                                    }
-                                });
+                    @Override
+                    public void onTakePhotoResult(boolean result, String info, Bundle data) {
+                        PhotoTakeHandler.this.handlerTakePhotoResult(result, info, data);
+                    }
+                });
 
                 //前台相机拍照
 //                TakePhotoForeground.perform(getContext(), event.getData(), new ITakePhotoByCameraResultListener() {

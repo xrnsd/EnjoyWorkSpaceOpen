@@ -41,11 +41,11 @@ public abstract class BasicAssistHandler {
     }
 
     //协处理器 相关
-    public void start(){
+    public void start() {
 
     }
 
-    public void stop(){
+    public void stop() {
 
     }
 

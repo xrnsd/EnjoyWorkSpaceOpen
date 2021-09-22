@@ -1,6 +1,5 @@
 package com.kuyou.avc.handler;
 
-import android.content.Context;
 import android.util.Log;
 
 import kuyou.common.ku09.handler.CameraLightControl;
@@ -23,10 +22,6 @@ import kuyou.common.ku09.handler.BasicAssistHandler;
  */
 public class FlashlightHandler extends BasicAssistHandler {
     protected final String TAG = "com.kuyou.avc.handler > FlashlightHandler";
-
-    public FlashlightHandler(Context context) {
-        setContext(context.getApplicationContext());
-    }
 
     @Override
     protected void initReceiveEventNotices() {

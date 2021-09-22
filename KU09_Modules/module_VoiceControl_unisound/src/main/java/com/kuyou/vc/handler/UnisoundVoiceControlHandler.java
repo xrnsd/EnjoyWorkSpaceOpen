@@ -35,11 +35,12 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 public class UnisoundVoiceControlHandler extends BasicAssistHandler {
     private final String TAG = "com.kuyou.vc.handler > UnisoundVoiceControlHandler";
 
-    private AudioMngHelper mAudioMngHelper;
     private VoiceControl mVoiceControl;
+    private AudioMngHelper mAudioMngHelper;
 
-    public UnisoundVoiceControlHandler(Context context) {
-        setContext(context.getApplicationContext());
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
         mAudioMngHelper = new AudioMngHelper(getContext());
     }
 

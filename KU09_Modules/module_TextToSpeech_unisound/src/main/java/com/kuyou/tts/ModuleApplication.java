@@ -17,10 +17,9 @@ import kuyou.common.ku09.BasicModuleApplication;
  * <p>
  */
 public class ModuleApplication extends BasicModuleApplication {
-    private final String TAG = "com.kuyou.tts > ModuleApplication";
 
-    private LocalModuleCommonHandler mLocalModuleCommonHandler;
     private TTSHandler mTTSHandler;
+    private LocalModuleCommonHandler mLocalModuleCommonHandler;
 
     @Override
     protected void initRegisterEventHandlers() {

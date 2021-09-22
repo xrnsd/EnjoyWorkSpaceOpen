@@ -31,9 +31,9 @@ public class PhotoUploadHandler extends BasicAssistHandler {
 
     protected final static String TAG = "com.kuyou.rc.handler > PhotoUploadHandler";
 
-    protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
-
     private boolean isRemoteControlPlatformConnected = false;
+
+    protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
 
     protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
         if (null == mJt808ExtendProtocolCodec) {

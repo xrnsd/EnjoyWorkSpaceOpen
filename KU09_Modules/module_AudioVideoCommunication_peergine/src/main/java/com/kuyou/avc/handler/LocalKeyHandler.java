@@ -1,9 +1,9 @@
 package com.kuyou.avc.handler;
 
-import android.content.Context;
 import android.util.Log;
 
 import kuyou.common.ku09.handler.CameraLightControl;
+
 import com.kuyou.avc.basic.photo.IAudioVideoRequestCallback;
 
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
@@ -21,24 +21,10 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
  * </p>
  */
 public class LocalKeyHandler extends KeyHandler {
+
     protected final String TAG = "com.kuyou.avc.handler > KeyHandler";
 
-    private Context mContext;
     private IAudioVideoRequestCallback mAudioVideoHandler;
-
-    public LocalKeyHandler(Context context) {
-        setContext(context.getApplicationContext());
-    }
-
-    public LocalKeyHandler setAudioVideoRequestResult(IAudioVideoRequestCallback mAudioVideoRequestResult) {
-        this.mAudioVideoHandler = mAudioVideoRequestResult;
-        return LocalKeyHandler.this;
-    }
-
-    @Override
-    public void setContext(Context context) {
-        mContext = context;
-    }
 
     @Override
     public void onKeyClick(int keyCode) {
@@ -48,7 +34,7 @@ public class LocalKeyHandler extends KeyHandler {
                 break;
             case IKeyConfig.FLASHLIGHT:
                 dispatchEvent(new EventFlashlightRequest()
-                        .setSwitch(!CameraLightControl.getInstance(mContext).isFlashLightOn())
+                        .setSwitch(!CameraLightControl.getInstance(getContext()).isFlashLightOn())
                         .setEventType(IJT808ExtensionProtocol.EVENT_TYPE_LOCAL_DEVICE_INITIATE));
                 break;
             case IKeyConfig.CAMERA:
@@ -77,5 +63,10 @@ public class LocalKeyHandler extends KeyHandler {
     @Override
     public void onKeyLongClick(int keyCode) {
 
+    }
+
+    public LocalKeyHandler setAudioVideoRequestResult(IAudioVideoRequestCallback mAudioVideoRequestResult) {
+        this.mAudioVideoHandler = mAudioVideoRequestResult;
+        return LocalKeyHandler.this;
     }
 }

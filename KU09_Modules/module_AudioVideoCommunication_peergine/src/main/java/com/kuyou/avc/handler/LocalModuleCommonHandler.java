@@ -16,6 +16,7 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
  * </p>
  */
 public class LocalModuleCommonHandler extends ModuleCommonHandler {
+
     protected final String TAG = "com.kuyou.avc.handler > LocalModuleCommonHandler";
 
     @Override

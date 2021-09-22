@@ -33,10 +33,38 @@ public class LocationHandler extends BasicAssistHandler implements ILocationProv
 
     protected static final boolean IS_ENABLE_FAKE_LOCATION = true;
 
+    private int mLocationProviderPolicy = 0;
+
     private HMLocationProvider mLocationProvider;
     private HMLocationProvider mLocationProviderFilter;
 
-    private int mLocationProviderPolicy = 0;
+    @Override
+    protected void initReceiveEventNotices() {
+        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
+
+        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
+        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
+    }
+
+    @Override
+    public boolean onReceiveEventNotice(RemoteEvent event) {
+        switch (event.getCode()) {
+//            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
+//                Log.i(TAG, "onReceiveEventNotice > 开始上报位置 ");
+//                break;
+//            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
+//                Log.i(TAG, "onReceiveEventNotice > 停止上报位置 ");
+//                break;
+            case EventRemoteControl.Code.HEARTBEAT_REPORT:
+//                Log.d(TAG, "onReceiveEventNotice > 心跳");
+                dispatchEvent(new EventSendToRemoteControlPlatformRequest()
+                        .setMsg(getLocationInfo().getBody()));
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
 
     public LocationHandler initProviderFilter(Application application) {
         if (null != mLocationProvider) {
@@ -134,33 +162,5 @@ public class LocationHandler extends BasicAssistHandler implements ILocationProv
             delLocationProviderPolicy(POLICY_PROVIDER_NORMAL_LOCAL);
         }
         mLocationProviderPolicy |= policy;
-    }
-
-    @Override
-    protected void initReceiveEventNotices() {
-        registerHandleEvent(EventRemoteControl.Code.HEARTBEAT_REPORT, false);
-
-        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST, false);
-        registerHandleEvent(EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST, false);
-    }
-
-    @Override
-    public boolean onReceiveEventNotice(RemoteEvent event) {
-        switch (event.getCode()) {
-//            case EventRemoteControl.Code.LOCATION_REPORT_START_REQUEST:
-//                Log.i(TAG, "onReceiveEventNotice > 开始上报位置 ");
-//                break;
-//            case EventRemoteControl.Code.LOCATION_REPORT_STOP_REQUEST:
-//                Log.i(TAG, "onReceiveEventNotice > 停止上报位置 ");
-//                break;
-            case EventRemoteControl.Code.HEARTBEAT_REPORT:
-//                Log.d(TAG, "onReceiveEventNotice > 心跳");
-                dispatchEvent(new EventSendToRemoteControlPlatformRequest()
-                        .setMsg(getLocationInfo().getBody()));
-                break;
-            default:
-                return false;
-        }
-        return true;
     }
 }

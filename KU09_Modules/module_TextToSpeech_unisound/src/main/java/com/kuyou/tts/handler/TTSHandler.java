@@ -32,12 +32,12 @@ public class TTSHandler extends BasicAssistHandler {
     protected final static int PS_PLAY = 1;
     protected final static int PS_PLAY_OLD_RESET = 2;
 
-    private TTSManager mTTSPlayer;
-    private Queue<String> mPendingPlaylist;
-
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
     private boolean isInitFinish = false, isPlaying = false;
     private String mPlayText = null, mPlayTextOld = null;
+
+    private TTSManager mTTSPlayer;
+    private Queue<String> mPendingPlaylist;
 
     public TTSHandler(Context context) {
         setContext(context.getApplicationContext());

@@ -17,7 +17,6 @@ import kuyou.common.ku09.handler.KeyHandler;
  * <p>
  */
 public class ModuleApplication extends BasicModuleApplication {
-    private final String TAG = "com.kuyou.vc > ModuleApplication";
 
     //INIT_CHECK_COUNT_MAX * INIT_CHECK_FREQ 不能大于模块服务看门狗的60000默认频度
     public static final int INIT_CHECK_COUNT_MAX = 6;
@@ -70,7 +69,7 @@ public class ModuleApplication extends BasicModuleApplication {
 
     protected UnisoundVoiceControlHandler getVoiceControlHandler() {
         if (null == mUnisoundVoiceControlHandler) {
-            mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler(getApplicationContext());
+            mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler();
             mUnisoundVoiceControlHandler.init(VoiceControl.TYPE.HARDWARE);
         }
         return mUnisoundVoiceControlHandler;
