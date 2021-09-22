@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.util.SdUtils;
 
-public class TestItemSdcard extends TestItem {
+public class TestItemSdcard extends TestItemBasic {
 
     private String mStrResult = "";
     private TextView mTvShow;
@@ -25,7 +25,7 @@ public class TestItemSdcard extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.tf_test);
+        return context.getString(R.string.test_tf);
     }
 
     @Override

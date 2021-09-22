@@ -43,7 +43,7 @@ public abstract class RemoteEvent {
         isDispatch2Myself = val;
         return RemoteEvent.this;
     }
-    
+
     //是否允许被单独消费，默认是
     public boolean isEnableConsumeSeparately() {
         return isEnableConsumeSeparately;
@@ -83,5 +83,22 @@ public abstract class RemoteEvent {
 
     public static String getStartPackageNameByData(Bundle data) {
         return data.getString(KEY_EVENT_START_PACKAGE_NAME);
+    }
+
+    @Override
+    public String toString() {
+        Bundle data = getData();
+        String val = null;
+        StringBuilder keyValList = new StringBuilder("");
+        for (String key : data.keySet()) {
+            if (null == key)
+                continue;
+            val = data.getString(key);
+            if (null == val)
+                continue;
+            keyValList.append(key).append(" = ").append(val).append("\n");
+            val = null;
+        }
+        return keyValList.toString();
     }
 }

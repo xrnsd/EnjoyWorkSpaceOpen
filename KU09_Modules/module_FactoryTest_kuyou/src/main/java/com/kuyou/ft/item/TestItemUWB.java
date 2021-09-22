@@ -3,7 +3,7 @@ package com.kuyou.ft.item;
 import android.content.Context;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
@@ -13,7 +13,7 @@ import kuyou.common.ku09.protocol.basic.IHardwareModuleDetection;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 
-public class TestItemUWB extends TestItem {
+public class TestItemUWB extends TestItemBasic {
 
     protected final static int OPEN_TIMEING_FLAG = 8;
 

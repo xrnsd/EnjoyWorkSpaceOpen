@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.io.File;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
 /**
  * action :相机测试[抽象]
@@ -23,7 +23,7 @@ import com.kuyou.ft.basic.TestItem;
  * date: 21-3-09 <br/>
  * </p>
  */
-public abstract class TestItemCamera extends TestItem {
+public abstract class TestItemCamera extends TestItemBasic {
 
     protected Button mBtnTakePhoto;
     protected TextView mUrlPhoto;

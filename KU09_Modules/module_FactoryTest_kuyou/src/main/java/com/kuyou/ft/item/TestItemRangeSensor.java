@@ -10,9 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemRangeSensor extends TestItem {
+public class TestItemRangeSensor extends TestItemBasic {
 
     private float mValue = -999.0F;
 
@@ -33,7 +33,7 @@ public class TestItemRangeSensor extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.rangesensor_test);
+        return context.getString(R.string.test_rangesensor);
     }
 
     @Override

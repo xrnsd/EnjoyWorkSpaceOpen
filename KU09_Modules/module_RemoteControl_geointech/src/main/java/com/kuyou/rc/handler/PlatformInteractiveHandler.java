@@ -60,7 +60,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  */
 public class PlatformInteractiveHandler extends BasicAssistHandler {
 
-    protected final String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
+    protected final static String TAG = "com.kuyou.rc.handler > PlatformInteractiveHandler ";
 
     protected final static int PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT = 1;
 

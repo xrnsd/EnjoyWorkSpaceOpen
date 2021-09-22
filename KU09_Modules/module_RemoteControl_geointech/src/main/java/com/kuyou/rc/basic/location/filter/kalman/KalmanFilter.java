@@ -3,7 +3,7 @@ package com.kuyou.rc.basic.location.filter.kalman;
 import com.kuyou.rc.basic.location.filter.kalman.Matrix;
 
 public class KalmanFilter {
-    protected final String TAG = "com.kuyou.rc.location.filter > KalmanFilter" ;
+    protected final static String TAG = "com.kuyou.rc.location.filter > KalmanFilter" ;
     
     /*these matrices should be provided by user*/
     public Matrix F; //state transition model

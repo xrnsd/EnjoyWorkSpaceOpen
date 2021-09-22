@@ -27,7 +27,7 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 
 public abstract class MultiCapture extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    protected final String TAG = "com.kuyou.avc.ui.basic >" + this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.avc.ui.basic > MultiCapture";
 
     private EditText m_editServer;
     private EditText m_editDevID;

@@ -18,7 +18,7 @@ import com.kuyou.rc.basic.location.filter.kalman.TrajectoryKalmanFilter;
  * </p>
  */
 public abstract class FilterManager implements IFilterCallBack {
-    protected final String TAG = "com.kuyou.rc.basic.location.filter > " + this.getClass().getSimpleName();
+    protected final static String TAG = "com.kuyou.rc.basic.location.filter > FilterManager";
 
     private TrajectoryFilter mTrajectoryFluctuationFilter, mTrajectoryKalmanFilter;
     private HMLocationProvider.IOnLocationChangeListener mOnLocationChangeListener;

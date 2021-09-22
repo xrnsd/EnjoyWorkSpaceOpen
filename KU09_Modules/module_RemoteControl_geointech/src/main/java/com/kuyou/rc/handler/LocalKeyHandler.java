@@ -19,7 +19,7 @@ import kuyou.common.ku09.handler.KeyHandler;
  * </p>
  */
 public class LocalKeyHandler extends KeyHandler {
-    protected final String TAG = "com.kuyou.rc.handler > KeyHandler";
+    protected final static String TAG = "com.kuyou.rc.handler > KeyHandler";
 
     private boolean isEnableNearPowerAlarm = true;
 

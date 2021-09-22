@@ -42,8 +42,8 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  * date: 21-3-9 <br/>
  * </p>
  */
-public abstract class TestItem extends Activity implements View.OnClickListener {
-    protected final String TAG = "com.kuyou.ft.basic > " + this.getClass().getSimpleName();
+public abstract class TestItemBasic extends Activity implements View.OnClickListener {
+    protected final String TAG = "com.kuyou.ft.basic > TestItem";
 
     protected final static String KEY_TEST_PROCESS_TYPE = "test.process.type";
 
@@ -91,7 +91,7 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
         mStatusProcessBus = new StatusProcessBusImpl() {
             @Override
             protected void onReceiveProcessStatusNotice(int statusCode, boolean isRemove) {
-                TestItem.this.onReceiveProcessStatusNotice(statusCode, isRemove);
+                TestItemBasic.this.onReceiveProcessStatusNotice(statusCode, isRemove);
             }
         };
         initReceiveProcessStatusNotices();
@@ -146,7 +146,7 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         initWindowConfig();
         initViews();
-        setTitle(getTestTitle(TestItem.this));
+        setTitle(getTestTitle(TestItemBasic.this));
     }
 
     @Override
@@ -252,15 +252,15 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
             return;
         }
         setContentView(R.layout.test_item);
-        mContent = (ViewGroup) LayoutInflater.from(TestItem.this).inflate(getSubContentId(),
+        mContent = (ViewGroup) LayoutInflater.from(TestItemBasic.this).inflate(getSubContentId(),
                 findViewById(R.id.content), true);
         mBtns = findViewById(R.id.btns);
 
         mBtnSuccess = findViewById(R.id.success);
         mBtnFailed = findViewById(R.id.failed);
 
-        mBtnSuccess.setOnClickListener(TestItem.this);
-        mBtnFailed.setOnClickListener(TestItem.this);
+        mBtnSuccess.setOnClickListener(TestItemBasic.this);
+        mBtnFailed.setOnClickListener(TestItemBasic.this);
     }
 
     /**
@@ -290,7 +290,7 @@ public abstract class TestItem extends Activity implements View.OnClickListener 
     }
 
     protected View.OnClickListener getListener() {
-        return TestItem.this;
+        return TestItemBasic.this;
     }
 
     /**

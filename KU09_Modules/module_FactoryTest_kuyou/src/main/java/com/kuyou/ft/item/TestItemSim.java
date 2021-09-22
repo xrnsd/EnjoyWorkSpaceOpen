@@ -6,9 +6,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemSim extends TestItem {
+public class TestItemSim extends TestItemBasic {
 
     private boolean Sim1State = false, Sim2State = false;
     private Context mContext;
@@ -26,7 +26,7 @@ public class TestItemSim extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.sim_test);
+        return context.getString(R.string.test_sim);
     }
 
     @Override

@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
  * <p>
  */
 public abstract class Info<T>  {
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    protected final String TAG = "kuyou.common.protocol > Info";
 
     public abstract String getTitle();
 

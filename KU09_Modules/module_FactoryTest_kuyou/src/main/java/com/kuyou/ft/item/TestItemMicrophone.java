@@ -11,15 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.basic.microphone.MicrophoneVUMeterTestView;
 import com.kuyou.ft.util.Recorder;
 
-public class TestItemMicrophone extends TestItem {
+public class TestItemMicrophone extends TestItemBasic {
 
     private int mStatus = 1;
 
@@ -70,7 +69,7 @@ public class TestItemMicrophone extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.microphone_test);
+        return context.getString(R.string.test_microphone);
     }
 
     @Override

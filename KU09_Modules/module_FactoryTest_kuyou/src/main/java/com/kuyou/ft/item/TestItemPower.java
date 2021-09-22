@@ -10,9 +10,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemPower extends TestItem {
+public class TestItemPower extends TestItemBasic {
 
     private int mBatteryN, mBatteryV, mBatteryTemp;
     private String mStrBatteryPlugged = "", mStrChargeStatus, mStrBatteryStatus, mStrPowerInfo = "";
@@ -100,7 +100,7 @@ public class TestItemPower extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.power_test);
+        return context.getString(R.string.test_power);
     }
 
     @Override

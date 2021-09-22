@@ -34,7 +34,7 @@ public abstract class TestEntrance extends Activity {
     protected final static String TAG = "com.kuyou.ft.basic.camera > TestEntrance";
 
     protected final static String KEY_AGING_MODE = "persist.ft.mode";
-    protected static Map<Integer, TestItem> sTestItemList = new HashMap<Integer, TestItem>();
+    protected static Map<Integer, TestItemBasic> sTestItemList = new HashMap<Integer, TestItemBasic>();
 
     private IDeviceConfig mDeviceConfig;
 
@@ -60,7 +60,7 @@ public abstract class TestEntrance extends Activity {
         return null;
     }
 
-    protected void onTestItemLoaded(TestItem item) {
+    protected void onTestItemLoaded(TestItemBasic item) {
 
     }
 
@@ -73,7 +73,7 @@ public abstract class TestEntrance extends Activity {
      */
     protected List<Class> getTestItemListAll(Context context) {
         try {
-            return ClassUtils.getAllClasses(context, TestItem.class);
+            return ClassUtils.getAllClasses(context, TestItemBasic.class);
         } catch (Exception e) {
             Log.e("123456", Log.getStackTraceString(e));
         }
@@ -114,7 +114,7 @@ public abstract class TestEntrance extends Activity {
     }
 
     protected void loadAllTestItem(Context context) {
-        TestItem testItem;
+        TestItemBasic testItem;
         sTestItemList.clear();
         try {
             List<Class> list = getTestItemList();
@@ -129,7 +129,7 @@ public abstract class TestEntrance extends Activity {
                 }
             }
             for (Class item : list) {
-                testItem = (TestItem) item.newInstance();
+                testItem = (TestItemBasic) item.newInstance();
                 testItem.setDeviceConfig(getDeviceConfig());
                 if (!testItem.isEnableTest() || !testItem.isEnableTestByFlag(getTestProcessType())) {
                     Log.w(TAG, "loadAllTestItem > 测试项已关闭 : " + testItem.getTestTitle(context));

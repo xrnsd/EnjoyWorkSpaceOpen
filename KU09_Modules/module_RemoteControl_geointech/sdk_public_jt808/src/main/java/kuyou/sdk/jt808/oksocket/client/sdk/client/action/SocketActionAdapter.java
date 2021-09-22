@@ -13,7 +13,7 @@ import kuyou.sdk.jt808.oksocket.core.pojo.OriginalData;
  */
 
 public abstract class SocketActionAdapter implements ISocketActionListener {
-    protected final String TAG = "kuyou.sdk.jt808 > SocketActionAdapter";
+    protected final static String TAG = "kuyou.sdk.jt808 > SocketActionAdapter";
     /**
      * Socket通讯IO线程的启动<br>
      * 该方法调用后IO线程将会正常工作<br>

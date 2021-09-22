@@ -97,14 +97,14 @@ public class HeartbeatHandler extends BasicAssistHandler {
                     getStatusProcessBus().stop(PS_HEARTBEAT_REPORT_START_TIME_OUT);
                     getStatusProcessBus().stop(PS_DEVICE_OFF_LINE);
                     if (isHeartbeatReply) {
-                        isDeviceOnLine = true;
-
                         dispatchEvent(new EventLocalDeviceStatus()
                                 .setDeviceStatus(EventLocalDeviceStatus.Status.ON_LINE)
                                 .setPolicyDispatch2Myself(true)
                                 .setEnableConsumeSeparately(false)
                                 .setRemote(true));
                         play("设备上线成功");
+
+                        isDeviceOnLine = true;
                     } else {
                         play("设备上线失败,错误3");
                     }
@@ -151,7 +151,7 @@ public class HeartbeatHandler extends BasicAssistHandler {
         super.onReceiveProcessStatusNotice(statusCode, isRemove);
         switch (statusCode) {
             case PS_HEARTBEAT_REPORT:
-                if (Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) < DEVICE_OFF_LINE_FLAG) {
+                if (isHeartbeatValid()) {
                     mHeartbeatReportFlowId += 1;
                     dispatchEvent(new EventHeartbeatReport().setRemote(false));
                     //Log.d(TAG, String.format("onReceiveProcessStatusNotice > 心跳 mHeartbeatReportFlowId = %s , mHeartbeatReportFlowId = %s"
@@ -197,47 +197,12 @@ public class HeartbeatHandler extends BasicAssistHandler {
         }
     }
 
-    private void resetFlags() {
-        isAuthenticationSuccess = false;
-        isHeartbeatReply = false;
-        isDeviceOnLine = false;
-
-        mHeartbeatReplyFlowId = 0;
-        mHeartbeatReportFlowId = 0;
-    }
-
     @Override
     protected void play(String content) {
         if (BuildConfig.IS_ENABLE_CONFUSE) {
             //Log.i(TAG, "play > content = "+ content);
         }
         super.play(content);
-    }
-
-    public boolean isConnect() {
-        if (!isAuthenticationSuccess) {
-            Log.w(TAG, "isConnect > authentication is fail");
-            return false;
-        }
-
-        if (!isStart()) {
-            Log.w(TAG, "isConnect > process fail : Heartbeat none start");
-            return false;
-        }
-        if (0 == mHeartbeatReplyFlowId) {
-            Log.w(TAG, "isConnect > process fail : Heartbeat none reply");
-            return false;
-        }
-        if (!isDeviceOnLine) {
-            Log.w(TAG, "isConnect > device is offline");
-            return false;
-        }
-
-        boolean heartbeatStatusResult = (30001 >
-                Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) * getDeviceConfig().getHeartbeatInterval());
-        Log.d(TAG, "isConnect > heartbeatStatusResult = " + heartbeatStatusResult);
-
-        return heartbeatStatusResult;
     }
 
     @Override
@@ -275,5 +240,44 @@ public class HeartbeatHandler extends BasicAssistHandler {
             return false;
         }
         return getStatusProcessBus().isStart(PS_HEARTBEAT_REPORT);
+    }
+
+    public boolean isConnect() {
+        if (!isAuthenticationSuccess) {
+            Log.w(TAG, "isConnect > authentication is fail");
+            return false;
+        }
+
+        if (!isStart()) {
+            Log.w(TAG, "isConnect > process fail : Heartbeat none start");
+            return false;
+        }
+        if (0 == mHeartbeatReplyFlowId) {
+            Log.w(TAG, "isConnect > process fail : Heartbeat none reply");
+            return false;
+        }
+        if (!isDeviceOnLine) {
+            Log.w(TAG, "isConnect > device is offline");
+            return false;
+        }
+
+        boolean heartbeatStatusResult = isHeartbeatValid();
+        Log.d(TAG, "isConnect > heartbeatStatusResult = " + heartbeatStatusResult);
+        return heartbeatStatusResult;
+    }
+
+    protected boolean isHeartbeatValid() {
+        return Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId) < DEVICE_OFF_LINE_FLAG;
+        //return (30001 > Math.abs(mHeartbeatReportFlowId - mHeartbeatReplyFlowId)
+        //        * getDeviceConfig().getHeartbeatInterval());
+    }
+
+    private void resetFlags() {
+        isAuthenticationSuccess = false;
+        isHeartbeatReply = false;
+        isDeviceOnLine = false;
+
+        mHeartbeatReplyFlowId = 0;
+        mHeartbeatReportFlowId = 0;
     }
 }

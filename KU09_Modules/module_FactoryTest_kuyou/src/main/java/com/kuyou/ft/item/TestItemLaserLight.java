@@ -1,15 +1,14 @@
 package com.kuyou.ft.item;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
 import kuyou.common.ku09.event.avc.EventLaserLightRequest;
 
-public class TestItemLaserLight extends TestItem {
+public class TestItemLaserLight extends TestItemBasic {
 
     @Override
     public int getTestId() {

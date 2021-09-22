@@ -16,9 +16,9 @@ import android.widget.TextView;
 import java.util.Iterator;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemGps extends TestItem implements GpsStatus.Listener, LocationListener {
+public class TestItemGps extends TestItemBasic implements GpsStatus.Listener, LocationListener {
 
     private int mNumberSatellites = 0;
     private int[] mSingleStrength = new int[128];
@@ -39,7 +39,7 @@ public class TestItemGps extends TestItem implements GpsStatus.Listener, Locatio
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.gps_test);
+        return context.getString(R.string.test_gps);
     }
 
     @Override

@@ -14,9 +14,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemBlutooth extends TestItem {
+public class TestItemBlutooth extends TestItemBasic {
 
     private int threadcount = 0,
             mBluetoothStatus = 0,
@@ -70,7 +70,7 @@ public class TestItemBlutooth extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.bluetooth_test);
+        return context.getString(R.string.test_bluetooth);
     }
 
     @Override

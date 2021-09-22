@@ -65,17 +65,17 @@
         <activity
             android:name="com.kuyou.ft.entrance.TestEntranceAuto"
             android:configChanges="orientation"
-            android:label="@string/auto_test"
+            android:label="@string/test_auto"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.entrance.TestEntranceAging"
             android:configChanges="orientation"
-            android:label="@string/aging_test"
+            android:label="@string/test_aging"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.entrance.TestEntranceSingle"
             android:configChanges="orientation"
-            android:label="@string/signle_test"
+            android:label="@string/test_signle"
             android:screenOrientation="landscape" />
 
 
@@ -91,81 +91,81 @@
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemWifi"
-            android:label="@string/wifi_test"
+            android:label="@string/test_wifi"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemLcd"
-            android:label="@string/lcd_test"
+            android:label="@string/test_lcd"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemPower"
-            android:label="@string/power_test"
+            android:label="@string/test_power"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemKey"
-            android:label="@string/key_test"
+            android:label="@string/test_key"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemLoudspeaker"
-            android:label="@string/loudspeaker_test"
+            android:label="@string/test_loudspeaker"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemHeadset"
-            android:label="@string/headset_test"
+            android:label="@string/test_headset"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemMicrophone"
-            android:label="@string/microphone_test"
+            android:label="@string/test_microphone"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemBackLight"
-            android:label="@string/backlight_test"
+            android:label="@string/test_backlight"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemReceiver"
-            android:label="@string/receiver_test"
+            android:label="@string/test_receiver"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemBlutooth"
-            android:label="@string/bluetooth_test"
+            android:label="@string/test_bluetooth"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemSim"
-            android:label="@string/sim_test"
+            android:label="@string/test_sim"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemRam"
-            android:label="@string/ram_test"
+            android:label="@string/test_ram"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemGsensor"
-            android:label="@string/gsensor_test"
+            android:label="@string/test_gsensor"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemLSensor"
-            android:label="@string/lsensor_test"
+            android:label="@string/test_lsensor"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemRangeSensor"
-            android:label="@string/rangesensor_test"
+            android:label="@string/test_rangesensor"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemSdcard"
-            android:label="@string/tf_test"
+            android:label="@string/test_tf"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemLed"
             android:configChanges="orientation"
-            android:label="@string/led_light_test"
+            android:label="@string/test_led_light"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemFlashlight"
             android:configChanges="orientation"
-            android:label="@string/flash_light_test"
+            android:label="@string/test_flash_light"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemGps"
-            android:label="@string/gps_test"
+            android:label="@string/test_gps"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemUWB"
@@ -181,7 +181,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name="com.kuyou.ft.item.TestItemThermalCamera"
-            android:label="@string/tcamera_test"
+            android:label="@string/test_tcamera"
             android:screenOrientation="landscape" />
     </application>
 </manifest>

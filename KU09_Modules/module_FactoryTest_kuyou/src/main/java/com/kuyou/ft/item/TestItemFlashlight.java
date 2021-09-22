@@ -11,9 +11,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemFlashlight extends TestItem {
+public class TestItemFlashlight extends TestItemBasic {
 
     private boolean isopen = false;
 
@@ -32,7 +32,7 @@ public class TestItemFlashlight extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.flash_light_test);
+        return context.getString(R.string.test_flash_light);
     }
 
     @Override

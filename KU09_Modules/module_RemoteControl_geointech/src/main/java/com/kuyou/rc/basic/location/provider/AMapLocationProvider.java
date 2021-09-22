@@ -24,7 +24,7 @@ import com.kuyou.rc.ui.TraceTestActivity;
  */
 public class AMapLocationProvider extends HMLocationProvider implements Application.ActivityLifecycleCallbacks {
 
-    protected final String TAG = "com.kuyou.rc.location > AMapLocationProvider";
+    protected final static String TAG = "com.kuyou.rc.location > AMapLocationProvider";
 
     private AmapLocationActivity mLocationProviderReal;
     private TraceTestActivity mTraceTestActivity;

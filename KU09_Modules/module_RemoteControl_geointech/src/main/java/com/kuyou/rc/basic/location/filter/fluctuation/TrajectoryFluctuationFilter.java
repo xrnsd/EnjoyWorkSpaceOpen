@@ -19,7 +19,7 @@ import kuyou.common.utils.GPSUtils;
  */
 public class TrajectoryFluctuationFilter extends TrajectoryFilter {
 
-    protected final String TAG = "com.kuyou.rc.location.filter > TrajectoryFluctuationFilter";
+    protected final static String TAG = "com.kuyou.rc.location.filter > TrajectoryFluctuationFilter";
 
     /**
      * action:过滤速度<br/>

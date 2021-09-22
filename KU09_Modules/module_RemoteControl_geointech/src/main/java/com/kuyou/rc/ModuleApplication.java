@@ -22,7 +22,8 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
  * <p>
  */
 public class ModuleApplication extends BasicModuleApplication {
-    private final String TAG = "com.kuyou.rc > ModuleApplication";
+
+    protected final static String TAG = "com.kuyou.rc > ModuleApplication";
 
     private AlarmHandler mAlarmHandler;
     private LocalKeyHandler mLocalKeyHandler;

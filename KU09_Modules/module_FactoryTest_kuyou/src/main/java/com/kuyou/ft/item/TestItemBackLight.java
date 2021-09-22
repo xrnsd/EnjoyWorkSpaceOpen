@@ -10,9 +10,9 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemBackLight extends TestItem {
+public class TestItemBackLight extends TestItemBasic {
 
     private Button mBtnStrong, mBtnWeak;
 
@@ -28,7 +28,7 @@ public class TestItemBackLight extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.backlight_test);
+        return context.getString(R.string.test_backlight);
     }
 
     @Override

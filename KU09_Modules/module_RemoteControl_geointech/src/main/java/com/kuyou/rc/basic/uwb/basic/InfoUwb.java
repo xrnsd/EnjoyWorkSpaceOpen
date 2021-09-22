@@ -14,7 +14,7 @@ import kuyou.common.bytes.ByteUtils;
  * </p>
  */
 public abstract class InfoUwb extends Info<IModuleInfoListener> {
-    protected final String TAG = "com.kuyou.rc.location.uwb.base > " + this.getClass().getSimpleName();
+    protected final static String TAG = "com.kuyou.rc.location.uwb.base > InfoUwb";
 
     @Override
     public boolean isSuccess() {

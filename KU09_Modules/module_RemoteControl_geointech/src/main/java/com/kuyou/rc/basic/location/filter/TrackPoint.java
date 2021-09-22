@@ -11,7 +11,7 @@ import android.util.Log;
  * remark1:<p> Location的基础信息加部分算法需要自定义信息 </p>
  */
 public class TrackPoint {
-    private static final String TAG = "TrackPoint";
+    protected final static String TAG = "com.kuyou.rc.basic.location.filter > TrackPoint";
 
     protected final static double POINT_SPEED_MAX = 250 / 3.6f; // 最大速度 250km/h ,不考虑开飞机等极端情况
 

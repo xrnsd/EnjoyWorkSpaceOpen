@@ -28,8 +28,8 @@ import java.util.concurrent.PriorityBlockingQueue;
  * <p>
  */
 public class TrajectoryKalmanFilter extends TrajectoryFilter implements SensorEventListener {
-
-    public static final String TAG = "TrajectoryKalmanFilter";
+    
+    protected final static String TAG = "com.kuyou.rc.basic.location.filter.kalman > TrajectoryKalmanFilter";
 
     public static double ACCELEROMETER_DEFAULT_DEVIATION = 0.1;
     public static final int SENSOR_POSITION_MIN_TIME = 500;

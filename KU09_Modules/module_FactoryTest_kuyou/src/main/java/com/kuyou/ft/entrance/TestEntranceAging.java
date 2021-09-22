@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.kuyou.ft.R;
 import com.kuyou.ft.basic.TestEntrance;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.basic.event.EventTestItemResult;
 
 /**
@@ -25,13 +25,13 @@ import com.kuyou.ft.basic.event.EventTestItemResult;
 public class TestEntranceAging extends TestEntrance {
 
     private int mIndex = 0;
-    private List<TestItem> mTestItemRandomList = null;
-    private List<TestItem> mTestItemOrderList = new ArrayList<TestItem>();
+    private List<TestItemBasic> mTestItemRandomList = null;
+    private List<TestItemBasic> mTestItemOrderList = new ArrayList<TestItemBasic>();
     private boolean isEnableTest = true;
 
     @Override
     protected int getTestProcessType() {
-        return TestItem.POLICY_TEST_AGING;
+        return TestItemBasic.POLICY_TEST_AGING;
     }
 
     @Override
@@ -42,14 +42,14 @@ public class TestEntranceAging extends TestEntrance {
     }
 
     @Override
-    protected void onTestItemLoaded(TestItem item) {
+    protected void onTestItemLoaded(TestItemBasic item) {
         super.onTestItemLoaded(item);
         mTestItemOrderList.add(item);
     }
 
     protected void getTestItemRandomList() {
-        List<TestItem> orderList = new ArrayList<TestItem>(mTestItemOrderList);
-        List<TestItem> randomList = new ArrayList<TestItem>();
+        List<TestItemBasic> orderList = new ArrayList<TestItemBasic>(mTestItemOrderList);
+        List<TestItemBasic> randomList = new ArrayList<TestItemBasic>();
         for (int i = 0, count = orderList.size(); i < count; i++) {
             int _index = (int) (Math.random() * orderList.size());
             randomList.add(orderList.get(_index));
@@ -58,7 +58,7 @@ public class TestEntranceAging extends TestEntrance {
         if (null != mTestItemRandomList && mTestItemRandomList.size() > 0) {
             final int id = mTestItemRandomList.get(mTestItemRandomList.size() - 1).getTestId();
             if (id == randomList.get(0).getTestId()) {
-                TestItem item = randomList.get(0);
+                TestItemBasic item = randomList.get(0);
                 Log.d(TAG, "loadAllTestItem > getTestTitle 重复 = " + item.getTestTitle(getApplicationContext()));
                 randomList.remove(0);
                 randomList.add(item);

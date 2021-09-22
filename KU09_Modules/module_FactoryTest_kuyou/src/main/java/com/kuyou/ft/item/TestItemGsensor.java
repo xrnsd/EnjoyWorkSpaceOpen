@@ -12,9 +12,9 @@ import android.widget.TextView;
 import java.util.Arrays;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemGsensor extends TestItem {
+public class TestItemGsensor extends TestItemBasic {
 
     private float x, y, z;
 
@@ -35,7 +35,7 @@ public class TestItemGsensor extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.gsensor_test);
+        return context.getString(R.string.test_gsensor);
     }
 
     @Override

@@ -3,9 +3,9 @@ package com.kuyou.ft.item;
 import android.content.Context;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.thermal.TestItemThermalCameraBasic;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemThermalCamera extends TestItemThermalCameraBasic {
+public class TestItemGAS extends TestItemBasic {
 
     @Override
     public int getTestPolicy() {
@@ -18,12 +18,17 @@ public class TestItemThermalCamera extends TestItemThermalCameraBasic {
 
     @Override
     public int getTestId() {
-        return R.id.test_tcamera;
+        return R.id.test_near_electricity;
+    }
+
+    @Override
+    public int getSubContentId() {
+        return 0;
     }
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.test_tcamera);
+        return context.getString(R.string.test_gas);
     }
 
 }

@@ -3,7 +3,7 @@ package com.kuyou.rc.basic.location.filter.kalman;
 import android.util.Log;
 
 public class GPSAccKalmanFilter {
-    public static final String TAG = "GPSAccKalmanFilter";
+    protected final static String TAG = "com.kuyou.rc.basic.location.filter.kalman > GPSAccKalmanFilter";
 
     private double m_timeStampMsPredict;
     private double m_timeStampMsUpdate;

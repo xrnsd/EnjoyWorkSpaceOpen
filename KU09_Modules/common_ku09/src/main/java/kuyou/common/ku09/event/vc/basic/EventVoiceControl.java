@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  */
 public abstract class EventVoiceControl extends RemoteEvent {
 
-    protected final String TAG = "kuyou.common.ku09.event.voicecontrol > " + this.getClass().getSimpleName();
+    protected final String TAG = "kuyou.common.ku09.event.voicecontrol > EventVoiceControl";
 
     //10340 ~ 12387
     protected final static int FLAG_CODE = 10340;
@@ -23,7 +23,8 @@ public abstract class EventVoiceControl extends RemoteEvent {
         public final static int MODULE_EXIT = FLAG_CODE + 1;
 
         //业务需求相关 128 ~ 2047
-        public final static int VOICE_WAKEUP = FLAG_CODE + 128;
+        public final static int VOICE_WAKEUP_REQUEST = FLAG_CODE + 128;
+        public final static int VOICE_WAKEUP_RESULT = FLAG_CODE + 129;
         public final static int VOICE_SLEEP = FLAG_CODE + 129;
     }
 }

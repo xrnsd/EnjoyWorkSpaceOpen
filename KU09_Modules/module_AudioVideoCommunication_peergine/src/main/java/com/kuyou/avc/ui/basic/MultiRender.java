@@ -26,7 +26,7 @@ import java.util.Date;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 public abstract class MultiRender extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    protected final String TAG = "com.kuyou.avc.ui.custom > " + this.getClass().getSimpleName();
+    protected final String TAG = "com.kuyou.avc.ui.custom > MultiRender";
 
     private EditText m_editServer;
     private EditText m_editDevID;

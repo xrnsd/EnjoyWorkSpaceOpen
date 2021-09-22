@@ -11,7 +11,7 @@ import android.util.Log;
  * </p>
  */
 public class IOnParseListener {
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    protected final String TAG = "com.kuyou.vc.protocol.basic > IOnParseListener";
 
     public boolean onWakeup(boolean switchStatus) {
         Log.d(TAG, "onWakeup > " + (switchStatus ? "语言模块已唤醒" : "语言模块已休眠"));

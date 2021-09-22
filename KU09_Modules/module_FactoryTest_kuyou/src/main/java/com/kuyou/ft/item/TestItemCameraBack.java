@@ -14,7 +14,7 @@ public class TestItemCameraBack extends TestItemCamera {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.bcamera_test);
+        return context.getString(R.string.test_bcamera);
     }
 
     @Override

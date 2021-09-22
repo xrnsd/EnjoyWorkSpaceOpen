@@ -33,7 +33,7 @@ public class TraceTestActivity extends Activity implements TraceListener {
     private List<TraceLocation> originPosList;
     private LBSTraceClient lbsTraceClient;
 
-    protected final String TAG = "com.kuyou.rc.handler.location.trace > TraceTestActivity";
+    protected final static String TAG = "com.kuyou.rc.handler.location.trace > TraceTestActivity";
     private int posCount = 0;
     private TraceLocation posTraceLocation;
 

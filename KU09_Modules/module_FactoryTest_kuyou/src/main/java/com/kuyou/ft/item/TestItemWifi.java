@@ -22,9 +22,9 @@ import androidx.core.content.ContextCompat;
 import java.util.List;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemWifi extends TestItem {
+public class TestItemWifi extends TestItemBasic {
 
     private int mtThreadCount = 0, mMaxLoopTimes = 20;
     private boolean mLocationEnabled = false;
@@ -56,7 +56,7 @@ public class TestItemWifi extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.wifi_test);
+        return context.getString(R.string.test_wifi);
     }
 
     @Override

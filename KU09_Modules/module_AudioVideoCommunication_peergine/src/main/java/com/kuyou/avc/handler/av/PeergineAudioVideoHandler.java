@@ -641,11 +641,12 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
                 break;
 
             case EventRemoteControl.Code.LOCAL_DEVICE_STATUS:
-                if (isItInHandlerState(HS_OPEN)) {//存在已打开通话
-                    if (EventLocalDeviceStatus.Status.ON_LINE == EventLocalDeviceStatus.getDeviceStatus(event)) {
-                        recoverAllLiveItem();
-                        break;
-                    }
+                final boolean isOnLine = EventLocalDeviceStatus.Status.ON_LINE
+                        == EventLocalDeviceStatus.getDeviceStatus(event);
+                if (isItInHandlerState(HS_OPEN)//存在已打开通话
+                        && isOnLine) {
+                    recoverAllLiveItem();
+                    break;
                 }
                 break;
 

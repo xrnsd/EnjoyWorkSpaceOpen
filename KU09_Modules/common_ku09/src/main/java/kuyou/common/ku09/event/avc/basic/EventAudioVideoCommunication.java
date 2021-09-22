@@ -12,7 +12,7 @@ import kuyou.common.ku09.event.common.basic.RemoteEventCommon;
  */
 public abstract class EventAudioVideoCommunication extends RemoteEventCommon {
 
-    protected final String TAG = "kuyou.common.ku09.event.avc > " + this.getClass().getSimpleName();
+    protected final String TAG = "kuyou.common.ku09.event.avc > EventAudioVideoCommunication";
 
     //6144~8191
     protected final static int FLAG_CODE = 6144;

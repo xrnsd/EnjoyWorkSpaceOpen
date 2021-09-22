@@ -1,6 +1,7 @@
 package com.kuyou.vc.handler;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.kuyou.vc.protocol.VoiceControlHardware;
 import com.kuyou.vc.protocol.VoiceControlSoft;
@@ -14,6 +15,8 @@ import kuyou.common.ku09.event.avc.EventAudioVideoOperateRequest;
 import kuyou.common.ku09.event.avc.EventFlashlightRequest;
 import kuyou.common.ku09.event.avc.EventPhotoTakeRequest;
 import kuyou.common.ku09.event.rc.EventAudioVideoParametersApplyRequest;
+import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
+import kuyou.common.ku09.event.vc.EventVoiceWakeupResult;
 import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
@@ -70,13 +73,26 @@ public class UnisoundVoiceControlHandler extends BasicAssistHandler {
 
     @Override
     protected void initReceiveEventNotices() {
-        registerHandleEvent(EventVoiceControl.Code.VOICE_WAKEUP, false);
+        registerHandleEvent(EventVoiceControl.Code.VOICE_WAKEUP_REQUEST, true);
+    }
+
+    private boolean isFactoryMode = false;
+
+    @Override
+    protected void play(String content) {
+        if (isFactoryMode) {
+            Log.d(TAG, "play > 工厂测试中取消:" + content);
+            return;
+        }
+        super.play(content);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
-            case EventVoiceControl.Code.VOICE_WAKEUP:
+            case EventVoiceControl.Code.VOICE_WAKEUP_REQUEST:
+                isFactoryMode = EventVoiceWakeupRequest.TypeCode.FactoryTest
+                        == EventVoiceWakeupRequest.getWakeUpRequestType(event);
                 play("正在为您打开语音控制");
                 getVoiceControl().start();
                 break;
@@ -103,6 +119,10 @@ public class UnisoundVoiceControlHandler extends BasicAssistHandler {
                 } else {
                     getVoiceControl().onSleep();
                 }
+                UnisoundVoiceControlHandler.this.dispatchEvent(
+                        new EventVoiceWakeupResult()
+                                .setWakeUpStatus(switchStatus)
+                                .setRemote(true));
                 return super.onWakeup(switchStatus);
             }
 

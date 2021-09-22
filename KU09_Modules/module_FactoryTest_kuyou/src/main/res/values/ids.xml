@@ -36,4 +36,5 @@
     <item type="id" name="test_voice_control"/>
 
     <item type="id" name="test_aging"/>
+    <item type="id" name="test_near_electricity"/>
 </resources>

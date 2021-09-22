@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.thermal.seekware.SeekCamera;
 import com.thermal.seekware.SeekCameraManager;
 import com.thermal.seekware.SeekImage;
@@ -29,7 +29,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  * date: 21-9-15 <br/>
  * </p>
  */
-public abstract class TestItemThermalCameraBasic extends TestItem {
+public abstract class TestItemThermalCameraBasic extends TestItemBasic {
 
     protected final static int OPEN_TIMEING_FLAG = 5;
 

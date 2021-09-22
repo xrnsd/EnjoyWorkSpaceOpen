@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemLSensor extends TestItem {
+public class TestItemLSensor extends TestItemBasic {
 
     private float[] x;
 
@@ -31,7 +31,7 @@ public class TestItemLSensor extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.lsensor_test);
+        return context.getString(R.string.test_lsensor);
     }
 
     @Override

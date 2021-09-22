@@ -11,9 +11,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemLcd extends TestItem {
+public class TestItemLcd extends TestItemBasic {
 
     private int mFlag = 0;
     private TextView mTvTest = null, mTvTitle = null;
@@ -56,7 +56,7 @@ public class TestItemLcd extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.lcd_test);
+        return context.getString(R.string.test_lcd);
     }
 
     @Override

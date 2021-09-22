@@ -17,13 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.basic.event.EventTestItemResult;
 import com.kuyou.ft.basic.ipc.TestEntranceIpc;
 import com.kuyou.ft.item.TestItemBackLight;
 import com.kuyou.ft.item.TestItemBlutooth;
 import com.kuyou.ft.item.TestItemCameraBack;
 import com.kuyou.ft.item.TestItemFlashlight;
+import com.kuyou.ft.item.TestItemGAS;
 import com.kuyou.ft.item.TestItemGps;
 import com.kuyou.ft.item.TestItemGsensor;
 import com.kuyou.ft.item.TestItemHeadset;
@@ -35,6 +36,7 @@ import com.kuyou.ft.item.TestItemLcd;
 import com.kuyou.ft.item.TestItemLed;
 import com.kuyou.ft.item.TestItemLoudspeaker;
 import com.kuyou.ft.item.TestItemMicrophone;
+import com.kuyou.ft.item.TestItemNearElectricity;
 import com.kuyou.ft.item.TestItemPower;
 import com.kuyou.ft.item.TestItemRam;
 import com.kuyou.ft.item.TestItemRangeSensor;
@@ -68,7 +70,7 @@ public class TestEntranceSingle extends TestEntranceIpc {
 
     @Override
     protected int getTestProcessType() {
-        return TestItem.POLICY_TEST;
+        return TestItemBasic.POLICY_TEST;
     }
 
     @Override
@@ -100,6 +102,8 @@ public class TestEntranceSingle extends TestEntranceIpc {
         classes.add(TestItemLaserLight.class);
         classes.add(TestItemVoiceControl.class);
         classes.add(TestItemThermalCamera.class);
+        classes.add(TestItemGAS.class);
+        classes.add(TestItemNearElectricity.class);
 
         return classes;
     }
@@ -115,7 +119,7 @@ public class TestEntranceSingle extends TestEntranceIpc {
     }
 
     @Override
-    protected void onTestItemLoaded(TestItem item) {
+    protected void onTestItemLoaded(TestItemBasic item) {
         super.onTestItemLoaded(item);
 
         if (mLine == null || mColumnsIndex >= getLineColumns()) {

@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemLoudspeaker extends TestItem {
+public class TestItemLoudspeaker extends TestItemBasic {
 
     private MediaPlayer mMediaPlayer;
 
@@ -25,7 +25,7 @@ public class TestItemLoudspeaker extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.loudspeaker_test);
+        return context.getString(R.string.test_loudspeaker);
     }
 
     @Override

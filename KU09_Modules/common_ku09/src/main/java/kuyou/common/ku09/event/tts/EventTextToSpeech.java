@@ -12,7 +12,7 @@ import kuyou.common.ipc.RemoteEvent;
  */
 public abstract class EventTextToSpeech extends RemoteEvent {
 
-    protected final String TAG = "kuyou.common.ku09.event.tts > "+ this.getClass().getSimpleName();
+    protected final String TAG = "kuyou.common.ku09.event.tts > EventTextToSpeech";
 
     //8292~10339
     protected final static int FLAG_CODE = 8292;

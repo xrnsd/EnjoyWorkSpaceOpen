@@ -10,9 +10,9 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemKey extends TestItem {
+public class TestItemKey extends TestItemBasic {
 
     private final static String KEY_CODE_TEST = "kuyou.factorytest.TestItemKey";
     private static final String FLAG = "|";
@@ -54,7 +54,7 @@ public class TestItemKey extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.key_test);
+        return context.getString(R.string.test_key);
     }
 
     @Override

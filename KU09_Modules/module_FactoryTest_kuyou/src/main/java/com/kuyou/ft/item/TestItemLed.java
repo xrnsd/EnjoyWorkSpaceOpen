@@ -10,9 +10,9 @@ import android.widget.Button;
 import java.io.FileOutputStream;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
-public class TestItemLed extends TestItem {
+public class TestItemLed extends TestItemBasic {
 
     private final byte[] LIGHT_ON = {'2', '5', '5'},
             LIGHT_OFF = {'0'};
@@ -41,7 +41,7 @@ public class TestItemLed extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.led_light_test);
+        return context.getString(R.string.test_led_light);
     }
 
     @Override

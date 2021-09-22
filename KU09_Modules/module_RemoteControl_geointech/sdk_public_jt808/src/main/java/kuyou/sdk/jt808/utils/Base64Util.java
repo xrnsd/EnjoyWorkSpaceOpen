@@ -15,7 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
  * <p>
  */
 public class Base64Util {
-    private static final String TAG = "kuyou.sdk.jt808 > Base64Util";
+    protected final static String TAG = "kuyou.sdk.jt808 > Base64Util";
 
     //解密密钥(自行随机生成)
     public static final String KEY = "DOORSENSOR123456";//密钥key

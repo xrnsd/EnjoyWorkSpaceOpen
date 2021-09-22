@@ -29,7 +29,7 @@ import kuyou.common.ku09.protocol.basic.IDeviceConfig;
  */
 public class PhotoUploadHandler extends BasicAssistHandler {
 
-    protected final String TAG = "com.kuyou.rc.handler > PhotoUploadHandler";
+    protected final static String TAG = "com.kuyou.rc.handler > PhotoUploadHandler";
 
     protected Jt808ExtendProtocolCodec mJt808ExtendProtocolCodec;
 

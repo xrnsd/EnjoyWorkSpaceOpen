@@ -2,7 +2,7 @@ package com.kuyou.ft.basic.ipc;
 
 import android.content.Intent;
 
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
 /**
  * action :测试功能项[抽象][IPC]
@@ -12,7 +12,7 @@ import com.kuyou.ft.basic.TestItem;
  * date: 21-3-9 <br/>
  * </p>
  */
-public abstract class TestItemIpc extends TestItem implements ITestIpcConfig {
+public abstract class TestItemIpc extends TestItemBasic implements ITestIpcConfig {
 
     protected void onResult(boolean status) {
         //super.onResult(status);

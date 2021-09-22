@@ -29,7 +29,7 @@ import kuyou.common.ku09.handler.BasicAssistHandler;
  */
 public class LocationHandler extends BasicAssistHandler implements ILocationProviderPolicy {
 
-    protected static final String TAG = "com.kuyou.rc.handler > LocationHandler";
+    protected final static String TAG = "com.kuyou.rc.handler > LocationHandler";
 
     protected static final boolean IS_ENABLE_FAKE_LOCATION = true;
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="success">成功</string>
     <string name="failed">失败</string>
     <string name="openBeforeGps">打开前GPS天线</string>
@@ -12,34 +11,7 @@
     <string name="take_camera">拍照</string>
     <string name="key_hint">请按键</string>
     <string name="lsensor_hint">移动手机至亮出和暗处对比,观察数值变化.</string>
-    <string name="auto_test">自动测试</string>
-    <string name="zhengji_test">恢复出厂设置</string>
-    <string name="touch_test">触屏</string>
-    <string name="lcd_test">LCD</string>
-    <string name="gps_test">GPS</string>
-    <string name="power_test">电源</string>
-    <string name="key_test">按键</string>
-    <string name="loudspeaker_test">喇叭</string>
-    <string name="headset_test">耳机</string>
-    <string name="microphone_test">麦克风</string>
-    <string name="receiver_test">听筒</string>
-    <string name="wifi_test">WiFi</string>
-    <string name="bluetooth_test">蓝牙</string>
-    <string name="vibrate_test">震动</string>
-    <string name="phone_test">电话</string>
-    <string name="backlight_test">背光</string>
-    <string name="ram_test">内存</string>
-    <string name="gsensor_test">重力</string>
     <string name="switch_gps_aerial">切换天线</string>
-    <string name="esensor_test">磁力计</string>
-    <string name="lsensor_test">光感</string>
-    <string name="rangesensor_test">距感</string>
-    <string name="tf_test">T卡</string>
-    <string name="bcamera_test">后摄像头</string>
-    <string name="fcamera_test">前摄像头</string>
-    <string name="tcamera_test">红外热成像摄像头</string>
-    <string name="radio_test">收音机</string>
-    <string name="sim_test">SIM卡</string>
     <string name="start_luyin">点击开始录音</string>
     <string name="stop_luyin">点击停止，播放录音</string>
     <string name="mircro_option">麦克风选项</string>
@@ -117,7 +89,6 @@
     <string name="discard">取消</string>
     <string name="recording">录音</string>
     <string name="silent">静音键</string>
-    <string name="led_light_test">指示灯</string>
     <string name="led_light_red">红色</string>
     <string name="led_light_green">绿色</string>
     <string name="led_light_blue">蓝色</string>
@@ -130,7 +101,6 @@
     <string name="external_memory">T卡存储容量：</string>
 
     <string name="pass">PASS</string>
-    <string name="gestrue_test">手势</string>
     <string name="gesture_test_title">手势测试</string>
     <string name="gesture_test_hint">用手掌在离手机上部5-10cm左右的位置挥动或者停止在该位置</string>
     <string name="text_left">左</string>
@@ -150,14 +120,11 @@
     <string name="dualmic_test_ref">副Mic测试</string>
     <string name="dualmic_test_text">"请选择测试Mic，然后对着选择的Mic吹气，如果扬声器有声响则判定成功，否则失败。"</string>
 
-    <string name="uv_test">红外UV测试</string>
     <string name="uv_rev">UV芯片版本号 ：</string>
 
-    <string name="footprint_test">指纹测试</string>
     <string name="footprint_is_opening">指纹准备中...</string>
     <string name="footprint_is_ready">指纹已经打开, 请滑动手指测试。</string>
 
-    <string name="magepen_test">电磁笔测试</string>
     <string name="magepen_test_hint">请选择校准笔或者按键</string>
     <string name="magepen_test_pen_hint">请将笔垂直靠近屏幕中间的蓝色圆圈，看到图片变成黄色时候，保持不动，等图片变成红色表示校准结束。</string>
     <string name="magepen_test_key_hint">请按住笔的按键不松手，垂直靠近屏幕中间的蓝色圆圈，看到图片变成黄色时候，保持不动，等图片变成红色表示校准结束。</string>
@@ -166,7 +133,6 @@
     <string name="magepen_test_spen_error">校准失败，请重新校准</string>
 
     <string name="receiver_test_hint">如果10秒钟没有听到听筒的啸叫声音，则判定失败</string>
-    <string name="rfid_test">Rfid测试</string>
     <string name="rfid_test_commiting">Rfid 正在测试....</string>
     <string name="rfid_test_sucess">Rfid 通讯成功!</string>
     <string name="rfid_test_failed">Rfid 通讯失败!</string>
@@ -175,9 +141,7 @@
     <string name="test_factoryreset_ok">确定</string>
     <string name="test_factoryreset_cancel">取消</string>
     <string name="rfid_app">Rfid应用</string>
-    <string name="aging_test">老化测试</string>
 
-    <string name="app_rfid_test">Rfid测试</string>
     <string name="str_rfid_title">RFID输出内容:</string>
     <string name="str_write_rfid">写RFID</string>
     <string name="str_ok">确定</string>
@@ -201,7 +165,6 @@
     <string name="str_clean_result_tip">注意：此操作会删除之前保存的测试记录, 请谨慎操作!</string>
     <string name="open_flash_light">打开闪光灯</string>
     <string name="close_flash_light">关闭闪光灯</string>
-    <string name="flash_light_test">闪光灯</string>
     <string name="hw_sw_info">设备信息</string>
     <string name="test_version_xh">型号: </string>
     <string name="test_version_chip">主芯片: </string>
@@ -219,7 +182,7 @@
     <string name="test_campass">指南针</string>
     <string name="test_factory_reset_title">提示</string>
     <string name="test_factory_reset_open_thermal_readme">红外打开后usb口不可用，确认打开?</string>
-    
+
     <string name="getting_location">正在获取经纬度...</string>
     <string name="cannot_get_location">无法获取经纬度</string>
     <string name="location_north">北纬 %s</string>
@@ -227,8 +190,7 @@
     <string name="location_east">东经 %s</string>
     <string name="location_west">西经 %s</string>
     <string name="test_bd1">北斗1</string>
-    <string name="signle_test">单项测试</string>
-    
+
     <string name="title_dev_id">设备 ID: </string>
     <string name="title_collecting_end_id">采集端 ID: </string>
     <string name="title_remote_control_server_address">远程服务器地址: </string>
@@ -237,16 +199,59 @@
     <string name="title_heartbeat_interval">心跳频度: </string>
 
     <string name="title_uwb">UWB室内定位</string>
-    <string name="title_uwb_id">UWB模块ID <xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="title_uwb_id">UWB模块ID <xliff:g example="device_id" id="query">%1$s</xliff:g></string>
     <string name="title_voice_control">语音控制</string>
-    <string name="title_thermal_camera_id">红外热成像摄像头ID <xliff:g id="query" example="device_id">%1$s</xliff:g></string>
+    <string name="title_thermal_camera_id">红外热成像摄像头ID <xliff:g example="device_id" id="query">%1$s</xliff:g></string>
     <string name="title_thermal_camera_not_found">红外热成像摄像头未找到</string>
-    
-    <string name="title_thermal_camera_normal">开始测试<xliff:g id="query" example="device_id">%1$s</xliff:g>秒内没有显示红外图像，即视为失败</string>
-    <string name="title_voice_control_normal">开始测试<xliff:g id="query" example="device_id">%1$s</xliff:g>秒内没有显示语言模块信息，即视为失败</string>
-    <string name="title_uwb_normal">开始测试<xliff:g id="query" example="device_id">%1$s</xliff:g>秒内没有显示UWB模块信息，即视为失败</string>
-    
+
+    <string name="title_thermal_camera_normal">开始测试<xliff:g example="device_id" id="query">%1$s</xliff:g>秒内没有显示红外图像，即视为失败</string>
+    <string name="title_uwb_normal">开始测试<xliff:g example="device_id" id="query">%1$s</xliff:g>秒内没有显示UWB模块信息，即视为失败</string>
+
+    <string name="title_voice_control_normal">开始测试<xliff:g example="device_id" id="query">%1$s</xliff:g>秒内没有显示语言模块信息，即视为失败</string>
+    <string name="title_voice_control_option">"请说\"小安你好\"测试模块是否ok"</string>
+
     <string name="title_laser_light_normal">点按按钮无法开关激光灯即视为测试失败</string>
     <string name="title_button_switch_on">打开</string>
     <string name="title_button_switch_off">关闭</string>
+    
+    <string name="test_signle">单项测试</string>
+    <string name="test_aging">老化测试</string>
+    <string name="test_auto">自动测试</string>
+    <string name="test_zhengji">恢复出厂设置</string>
+    
+    <string name="test_touch">触屏</string>
+    <string name="test_lcd">LCD</string>
+    <string name="test_gps">GPS</string>
+    <string name="test_power">电源</string>
+    <string name="test_key">按键</string>
+    <string name="test_loudspeaker">喇叭</string>
+    <string name="test_headset">耳机</string>
+    <string name="test_microphone">麦克风</string>
+    <string name="test_receiver">听筒</string>
+    <string name="test_wifi">WiFi</string>
+    <string name="test_bluetooth">蓝牙</string>
+    <string name="test_vibrate">震动</string>
+    <string name="test_phone">电话</string>
+    <string name="test_backlight">背光</string>
+    <string name="test_ram">内存</string>
+    <string name="test_gsensor">重力</string>
+    <string name="test_esensor">磁力计</string>
+    <string name="test_lsensor">光感</string>
+    <string name="test_rangesensor">距感</string>
+    <string name="test_tf">T卡</string>
+    <string name="test_bcamera">后摄像头</string>
+    <string name="test_fcamera">前摄像头</string>
+    <string name="test_tcamera">红外热成像摄像头</string>
+    <string name="test_radio">收音机</string>
+    <string name="test_sim">SIM卡</string>
+    <string name="test_led_light">指示灯</string>
+    <string name="test_gestrue">手势</string>
+    <string name="test_uv">红外UV测试</string>
+    <string name="test_footprint">指纹测试</string>
+    <string name="test_magepen">电磁笔测试</string>
+    <string name="test_rfid">Rfid测试</string>
+    <string name="test_app_rfid">Rfid测试</string>
+    <string name="test_flash_light">闪光灯</string>
+    <string name="test_gas">气体检测</string>
+    <string name="test_near_electricity">强电检测</string>
 </resources>

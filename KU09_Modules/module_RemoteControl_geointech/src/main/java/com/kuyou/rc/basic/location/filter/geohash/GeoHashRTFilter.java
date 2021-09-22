@@ -11,7 +11,7 @@ import java.util.List;
 
 public class GeoHashRTFilter {
     
-    protected final String TAG = "com.kuyou.rc.location.filter > GeohashRTFilter";
+    protected final static String TAG = "com.kuyou.rc.location.filter > GeohashRTFilter";
 
     public static String PROVIDER_NAME = "GeoHashFiltered";
 

@@ -20,7 +20,7 @@ import android.util.Log;
  */
 public abstract class TrajectoryFilter {
 
-    protected final String TAG = "com.kuyou.rc.location.filter.base > TrajectoryFilter";
+    protected final static String TAG = "com.kuyou.rc.location.filter.base > TrajectoryFilter";
     protected OnDataFilterListener mOnDataFilterListener;
     protected boolean isStopFilter = false;
 

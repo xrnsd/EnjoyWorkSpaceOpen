@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.kuyou.ft.R;
 import com.kuyou.ft.basic.TestEntrance;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.basic.event.EventTestItemResult;
 import com.kuyou.ft.item.TestItemBackLight;
 import com.kuyou.ft.item.TestItemBlutooth;
@@ -58,7 +58,7 @@ public class TestEntranceAuto extends TestEntrance {
 
     @Override
     protected int getTestProcessType() {
-        return TestItem.POLICY_TEST_AUTO;
+        return TestItemBasic.POLICY_TEST_AUTO;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class TestEntranceAuto extends TestEntrance {
     }
 
     @Override
-    protected void onTestItemLoaded(TestItem item) {
+    protected void onTestItemLoaded(TestItemBasic item) {
         super.onTestItemLoaded(item);
         if (null == mTestItemAutoList) {
             mTestItemAutoList = new ArrayList<Integer>();

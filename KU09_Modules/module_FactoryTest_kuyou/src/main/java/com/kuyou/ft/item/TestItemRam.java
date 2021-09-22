@@ -9,10 +9,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.util.SdUtils;
 
-public class TestItemRam extends TestItem {
+public class TestItemRam extends TestItemBasic {
 
     private TextView mTvRamInfo;
 
@@ -28,7 +28,7 @@ public class TestItemRam extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.ram_test);
+        return context.getString(R.string.test_ram);
     }
 
     @Override

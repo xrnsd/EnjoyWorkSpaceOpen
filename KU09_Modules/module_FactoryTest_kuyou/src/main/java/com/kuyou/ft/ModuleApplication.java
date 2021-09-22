@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kuyou.ft.basic.TestEntrance;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import java.util.Map;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
+import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 
 /**
  * action :
@@ -29,7 +30,7 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
  */
 public class ModuleApplication extends BasicModuleApplication implements Application.ActivityLifecycleCallbacks {
 
-    protected Map<Integer, TestItem> mItemTestList = new HashMap<>();
+    protected Map<Integer, TestItemBasic> mItemTestList = new HashMap<>();
 
     @Override
     protected void init() {
@@ -40,6 +41,7 @@ public class ModuleApplication extends BasicModuleApplication implements Applica
     protected List<Integer> getEventDispatchList() {
         List<Integer> eventCode = new ArrayList<>();
         eventCode.add(EventRemoteControl.Code.HARDWARE_MODULE_STATUS_DETECTION_RESULT);
+        eventCode.add(EventVoiceControl.Code.VOICE_WAKEUP_RESULT);
         return eventCode;
     }
 
@@ -52,7 +54,7 @@ public class ModuleApplication extends BasicModuleApplication implements Applica
     public void onReceiveEventNotice(RemoteEvent event) {
         super.onReceiveEventNotice(event);
 
-        for (Map.Entry<Integer, TestItem> entry : getItemTestList().entrySet()) {
+        for (Map.Entry<Integer, TestItemBasic> entry : getItemTestList().entrySet()) {
             entry.getValue().onReceiveEventNotice(event);
         }
     }
@@ -93,15 +95,15 @@ public class ModuleApplication extends BasicModuleApplication implements Applica
 
     }
 
-    public Map<Integer, TestItem> getItemTestList() {
+    public Map<Integer, TestItemBasic> getItemTestList() {
         return mItemTestList;
     }
 
     public void addTestItem(Activity activity) {
-        if (!(activity instanceof TestItem)) {
+        if (!(activity instanceof TestItemBasic)) {
             return;
         }
-        TestItem item = (TestItem) activity;
+        TestItemBasic item = (TestItemBasic) activity;
         synchronized (mItemTestList) {
             mItemTestList.put(item.getTestId(), item);
         }

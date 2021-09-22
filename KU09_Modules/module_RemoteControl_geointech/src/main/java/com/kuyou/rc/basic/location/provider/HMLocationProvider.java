@@ -20,7 +20,7 @@ import kuyou.common.ku09.protocol.basic.IDeviceConfig;
  * </p>
  */
 public class HMLocationProvider implements ILocationProvider {
-    protected final String TAG = "com.kuyou.rc.location > " + this.getClass().getSimpleName();
+    protected final static String TAG = "com.kuyou.rc.location > HMLocationProvider";
 
     protected Location mLocation = null;
     protected Context mContext = null;

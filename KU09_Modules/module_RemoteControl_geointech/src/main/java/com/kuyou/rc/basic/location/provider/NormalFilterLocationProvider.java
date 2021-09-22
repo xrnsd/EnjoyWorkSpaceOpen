@@ -15,7 +15,7 @@ import com.kuyou.rc.basic.location.filter.IFilterCallBack;
  * </p>
  */
 public class NormalFilterLocationProvider extends HMLocationProvider {
-    protected final String TAG = "com.kuyou.rc.location > NormalFilterLocationProvider";
+    protected final static String TAG = "com.kuyou.rc.basic.location.provider > NormalFilterLocationProvider";
 
     private static NormalFilterLocationProvider sMain;
 

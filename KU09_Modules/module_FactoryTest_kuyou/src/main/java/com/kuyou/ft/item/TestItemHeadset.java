@@ -16,10 +16,10 @@ import java.io.File;
 import java.io.IOException;
 
 import com.kuyou.ft.R;
-import com.kuyou.ft.basic.TestItem;
+import com.kuyou.ft.basic.TestItemBasic;
 import com.kuyou.ft.util.Recorder;
 
-public class TestItemHeadset extends TestItem {
+public class TestItemHeadset extends TestItemBasic {
 
     private int mStatus = 0;
     private File mFileAudio, mFileRecAudio;
@@ -48,7 +48,7 @@ public class TestItemHeadset extends TestItem {
 
     @Override
     public String getTestTitle(Context context) {
-        return context.getString(R.string.headset_test);
+        return context.getString(R.string.test_headset);
     }
 
     private final BroadcastReceiver mBroadcastReceiverHeadset = new BroadcastReceiver() {
