@@ -35,6 +35,7 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected final static int PS_DEVICE_OFF_LINE = 43;
 
     protected final static int DEVICE_OFF_LINE_FLAG = 5;
+
     private boolean isAuthenticationSuccess = false;
     private boolean isHeartbeatReply = false;
     private boolean isDeviceOnLine = false;
@@ -142,7 +143,7 @@ public class HeartbeatHandler extends BasicAssistHandler {
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DEVICE_OFF_LINE,
-                new StatusProcessBusCallbackImpl(false, 5 * 1000)
+                new StatusProcessBusCallbackImpl(false, 5000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

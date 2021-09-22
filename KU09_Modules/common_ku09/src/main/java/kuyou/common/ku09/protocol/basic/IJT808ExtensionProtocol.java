@@ -7,11 +7,12 @@ package kuyou.common.ku09.protocol.basic;
  * author: wuguoxian <br/>
  * date: 21-3-23 <br/>
  * 部分扩展协议指令名称项定义说明
- *  S2C : 服务器发送客户端接收
- *  C2S : 客户端发送服务器接收
+ * S2C : 服务器发送客户端接收
+ * C2S : 客户端发送服务器接收
  * </p>
  */
-public interface IJT808ExtensionProtocol {
+public interface IJT808ExtensionProtocol extends IJT808BasicProtocol {
+
     // ========================  CMD HEADER ================================
 
     //  SERVER_CMD
@@ -77,12 +78,12 @@ public interface IJT808ExtensionProtocol {
      * flow：client > server
      */
     public final static int C2S_RESULT_AUDIO_VIDEO_PARAMETERS = 0x0F03;
-    
+
     // ========================  CMD CONNECT ================================
 
     //AudioVideoGroup
     public static final int PLATFORM_TYPE_AGORA = 1;
-    public static final int PLATFORM_TYPE_PEERGIN =2;
+    public static final int PLATFORM_TYPE_PEERGIN = 2;
 
     public static final int MEDIA_TYPE_AUDIO = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -107,7 +108,7 @@ public interface IJT808ExtensionProtocol {
     public final static int RESULT_FAIL_FAILURE_LOCAL_DEVICE_HARDWARE_EXCEPTION = 4;
     public final static int RESULT_FAIL_FAILURE_LOCAL_DEVICE_HANDLE_TIME_OUT = 5;
     public final static int RESULT_FAIL_FAILURE_OTHER = 6;
-    
+
     public final static String TOKEN_NULL = "none";
 
     //Alarm

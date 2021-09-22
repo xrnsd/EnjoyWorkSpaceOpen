@@ -47,7 +47,7 @@ public class SicAuthentication extends SicBasic {
         byte[] authCodeMsg = ByteUtils.byteMergerAll(
                 new byte[]{ByteUtils.int2Byte(authCode.length)}, authCode, getItemAddition());
         Log.d(TAG, toString());
-        return getPackToJt808(0x0102, authCodeMsg);
+        return getPackToJt808(C2S_AUTHENTICATION, authCodeMsg);
     }
 
     protected byte[] getItemAddition() {

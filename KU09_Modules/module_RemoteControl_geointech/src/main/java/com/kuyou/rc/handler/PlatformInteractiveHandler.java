@@ -9,6 +9,7 @@ import com.kuyou.rc.basic.jt808extend.PlatformConnectManager;
 import com.kuyou.rc.basic.jt808extend.item.SicAudioVideo;
 import com.kuyou.rc.basic.jt808extend.item.SicAuthentication;
 import com.kuyou.rc.basic.jt808extend.item.SicBasic;
+import com.kuyou.rc.basic.jt808extend.item.SicGeneralReply;
 import com.kuyou.rc.basic.jt808extend.item.SicPhotoTake;
 import com.kuyou.rc.basic.jt808extend.item.SicTextMessage;
 
@@ -105,6 +106,12 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 @Override
                 public void onRemote2LocalExpandFail(Exception e) {
                     Log.e(TAG, Log.getStackTraceString(e));
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicGeneralReply instruction) {
+                    Log.d(TAG, "onRemote2LocalExpand > 自动回复：");
+                    PlatformInteractiveHandler.this.sendToRemoteControlPlatform(instruction.getBody());
                 }
 
                 @Override

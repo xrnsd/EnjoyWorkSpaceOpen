@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kuyou.rc.basic.jt808extend.item.SicBasic;
+import com.kuyou.rc.basic.jt808extend.item.SicGeneralReply;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.ku09.protocol.basic.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 import kuyou.common.protocol.Codec;
 import kuyou.common.utils.ClassUtils;
 import kuyou.sdk.jt808.basic.exceptions.SocketManagerException;
@@ -105,6 +107,14 @@ public class Jt808ExtendProtocolCodec {
             //Log.d(TAG, "handler > process fail : instruction is not exist = 0x" + ByteUtils.bytes2Hex(ByteUtils.int2Word(bean.getMsgId())));
             getInstructionParserListener().onRemote2LocalBasic(bean, bytes);
             return;
+        }
+
+        SicGeneralReply reply = (SicGeneralReply) mRequestParserList.get(IJT808ExtensionProtocol.C2S_REPLY);
+        if (null != reply) {
+            reply.setFlowNumber(instruction.getFlowNumber());
+            reply.setMsgId(bean.getMsgId());
+            reply.setResultCode(SicGeneralReply.ResultCode.SUCCESS);
+            getInstructionParserListener().onRemote2LocalExpand(reply);
         }
         instruction.parse(bytes, getInstructionParserListener());
     }
