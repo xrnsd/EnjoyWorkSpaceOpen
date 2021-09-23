@@ -2,14 +2,14 @@ package kuyou.common.serialport.protocol;
 
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import kuyou.common.bytes.ByteUtils;
 import kuyou.common.serialport.base.Param;
 import kuyou.common.serialport.base.SerialPort;
-import kuyou.common.bytes.ByteUtils;
-
 
 /**
  * action :串口读写实现
@@ -76,6 +76,7 @@ public class SerialPortImpl extends SerialPort {
         }
         if (mReadThread != null) {
             try {
+                mReadThread.setRead(false);
                 mReadThread.interrupt();
                 mReadThread.join();
                 mReadThread = null;
@@ -108,6 +109,12 @@ public class SerialPortImpl extends SerialPort {
 
     private class ReadThread extends Thread {
 
+        private boolean isRead = true;
+
+        public void setRead(boolean val) {
+            isRead = val;
+        }
+
         @Override
         public void run() {
             super.run();
@@ -121,7 +128,7 @@ public class SerialPortImpl extends SerialPort {
             }
             byte[] buffer;
             int size;
-            while (!isInterrupted()) {
+            while (!isInterrupted() && isRead) {
                 try {
                     buffer = new byte[mBufferSize];
                     size = getInputStream().read(buffer);
@@ -133,6 +140,9 @@ public class SerialPortImpl extends SerialPort {
                     Thread.sleep(mReadFreq);
                 } catch (Exception e) {
                     dispatchEvent2Listener(e);
+                    if (e instanceof IOException) {
+                        break;
+                    }
                 }
             }
         }

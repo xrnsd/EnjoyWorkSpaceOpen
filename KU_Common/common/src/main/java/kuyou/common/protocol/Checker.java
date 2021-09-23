@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import kuyou.common.serialport.base.SerialPort.IOnSerialPortListener;
 import kuyou.common.bytes.ByteUtils;
+import kuyou.common.serialport.base.SerialPort.IOnSerialPortListener;
 
 /**
  * action :串口数据校验器[抽象]
@@ -176,18 +176,22 @@ public abstract class Checker implements IOnSerialPortListener {
             }
             Log.d(TAG, "handler > \n\n");
             return data;
-        } else {
-            for (int index = 0, count = data.length; index < count; index++) {
-                if (mFlag == ByteUtils.byte2Int(data[index])) {
-                    Log.d(TAG, "handler > 指令拼接，进行删除");
-                    return handler(Arrays.copyOfRange(data, index, count - index + 1));
-                }
-            }
         }
 
         if (null != mCheckCache) {
             Log.d(TAG, "handler > 指令缺失，进行拼接");
             return handler(ByteUtils.byteMergerAll(mCheckCache, data));
+        }
+
+        for (int index = 0, count = data.length; index < count; index++) {
+            if (mFlag == ByteUtils.byte2Int(data[index])) {
+                Log.d(TAG, "handler > 指令拼接，进行删除");
+                try {
+                    return handler(Arrays.copyOfRange(data, index, count - index + 1));
+                } catch (Exception e) {
+                    Log.e(TAG, Log.getStackTraceString(e));
+                }
+            }
         }
         return null;
     }

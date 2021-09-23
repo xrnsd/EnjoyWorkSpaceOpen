@@ -114,16 +114,20 @@ public abstract class SerialPort {
     }
 
     protected void dispatchEvent2Listener(byte[] val) {
-        if (null == getListener())
+        if (null == getListener()) {
+            Log.w(TAG, "dispatchEvent2Listener > process fail byte: listener is null ");
             return;
+        }
         Log.d(TAG, "dispatchEvent2Listener > val = " + ByteUtils.bytes2hex(val));
         getListener().onReceiveData(val);
     }
 
     protected void dispatchEvent2Listener(Exception val) {
         Log.d(TAG, Log.getStackTraceString(val));
-        if (null == getListener())
+        if (null == getListener()) {
+            Log.w(TAG, "dispatchEvent2Listener > process fail exception: listener is null ");
             return;
+        }
         getListener().onExceptionResult(val);
     }
 

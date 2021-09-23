@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.library'
+}
+//配套软硬件配置
+ext {
+    moduleName = "Common_ku09"
+    //混淆
+    isConfuse = rootProject.ext.isConfuse
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "${versionNumberCustom()}"
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField "String", "BUILD_DATE", "\"${rootProject.ext.versionDate}\""
+        buildConfigField "String", "BUILD_DATE_PATTERN", "\"${rootProject.ext.versionDatePattern}\""
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
+    }
+
+    buildTypes {
+        release {
+            zipAlignEnabled project.isConfuse
+            minifyEnabled project.isConfuse
+            //minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    android.libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "${defaultConfig.versionName}.aar"
+        }
+    }
+}
+
+dependencies {
+    compileOnly files('compileOnlyLibs/framework.jar')
+    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
+
+    compileOnly project(path: ':lib_common')
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.code.gson:gson:2.8.0'
+}
+
+//added by wgx
+def versionNumberCustom() {
+
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    return "${project.moduleName}_" + "${buildType}_" + rootProject.ext.versionDate;
+}
+
+boolean isReleaseBuildType(){
+    for(String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
+
+configurations {
+    all*. exclude group: 'org.greenrobot.eventbus.AsyncPoster'
+}

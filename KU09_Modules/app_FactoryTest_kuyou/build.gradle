@@ -1,0 +1,110 @@
+apply plugin: 'com.android.application'
+
+//配套配置信息
+ext {
+    //应用名称
+    moduleName = "FactoryTest_kuyou"
+    //应用包名
+    modulePackageName = "com.kuyou.ft"
+    //混淆
+    isConfuse = false //rootProject.ext.isConfuse
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("ANDROID_SYSTEM_KEY_STORE_FLLE_PATH"))
+            storePassword "17+1=18"
+            keyAlias System.getenv("ANDROID_SYSTEM_KEY_ALIAS")
+            keyPassword "17+1=18"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "${project.modulePackageName}"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "${versionNumberCustom()}"
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+        //混淆开关
+        buildConfigField "boolean", "IS_ENABLE_CONFUSE", "Boolean.parseBoolean(\"${project.isConfuse}\")"
+        resValue "string", "app_name", "${project.moduleName}"
+    }
+    sourceSets{
+        main{
+            //jni libs path set
+            jniLibs.srcDirs = ['libs'];
+        }
+    }
+
+    buildTypes {
+        release {
+            if (project.isConfuse) {
+                zipAlignEnabled project.isConfuse
+                minifyEnabled project.isConfuse
+                shrinkResources project.isConfuse
+            }else{
+                minifyEnabled false
+            }
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //加入签名配置
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${rootProject.ext.projectHardwareName}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+
+    implementation fileTree(dir: 'implementationLibs', include: ['seek_android_sdk_4.1.2.0.aar'])
+    //implementation fileTree(dir: "libs", include: ["*.jar"])
+    
+    compileOnly files('compileOnlyLibs/framework.jar')
+    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
+
+    compileOnly files('compileOnlyLibs/framework_6.jar')
+    compileOnly files('compileOnlyLibs/telephony_common.jar')
+
+    implementation project(path: ':lib_common')
+    implementation project(path: ':lib_common_ku09')
+}
+
+//added by wgx
+def versionNumberCustom() {
+    def buildType = "debug"
+    if (isReleaseBuildType()) {
+        buildType = "release"
+    }
+    return "${project.moduleName}_" + "${buildType}_" + rootProject.ext.versionDate;
+}
+
+boolean isReleaseBuildType(){
+    for(String s : gradle.startParameter.taskNames) {
+        if (s.contains("Release") | s.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
+
+task aInstallReleaseLaunch(type: Exec){
+    dependsOn 'installRelease'
+    commandLine  "adb","shell","am","start","-n","${project.modulePackageName}/.FactoryTest"
+}

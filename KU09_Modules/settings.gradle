@@ -1,14 +1,14 @@
-include 'common'
-project(':common').projectDir =file('../KU_Common/common')
-include ':common_ku09'
-include ':module_InterProcessCommunication_kuyou'
+include 'lib_common'
+project(':lib_common').projectDir =file('../KU_Common/common')
+include ':lib_common_ku09'
+include ':app_InterProcessCommunication_kuyou'
 
-include ':module_TextToSpeech_unisound'
-include ':module_VoiceControl_unisound'
-include ':module_RemoteControl_geointech:sdk_public_jt808'
-include ':module_RemoteControl_geointech'
+include ':app_TextToSpeech_unisound'
+include ':app_VoiceControl_unisound'
+include ':app_RemoteControl_geointech:lib_sdk_jt808'
+include ':app_RemoteControl_geointech'
 
-include ':module_AudioVideoCommunication_peergine'
-include ':module_FactoryTest_kuyou'
+include ':app_AudioVideoCommunication_peergine'
+include ':app_FactoryTest_kuyou'
 
 
