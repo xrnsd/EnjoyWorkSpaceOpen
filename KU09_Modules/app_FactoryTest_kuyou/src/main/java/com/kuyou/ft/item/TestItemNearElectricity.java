@@ -1,13 +1,15 @@
 package com.kuyou.ft.item;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.kuyou.ft.R;
 import com.kuyou.ft.basic.TestItemBasic;
 
+import kuyou.common.file.FileUtils;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.basic.EventKey;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 import kuyou.common.ku09.protocol.basic.IKeyConfig;
 
 public class TestItemNearElectricity extends TestItemBasic {
@@ -48,6 +50,7 @@ public class TestItemNearElectricity extends TestItemBasic {
         mTvTiming = findViewById(R.id.tv_time);
 
         getStatusProcessBus().start(PS_TIMING);
+        detection();
     }
 
     @Override
@@ -59,10 +62,23 @@ public class TestItemNearElectricity extends TestItemBasic {
         }
         getStatusProcessBus().stop(PS_TIMING);
         mTvTitle.setText("模块已搭载");
-
+        reset();
     }
-    
-    protected void detection(){
-        final String filePathDevGasDetection = IHardwareControlDetectionV1_1.DEV_PTAH_PRESSURE;
+
+    @Override
+    protected void onDestroy() {
+        reset();
+        super.onDestroy();
+    }
+
+    protected void detection() {
+        if (!FileUtils.writeInternalAntennaDevice(IHardwareControl.DEV_PTAH_PRESSURE, IHardwareControl.DEV_VAL_PRESSURE_POWER_ON_TEST)) {
+            Log.e(TAG, "detection > process fail : enable test mode");
+            return;
+        }
+    }
+
+    protected void reset() {
+        FileUtils.writeInternalAntennaDevice(IHardwareControl.DEV_PTAH_PRESSURE, IHardwareControl.DEV_VAL_PRESSURE_POWER_ON_220);
     }
 }

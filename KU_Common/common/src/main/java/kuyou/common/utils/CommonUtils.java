@@ -23,16 +23,15 @@ import java.util.List;
 
 public class CommonUtils {
 
-    //protected final String TAG = this.getClass().getSimpleName();
-    private static final String TAG = "CommonUtils";
-    public final static boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+    protected final static String TAG = "kuyou.common.utils > CommonUtils";
 
+    public final static boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static int getStatusBarHeight(Context context) {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         int height = resources.getDimensionPixelSize(resourceId);
-        Log.d("123456 Launcher.getStatusBarHeight>", " statusBarHeight =" + height);
+        Log.d(TAG, " statusBarHeight =" + height);
         return height;
     }
 

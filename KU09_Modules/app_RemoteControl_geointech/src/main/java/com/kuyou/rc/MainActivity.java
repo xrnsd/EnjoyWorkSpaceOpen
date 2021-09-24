@@ -1,9 +1,11 @@
 package com.kuyou.rc;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
 import com.kuyou.rc.R;
+import com.kuyou.rc.ui.TraceTestActivity;
 
 import kuyou.common.ku09.ui.BasicPermissionsHandlerActivity;
 
@@ -16,6 +18,11 @@ public class MainActivity extends BasicPermissionsHandlerActivity {
         super.onCreate(savedInstanceState);
         setTitle("");
         onBackPressed();
+
+//        Intent intent = new Intent();
+//        intent.setClass(MainActivity.this, TraceTestActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
     }
 
     @Override

@@ -67,7 +67,12 @@ public class RemoteEventBus implements IRemoteConfig {
         return mContext;
     }
 
-    public RemoteEventBus register(IRegisterConfig config) {
+    public RemoteEventBus register(Object instance) {
+        if (!(instance instanceof IRegisterConfig)) {
+            EventBus.getDefault().register(instance);
+            return RemoteEventBus.this;
+        }
+        IRegisterConfig config = (IRegisterConfig) instance;
         startIPCDaemon(getContext());
 
         EventBus.getDefault().register(config.getLocalEventDispatchHandler());
@@ -94,6 +99,13 @@ public class RemoteEventBus implements IRemoteConfig {
         Log.d(mTagLog, "register > ");
 
         return RemoteEventBus.this;
+    }
+
+    public void unregister(Object instance) {
+        if (instance instanceof IRegisterConfig) {
+            return;
+        }
+        EventBus.getDefault().unregister(instance);
     }
 
     protected void dispatchRemoteEventFrameStatus(int code) {

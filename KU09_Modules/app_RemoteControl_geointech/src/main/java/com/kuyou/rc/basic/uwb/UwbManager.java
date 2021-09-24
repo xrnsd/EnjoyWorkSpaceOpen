@@ -8,7 +8,7 @@ import com.kuyou.rc.basic.uwb.basic.InfoUwb;
 import com.kuyou.rc.basic.uwb.info.InfoSetModuleId;
 
 import kuyou.common.file.FileUtils;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 import kuyou.common.serialport.base.Param;
 import kuyou.common.serialport.base.SerialPort;
 import kuyou.common.serialport.protocol.SerialPortImpl;
@@ -48,9 +48,9 @@ public class UwbManager {
 
     protected void init(Context context) {
         setParam(new Param()
-                .setPathDev(IHardwareControlDetectionV1_1.DEV_PTAH_UWB)
-                .setPathDevOnVal(IHardwareControlDetectionV1_1.DEV_VAL_UWB_POWER_ON)
-                .setPathDevOffVal(IHardwareControlDetectionV1_1.DEV_VAL_UWB_POWER_OFF)
+                .setPathDev(IHardwareControl.DEV_PTAH_UWB)
+                .setPathDevOnVal(IHardwareControl.DEV_VAL_UWB_POWER_ON)
+                .setPathDevOffVal(IHardwareControl.DEV_VAL_UWB_POWER_OFF)
                 .setSerialPortDevPath("/dev/ttyS1")
                 .setChecker(CheckerUwb.getInstance())
                 .setVMini(CheckerUwb.getInstance().getMsgLengthMini())
@@ -106,7 +106,7 @@ public class UwbManager {
     public UwbManager openSerialPort() {
         if (null != mSerialPortParam) {
             Log.d(TAG, "openSerialPort > ");
-            FileUtils.writeInternalAntennaDevice(mSerialPortParam.getPathDev(), IHardwareControlDetectionV1_1.DEV_VAL_UWB_UART_ON);
+            FileUtils.writeInternalAntennaDevice(mSerialPortParam.getPathDev(), IHardwareControl.DEV_VAL_UWB_UART_ON);
             mSerialPort.open();
         } else {
             Log.e(TAG, "openSerialPort > process fail : mSerialPortParam is null");
@@ -129,7 +129,7 @@ public class UwbManager {
     public UwbManager closeSerialPort() {
         if (null != mSerialPortParam) {
             Log.d(TAG, "closeSerialPort > ");
-            FileUtils.writeInternalAntennaDevice(mSerialPortParam.getPathDev(), IHardwareControlDetectionV1_1.DEV_VAL_UWB_UART_OFF);
+            FileUtils.writeInternalAntennaDevice(mSerialPortParam.getPathDev(), IHardwareControl.DEV_VAL_UWB_UART_OFF);
             mSerialPort.close();
         } else {
             Log.e(TAG, "closeSerialPort > process fail : mSerialPortParam is null");

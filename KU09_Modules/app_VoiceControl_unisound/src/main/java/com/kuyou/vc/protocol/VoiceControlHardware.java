@@ -10,7 +10,7 @@ import java.util.List;
 
 import kuyou.common.bytes.ByteUtils;
 import kuyou.common.file.FileUtils;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 import kuyou.common.serialport.base.Param;
 import kuyou.common.serialport.base.SerialPort;
 import kuyou.common.serialport.protocol.SerialPortImpl;
@@ -46,9 +46,9 @@ public class VoiceControlHardware extends VoiceControl {
     public void init(Context context) {
         super.init(context);
         mParam = new Param()
-                .setPathDev(IHardwareControlDetectionV1_1.DEV_PTAH_VOICE_CONTROL)
-                .setPathDevOnVal(IHardwareControlDetectionV1_1.DEV_VAL_VOICE_CONTROL_POWER_ON)
-                .setPathDevOffVal(IHardwareControlDetectionV1_1.DEV_VAL_VOICE_CONTROL_POWER_OFF)
+                .setPathDev(IHardwareControl.DEV_PTAH_VOICE_CONTROL)
+                .setPathDevOnVal(IHardwareControl.DEV_VAL_VOICE_CONTROL_POWER_ON)
+                .setPathDevOffVal(IHardwareControl.DEV_VAL_VOICE_CONTROL_POWER_OFF)
                 .setSerialPortDevPath("/dev/ttyS0")
                 .setChecker(CheckerVoice.getInstance())
                 .setVMini(CheckerVoice.getInstance().getMsgLengthMini())

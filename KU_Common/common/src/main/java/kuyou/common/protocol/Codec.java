@@ -21,8 +21,8 @@ import kuyou.common.utils.ClassUtils;
  * <p>
  */
 public abstract class Codec<T> {
-
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    
+    protected final String TAG = "kuyou.common.protocol > " + this.getClass().getSimpleName();
 
     private final Map<Integer, Step> mStepCache = new HashMap<Integer, Step>();
     private final Map<Integer, Info> mInfoCache = new HashMap<Integer, Info>();

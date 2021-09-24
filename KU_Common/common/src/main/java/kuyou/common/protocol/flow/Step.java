@@ -12,7 +12,7 @@ import kuyou.common.protocol.Info;
  * <p>
  */
 public class Step {
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    protected final String TAG = "kuyou.common.protocol.flow > " + this.getClass().getSimpleName();
 
     private String mTitle, mCmdString;
     private byte[] mCmdBytes;

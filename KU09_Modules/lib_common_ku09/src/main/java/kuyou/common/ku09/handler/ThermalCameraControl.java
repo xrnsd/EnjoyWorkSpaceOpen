@@ -3,7 +3,7 @@ package kuyou.common.ku09.handler;
 import android.util.Log;
 
 import kuyou.common.file.FileUtils;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 
 /**
  * action :激光灯控制
@@ -13,7 +13,7 @@ import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
  * date: 21-4-28 <br/>
  * </p>
  */
-public class ThermalCameraControl implements IHardwareControlDetectionV1_1 {
+public class ThermalCameraControl implements IHardwareControl {
     private static final String TAG = "kuyou.common.ku09.handler > InfearedCameraControl";
 
     public static boolean open() {

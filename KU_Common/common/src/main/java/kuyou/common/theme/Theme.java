@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Theme extends Activity implements Itheme {
 
-    private static final String TAG = "Theme";
+    protected static final String TAG = "kuyou.common.theme > Theme";
 
     private List<String> mThemePackageList;
     private String mPackageNameThemeSel = null;
@@ -28,7 +28,7 @@ public class Theme extends Activity implements Itheme {
 
     public void UpdateLauncherThemeById(Context context, String theme_packagename) {
         if (theme_packagename == null) {
-            android.util.Log.d("123456 ", "Theme>UpdateLauncherThemeById=null");
+            android.util.Log.d(TAG, "Theme>UpdateLauncherThemeById=null");
             return;
         }
         int theme_id = Integer.valueOf(theme_packagename.replaceAll(THEME_PACKAGE_NAME_BASE, ""));
@@ -36,7 +36,7 @@ public class Theme extends Activity implements Itheme {
     }
 
     public void UpdateLauncherThemeById(Context context, int theme_id) {
-        android.util.Log.d("123456 " + TAG, "Theme>UpdateLauncherUIByThemeId=" + theme_id);
+        android.util.Log.d(TAG, "Theme>UpdateLauncherUIByThemeId=" + theme_id);
         //wait
         final ProgressDialog dialog = new ProgressDialog(context);
         dialog.setMessage("Wallpaper settings …");
@@ -50,10 +50,10 @@ public class Theme extends Activity implements Itheme {
 //            int wallpaperResId=mThemeUtils.getThemeResourceByName("drawable", FILENAME_THEME);
 //            WallpaperManager   wm=(WallpaperManager)context.getSystemService(WallpaperService.WALLPAPER_SERVICE);
 //            wm.setBitmap(BitmapFactory.decodeResource(mThemeUtils.getLocalThemeResources(),wallpaperResId));
-//            android.util.Log.d("123456 ", "Theme>UpdateLauncherThemeById update wallpaper");
+//            android.util.Log.d(TAG, "Theme>UpdateLauncherThemeById update wallpaper");
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            android.util.Log.d("123456 ", "Theme>UpdateLauncherThemeById update wallpaper fail="+e);
+//            android.util.Log.d(TAG, "Theme>UpdateLauncherThemeById update wallpaper fail="+e);
 //        }
 
 

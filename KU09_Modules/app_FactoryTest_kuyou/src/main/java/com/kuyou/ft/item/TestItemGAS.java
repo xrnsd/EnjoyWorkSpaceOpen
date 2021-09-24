@@ -7,7 +7,7 @@ import com.kuyou.ft.R;
 import com.kuyou.ft.basic.TestItemBasic;
 
 import kuyou.common.file.FileUtils;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 
 public class TestItemGAS extends TestItemBasic {
 
@@ -46,16 +46,16 @@ public class TestItemGAS extends TestItemBasic {
     }
 
     protected boolean isNotDetection() {
-        final String filePathDevGasDetection = IHardwareControlDetectionV1_1.DEV_PTAH_GAS;
+        final String filePathDevGasDetection = IHardwareControl.DEV_PTAH_GAS;
         FileUtils fu = FileUtils.getInstance(getApplicationContext());
         if (null == fu) {
-            Log.e(TAG, "check > process fail : fu is null");
+            Log.e(TAG, "isNotDetection > process fail : fu is null");
             return true;
         }
         String devStatus = fu.readData(filePathDevGasDetection);
         Log.d(TAG, "isNotDetection > devStatus =" + devStatus);
         return null == devStatus
                 || devStatus.replaceAll(" ", "").length() == 0
-                || devStatus.startsWith(IHardwareControlDetectionV1_1.DEV_VAL_GAS_POWER_OFF);
+                || devStatus.startsWith(IHardwareControl.DEV_VAL_GAS_POWER_OFF);
     }
 }

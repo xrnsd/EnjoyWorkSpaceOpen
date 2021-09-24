@@ -23,7 +23,7 @@ import kuyou.common.protocol.Info;
  */
 public abstract class Flow<T> extends LifeListener {
 
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    protected final String TAG = "kuyou.common.protocol.flow > " + this.getClass().getSimpleName();
 
     protected final static int FLAG_READY = 0;
 

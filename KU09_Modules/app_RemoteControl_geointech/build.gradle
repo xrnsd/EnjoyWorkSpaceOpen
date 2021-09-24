@@ -70,9 +70,11 @@ dependencies {
     implementation project(path: ':lib_common')
     implementation project(path: ':lib_common_ku09')
     implementation project(path: ':app_RemoteControl_geointech:lib_sdk_jt808')
-
-    implementation 'com.amap.api:3dmap:latest.integration'
-    implementation 'com.amap.api:location:4.7.0'
+    
+    implementation fileTree(dir: 'libs', include: ['Amap_2DMap_V6.0.0_20191106.jar'])
+    implementation fileTree(dir: 'libs', include: ['AMap_Location_V4.9.0_20200302.jar'])
+//    implementation 'com.amap.api:3dmap:latest.integration'
+    //implementation 'com.amap.api:location:4.7.0'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'

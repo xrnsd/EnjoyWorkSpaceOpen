@@ -19,7 +19,7 @@ import kuyou.common.ku09.handler.ModuleCommonHandler;
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 20-10-24 <br/>
- * <p>
+ * </p>
  */
 public class ModuleApplication extends BasicModuleApplication {
 

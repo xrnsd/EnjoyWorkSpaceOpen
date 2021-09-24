@@ -26,7 +26,7 @@ import kuyou.common.ku09.event.rc.hmd.EventHardwareModuleStatusDetectionResult;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.handler.ThermalCameraControl;
 import kuyou.common.ku09.handler.UsbDeviceHandler;
-import kuyou.common.ku09.protocol.basic.IHardwareControlDetectionV1_1;
+import kuyou.common.ku09.protocol.basic.IHardwareControl;
 import kuyou.common.ku09.protocol.basic.IHardwareDetection;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
@@ -39,7 +39,7 @@ import kuyou.common.status.basic.IStatusProcessBusCallback;
  * date: 21-9-9 <br/>
  * </p>
  */
-public class HardwareModuleDetectionHandler extends BasicAssistHandler 
+public class HardwareModuleDetectionHandler extends BasicAssistHandler
         implements IHardwareDetection {
 
     protected final static String TAG = "com.kuyou.rc.handler > HardwareModuleDetectionHandler";
@@ -59,7 +59,10 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler
         mHardwareModuleInfoList = new ArrayList<>();
         mHardwareModuleTypeIdList = new ArrayList<>();
         mHardwareModuleTypeInfoMap = new HashMap<>();
+        initDetectionList();
+    }
 
+    protected void initDetectionList() {
         mHardwareModuleTypeInfoMap.put(HM_TYPE_INPUT_CAMERA_INFRARED_THERMAL, "红外热成像");
         mHardwareModuleTypeInfoMap.put(HM_TYPE_INPUT_LOCATION_UWB, "UWB");
         mHardwareModuleTypeInfoMap.put(HM_TYPE_INPUT_CAMERA_NORMAL, "普通后摄");
@@ -249,7 +252,7 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler
                     Log.w(TAG, "onReceiveProcessStatusNotice > HM_TYPE_INPUT_GAS_DETECTION >  fileUtils is null");
                     break;
                 }
-                final String resultDevGasDetection = FileUtils.getInstance(getContext()).readData(IHardwareControlDetectionV1_1.DEV_PTAH_GAS);
+                final String resultDevGasDetection = FileUtils.getInstance(getContext()).readData(IHardwareControl.DEV_PTAH_GAS);
                 boolean isExistDevGasDetection = resultDevGasDetection.contains(DEV_VAL_GAS_POWER_ON);
                 dispatchEvent(new EventHardwareModuleStatusDetectionResult()
                         .setStatusId(isExistDevGasDetection ? HM_STATUS_BE_EQUIPPED_NORMAL : HM_STATUS_BE_EQUIPPED_NOT_DETECTED)

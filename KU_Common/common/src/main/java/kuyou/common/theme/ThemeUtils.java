@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class ThemeUtils implements Itheme {
 
-    protected final String TAG = this.getClass().getSimpleName() + "_123456";
+    protected final String TAG = "kuyou.common.theme > " + this.getClass().getSimpleName();
     private static final String SP_FLAG = "launcher_theme";
 
     private static ThemeUtils sThemeUtils;

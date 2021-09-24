@@ -6,36 +6,31 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.Polyline;
-import com.amap.api.maps.model.PolylineOptions;
-import com.amap.api.trace.LBSTraceClient;
-import com.amap.api.trace.TraceListener;
-import com.amap.api.trace.TraceLocation;
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.BitmapDescriptor;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps2d.model.Polyline;
+import com.amap.api.maps2d.model.PolylineOptions;
 import com.kuyou.rc.R;
-import com.kuyou.rc.basic.location.filter.TrackPoint;
+import com.kuyou.rc.basic.location.filter.FilterManager;
+import com.kuyou.rc.basic.location.filter.IFilterCallBack;
+import com.kuyou.rc.basic.location.provider.HMLocationProvider;
+import com.kuyou.rc.basic.location.provider.NormalFilterLocationProvider;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 
-/**
- * 轨迹纠偏功能 示例 使用起来更简单
- */
-public class TraceTestActivity extends Activity implements TraceListener {
-    private List<TraceLocation> mListPoint = new ArrayList<>();
-    private List<TraceLocation> originPosList;
-    private LBSTraceClient lbsTraceClient;
+public class TraceTestActivity extends Activity {
 
     protected final static String TAG = "com.kuyou.rc.handler.location.trace > TraceTestActivity";
     private int posCount = 0;
-    private TraceLocation posTraceLocation;
 
     private final Timer timer = new Timer();
 
@@ -46,9 +41,7 @@ public class TraceTestActivity extends Activity implements TraceListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trace_simple);
-        mMapView = (MapView) findViewById(R.id.map);
-        mMapView.onCreate(savedInstanceState);// 此方法必须重写
-        init();
+        init(savedInstanceState);
     }
 
 
@@ -83,79 +76,75 @@ public class TraceTestActivity extends Activity implements TraceListener {
         mMapView.onSaveInstanceState(outState);
     }
 
-    List<TrackPoint> mTrackPointList = new ArrayList<>();
-    final List<LatLng> latLngs2 = new ArrayList<>();
-
-    private void drawTraceLine(List<TrackPoint> list) {
-        {
-            mTrackPointList.addAll(list);
-            for (TrackPoint point : list) {
-                latLngs2.add(new LatLng(point.getLatitude(), point.getLongitude()));
-            }
-            Log.d("Trajectory2", "===================  latLngs2.sze()=" + latLngs2.size());
-            if (latLngs2.size() >= 0) {
-                final List<LatLng> latLngs = new ArrayList<>();
-                latLngs.addAll(latLngs2);
-                latLngs2.clear();
-
-                aMap.addPolyline(new PolylineOptions().
-                        addAll(latLngs).width(10).color(Color.argb(255, 1, 1, 1)));
-
-                int index = 0;
-                MarkerOptions markerOption;
-                for (LatLng startLocation_gps : latLngs) {
-                    markerOption = new MarkerOptions();
-                    markerOption.position(startLocation_gps);
-                    markerOption.title(new StringBuilder("点")
-                            .append(index).append(":").append(mTrackPointList.get(index).getAngle())
-                            .toString());
-                    markerOption.draggable(false);//设置Marker可拖动
-                    markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                            .decodeResource(getResources(), R.drawable.marker_blue)));
-                    // 将Marker设置为贴地显示，可以双指下拉地图查看效果
-                    markerOption.setFlat(true);//设置marker平贴地图效果
-                    aMap.addMarker(markerOption);
-                    index += 1;
-                }
-
-                latLngs.clear();
-                mTrackPointList.clear();
-            }
-        }
-    }
-
-    public void initView() {
-        if (originPosList == null) {
-            originPosList = new ArrayList<>();
-            LatLng positionLatLng = new LatLng(22.624991f, 113.865306f);
-            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(positionLatLng, 16));
-        }
-    }
-
     private PolylineOptions mPolyoptions;
-    private List<TraceLocation> mTracelocationlist = new ArrayList<TraceLocation>();
     private int tracesize = 30;
     private Polyline mpolyline;
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
+        mMapView = findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+        aMap = mMapView.getMap();
+
         mPolyoptions = new PolylineOptions();
         mPolyoptions.width(10f);
         mPolyoptions.color(Color.GRAY);
+
+        LatLng mylocation = new LatLng(22.550020545869813, 113.90872557625059);
+        CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mylocation, 18, 30, 0));
+        aMap.moveCamera(mCameraUpdate);
+        aMap.invalidate();
     }
 
     public void onLocationChange(Location location) {
         Log.d(TAG, "onLocationChange > ");
-        LatLng mylocation = new LatLng(location.getLatitude(),
-                location.getLongitude());
-        aMap.moveCamera(CameraUpdateFactory.changeLatLng(mylocation));
-
-        //record.addpoint(amapLocation);
-        mPolyoptions.add(mylocation);
-        mTracelocationlist.add(parseTraceLocation(location));
-        redrawline();
-        if (mTracelocationlist.size() > tracesize - 1) {
-            trace();
+        if (null == aMap || !isDraw) {
+            return;
         }
+        addMarker(location);
+        addPolylineBase(location);
+        mNormalFilterLocationProvider.dispatchLocation(location);
+
+//        //record.addpoint(amapLocation);
+//        mPolyoptions.add(mylocation);
+//        mTracelocationlist.add(parseTraceLocation(location));
+//        redrawline();
+//        if (mTracelocationlist.size() > tracesize - 1) {
+//            trace();
+//        }
+    }
+
+    MarkerOptions mMarkerOptions;
+    long mMarkerIndex = 0;
+
+    private void addMarker(Location location) {
+        if (null == mMarkerOptions) {
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory.decodeResource(this.getResources(),
+                            R.drawable.marker_blue));
+            mMarkerOptions = new MarkerOptions();
+            mMarkerOptions.icon(icon);
+            mMarkerOptions.anchor(0.1f, 0.1f);
+
+        }
+
+        LatLng latLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+        mMarkerOptions.position(latLng);
+        mMarkerOptions.title(String.valueOf(mMarkerIndex++));
+        aMap.addMarker(mMarkerOptions);
+    }
+
+    private LatLng mLatLngOld;
+
+    private void addPolylineBase(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+        if (null == mLatLngOld) {
+            mLatLngOld = latLng;
+            return;
+        }
+        aMap.addPolyline((new PolylineOptions()).add(mLatLngOld, latLng).color(Color.RED));
+        mLatLngOld = latLng;
     }
 
     /**
@@ -171,37 +160,56 @@ public class TraceTestActivity extends Activity implements TraceListener {
         }
     }
 
-    private void trace() {
-        List<TraceLocation> locationList = new ArrayList<>(mTracelocationlist);
-        LBSTraceClient mTraceClient = new LBSTraceClient(getApplicationContext());
-        mTraceClient.queryProcessedTrace(1, locationList, LBSTraceClient.TYPE_AMAP, this);
-        TraceLocation lastlocation = mTracelocationlist.get(mTracelocationlist.size() - 1);
-        mTracelocationlist.clear();
-        mTracelocationlist.add(lastlocation);
+    private boolean isDraw = false;
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.start_bt:
+                isDraw = true;
+                //initFilter();
+                break;
+            case R.id.stop_bt:
+                isDraw = false;
+                break;
+            default:
+                break;
+        }
     }
 
-    @Override
-    public void onRequestFailed(int i, String s) {
 
+    NormalFilterLocationProvider mNormalFilterLocationProvider;
+    private LatLng mLatLngFilterOld;
+
+    private void initFilter() {
+        if (null != mNormalFilterLocationProvider)
+            return;
+        mNormalFilterLocationProvider = NormalFilterLocationProvider.getInstance(getApplicationContext());
+        mNormalFilterLocationProvider.setFilter(new FilterManager.IFilterPolicyCallBack() {
+            @Override
+            public int getFilterPolicy() {
+                int policy = 0;
+                policy |= IFilterCallBack.POLICY_FILTER_FLUCTUATION;
+                //policy |= IFilterCallBack.POLICY_FILTER_KALMAN;
+                return policy;
+            }
+        });
+        mNormalFilterLocationProvider.setLocationChangeListener(new HMLocationProvider.IOnLocationChangeListener() {
+            @Override
+            public void onLocationChange(Location location) {
+                TraceTestActivity.this.addPolylineFilter(location);
+            }
+        });
     }
 
-    @Override
-    public void onTraceProcessing(int i, int i1, List<LatLng> list) {
-
+    private void addPolylineFilter(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+        if (null == mLatLngFilterOld) {
+            mLatLngFilterOld = latLng;
+            return;
+        }
+        aMap.addPolyline((new PolylineOptions()).add(mLatLngFilterOld, latLng).color(Color.YELLOW));
+        mLatLngFilterOld = latLng;
     }
 
-    @Override
-    public void onFinished(int i, List<LatLng> list, int i1, int i2) {
-
-    }
-
-    public static TraceLocation parseTraceLocation(Location amapLocation) {
-        TraceLocation location = new TraceLocation();
-        location.setBearing(amapLocation.getBearing());
-        location.setLatitude(amapLocation.getLatitude());
-        location.setLongitude(amapLocation.getLongitude());
-        location.setSpeed(amapLocation.getSpeed());
-        location.setTime(amapLocation.getTime());
-        return location;
-    }
 }

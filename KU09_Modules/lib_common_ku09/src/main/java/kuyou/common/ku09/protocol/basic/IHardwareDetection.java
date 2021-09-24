@@ -1,14 +1,15 @@
 package kuyou.common.ku09.protocol.basic;
 
 /**
- * action :
+ * action :硬件检测[接口][基于]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-9-9 <br/>
+ * 协议文档: 北斗终端数据协议V20210922.docx
  * </p>
  */
-public interface IHardwareDetection extends IHardwareControlDetectionV1_1 {
+public interface IHardwareDetection extends IHardwareControl {
 
     /**
      * action:协议头,附加信息: 设备硬件模块搭载状态信息
@@ -79,7 +80,6 @@ public interface IHardwareDetection extends IHardwareControlDetectionV1_1 {
      * action:强电靠近检测
      * */
     public final static int HM_TYPE_INPUT_STRONG_POWER_DETECTION = 15;
-
 
 
     /**

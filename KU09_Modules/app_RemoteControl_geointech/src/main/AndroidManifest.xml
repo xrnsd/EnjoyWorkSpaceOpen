@@ -45,12 +45,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:screenOrientation="landscape">
         <activity
             android:name=".MainActivity"
             android:label="RC_MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="nosensor"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent"
             android:noHistory="true"
             android:excludeFromRecents="true">
@@ -64,8 +65,21 @@
             android:name=".ui.AmapLocationActivity"
             android:label="RC_LocationActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="nosensor"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent"
+            android:noHistory="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.TraceTestActivity"
+            android:label="RC_LocationActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:theme="@*android:style/Theme.DeviceDefault"
             android:noHistory="true"
             android:excludeFromRecents="true">
             <intent-filter>

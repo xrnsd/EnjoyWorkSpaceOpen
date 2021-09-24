@@ -1,21 +1,22 @@
 package kuyou.common.ku09.protocol.basic;
 
 /**
- * action :硬件块控制检测[接口][基于设备节点]
+ * action :硬件控制[接口][基于设备节点]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
  * date: 21-9-23 <br/>
- * 定义说明: 硬件模块控制检测API/V1.1.txt
+ * 协议文档: 模块控制V1.2.txt
  * </p>
  */
-public interface IHardwareControlDetectionV1_1 {
+public interface IHardwareControl {
     //PRESSURE,近电报警，强电检测
     public static final String DEV_PTAH_PRESSURE = "/sys/kernel/lactl/attr/pressure";
     public static final String DEV_VAL_PRESSURE_POWER_ON_220 = "pressure_grade_a";
     public static final String DEV_VAL_PRESSURE_POWER_ON_10K = "pressure_grade_b";
     public static final String DEV_VAL_PRESSURE_POWER_ON_35K = "pressure_grade_c";
     public static final String DEV_VAL_PRESSURE_POWER_ON_220K = "pressure_grade_d";
+    public static final String DEV_VAL_PRESSURE_POWER_ON_TEST = "pressure_grade_t";
     public static final String DEV_VAL_PRESSURE_POWER_OFF = "pressure_grade_n";
 
     //GAS，气体检测

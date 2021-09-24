@@ -21,7 +21,7 @@ import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.vc.basic.EventVoiceControl;
 
 /**
- * action :
+ * action :工厂测试模块
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
