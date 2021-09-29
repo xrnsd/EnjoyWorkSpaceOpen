@@ -31,10 +31,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('libs/BASE64.jar')
 
     compileOnly project(path: ':lib_common')
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation("com.squareup.okhttp3:okhttp:4.2.0")
+
+    api("com.squareup.okhttp3:okhttp:4.2.0")
 }

@@ -88,21 +88,25 @@ public class HardwareModuleDetectionHandler extends BasicAssistHandler
         for (Map.Entry<Integer, String> entry : mHardwareModuleTypeInfoMap.entrySet()) {
             mHardwareModuleTypeIdList.add(entry.getKey());
             getStatusProcessBus().registerStatusNoticeCallback(entry.getKey(),
-                    new StatusProcessBusCallbackImpl(false, 0)
+                    new StatusProcessBusCallbackImpl()
                             .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_BACKGROUND));
         }
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_CAMERA_INFRARED_THERMAL_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 2000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 2000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 5000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 5000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_GET_ID,
-                new StatusProcessBusCallbackImpl(false, 3000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 3000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         getStatusProcessBus().registerStatusNoticeCallback(PS_DETECTION_LOCATION_UWB_SET_ID_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 3000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 3000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

@@ -16,9 +16,6 @@ import kuyou.common.exception.IGlobalExceptionControl;
 import kuyou.common.exception.UncaughtExceptionManager;
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ipc.RemoteEventBus;
-import kuyou.common.ku09.protocol.basic.ILiveControlCallback;
-import kuyou.common.ku09.protocol.DeviceConfigImpl;
-import kuyou.common.ku09.protocol.basic.IDeviceConfig;
 import kuyou.common.ku09.event.common.EventKeyClick;
 import kuyou.common.ku09.event.common.EventKeyDoubleClick;
 import kuyou.common.ku09.event.common.EventKeyLongClick;
@@ -26,11 +23,14 @@ import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.common.basic.IEventBusDispatchCallback;
 import kuyou.common.ku09.event.tts.EventTextToSpeechPlayRequest;
 import kuyou.common.ku09.handler.BasicAssistHandler;
+import kuyou.common.ku09.protocol.DeviceConfigImpl;
+import kuyou.common.ku09.protocol.basic.IDeviceConfig;
+import kuyou.common.ku09.protocol.basic.ILiveControlCallback;
+import kuyou.common.log.LogcatHelper;
 import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.StatusProcessBusImpl;
 import kuyou.common.status.basic.IStatusProcessBus;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
-import kuyou.common.log.LogcatHelper;
 import kuyou.common.utils.CommonUtils;
 import kuyou.common.utils.DebugUtil;
 import kuyou.common.utils.SystemPropertiesUtils;
@@ -279,7 +279,9 @@ public abstract class BasicModuleApplication extends Application {
                 }
             };
             mStatusProcessBus.registerStatusNoticeCallback(PS_FEED,
-                    new StatusProcessBusCallbackImpl(true, getFeedTimeLong())
+                    new StatusProcessBusCallbackImpl()
+                            .setAutoNoticeReceiveCycle(true)
+                            .setNoticeReceiveFreq(getFeedTimeLong())
                             .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
             mStatusProcessBus.start(PS_FEED);

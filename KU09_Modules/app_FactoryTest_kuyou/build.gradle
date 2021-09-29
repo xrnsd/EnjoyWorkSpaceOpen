@@ -69,21 +69,15 @@ android {
 }
 
 dependencies {
-
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-
-    implementation fileTree(dir: 'implementationLibs', include: ['seek_android_sdk_4.1.2.0.aar'])
-    //implementation fileTree(dir: "libs", include: ["*.jar"])
-    
     compileOnly files('compileOnlyLibs/framework.jar')
-    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
-
     compileOnly files('compileOnlyLibs/framework_6.jar')
     compileOnly files('compileOnlyLibs/telephony_common.jar')
 
-    implementation project(path: ':lib_common')
+    implementation files('implementationLibs/seek_android_sdk_4.1.2.0.aar')
+
     implementation project(path: ':lib_common_ku09')
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }
 
 //added by wgx

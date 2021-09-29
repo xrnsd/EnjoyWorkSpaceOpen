@@ -4,9 +4,9 @@ import com.kuyou.vc.handler.UnisoundVoiceControlHandler;
 import com.kuyou.vc.protocol.basic.VoiceControl;
 
 import kuyou.common.ku09.BasicModuleApplication;
-import kuyou.common.ku09.protocol.basic.IKeyConfig;
 import kuyou.common.ku09.event.vc.EventVoiceWakeupRequest;
 import kuyou.common.ku09.handler.KeyHandler;
+import kuyou.common.ku09.protocol.basic.IKeyConfig;
 
 /**
  * action :语音控制模块
@@ -54,12 +54,19 @@ public class ModuleApplication extends BasicModuleApplication {
     protected KeyHandler getKeyHandler() {
         if (null == mKeyHandler) {
             mKeyHandler = new KeyHandler() {
+                boolean isSwitch = true;
+
                 @Override
                 protected void onKeyLongClick(int keyCode) {
                     super.onKeyLongClick(keyCode);
                     if (IKeyConfig.VOICE_CONTROL == keyCode) {
                         dispatchEvent(new EventVoiceWakeupRequest()
                                 .setRemote(false));
+                    }
+//                    //temp test
+                    if (IKeyConfig.CAMERA == keyCode) {
+                        ModuleApplication.this.getVoiceControlHandler().getListener().onVideo(isSwitch);
+                        isSwitch = !isSwitch;
                     }
                 }
             };
@@ -69,8 +76,8 @@ public class ModuleApplication extends BasicModuleApplication {
 
     protected UnisoundVoiceControlHandler getVoiceControlHandler() {
         if (null == mUnisoundVoiceControlHandler) {
-            mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler();
-            mUnisoundVoiceControlHandler.init(VoiceControl.TYPE.HARDWARE);
+            mUnisoundVoiceControlHandler = new UnisoundVoiceControlHandler()
+                    .setVoiceType(VoiceControl.TYPE.HARDWARE);
         }
         return mUnisoundVoiceControlHandler;
     }

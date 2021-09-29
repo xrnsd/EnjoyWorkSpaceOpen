@@ -11,17 +11,19 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
     private int mStatusProcessFlag = -1;
     private boolean isAutoNoticeReceiveCycle = false;
     private boolean isEnableReceiveRemoveNotice = false;
-    private long mNoticeReceiveFreq = -1;
+    private long mNoticeReceiveFreq = 0;
 
     private Looper mNoticeHandleLooper = null;
     private int mNoticeHandleLooperPolicy = -1;
+
+    public StatusProcessBusCallbackImpl() {
+    }
 
     /**
      * action:自动循环收到消息
      *
      * @param val1 ，为true表示开启，自动循环收到消息
      * @param val2 ，val1为true时，自动循环收到消息的周期
-     * @param val3 ，设定消息处理线程
      */
     public StatusProcessBusCallbackImpl(boolean val1, long val2) {
         isAutoNoticeReceiveCycle = val1;
@@ -35,6 +37,16 @@ public class StatusProcessBusCallbackImpl implements IStatusProcessBusCallback {
         isEnableReceiveRemoveNotice = callback.isEnableReceiveRemoveNotice();
         mNoticeHandleLooperPolicy = callback.getNoticeHandleLooperPolicy();
         mNoticeHandleLooper = callback.getNoticeHandleLooper();
+    }
+
+    public StatusProcessBusCallbackImpl setAutoNoticeReceiveCycle(boolean autoNoticeReceiveCycle) {
+        isAutoNoticeReceiveCycle = autoNoticeReceiveCycle;
+        return StatusProcessBusCallbackImpl.this;
+    }
+
+    public StatusProcessBusCallbackImpl setNoticeReceiveFreq(long noticeReceiveFreq) {
+        mNoticeReceiveFreq = noticeReceiveFreq;
+        return StatusProcessBusCallbackImpl.this;
     }
 
     @Override

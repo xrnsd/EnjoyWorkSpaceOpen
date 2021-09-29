@@ -22,6 +22,7 @@ public class EventAudioVideoOperateRequest extends EventRequest {
     protected static final String KEY_EVENT_DATA_FLOW_NUMBER = "keyEventData.flowNumber";
     protected static final String KEY_TOKEN = "keyEventData.token";
     protected static final String KEY_CHANNEL_ID = "keyEventData.channelId";
+    protected static final String KEY_VOICE_CONTROL = "keyEventData.voiceControl";
 
     public static interface Action {
         public final static String OPEN = "event.action.open";
@@ -95,6 +96,15 @@ public class EventAudioVideoOperateRequest extends EventRequest {
         if (null == data)
             return null;
         return data.getString(KEY_CHANNEL_ID);
+    }
+
+    public EventAudioVideoOperateRequest setVoiceControl(boolean val) {
+        getData().putBoolean(KEY_VOICE_CONTROL, val);
+        return EventAudioVideoOperateRequest.this;
+    }
+
+    public static boolean isVoiceControl(RemoteEvent event) {
+        return event.getData().getBoolean(KEY_VOICE_CONTROL);
     }
 
     @NonNull

@@ -89,11 +89,12 @@ public class TTSHandler extends BasicAssistHandler {
     protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
         getStatusProcessBus().registerStatusNoticeCallback(PS_PLAY,
-                new StatusProcessBusCallbackImpl(false, 0)
+                new StatusProcessBusCallbackImpl()
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_PLAY_OLD_RESET,
-                new StatusProcessBusCallbackImpl(false, 2 * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq(2 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

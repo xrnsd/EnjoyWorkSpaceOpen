@@ -77,7 +77,8 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         super.initReceiveProcessStatusNotices();
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 10 * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 10 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

@@ -100,9 +100,12 @@ public abstract class TestItemBasic extends Activity implements View.OnClickList
     protected void initReceiveProcessStatusNotices() {
         if (-1 != getTimingFlag()) {
             mTiming = getTimingFlag() - 1;
-            getStatusProcessBus().registerStatusNoticeCallback(PS_TIMING, new StatusProcessBusCallbackImpl(true, 1000)
-                    .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
-                    .setEnableReceiveRemoveNotice(true));
+            getStatusProcessBus().registerStatusNoticeCallback(PS_TIMING,
+                    new StatusProcessBusCallbackImpl()
+                            .setNoticeReceiveFreq(1000)
+                            .setAutoNoticeReceiveCycle(true)
+                            .setEnableReceiveRemoveNotice(true)
+                            .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
         }
     }
 

@@ -59,7 +59,8 @@ public class TestItemUWB extends TestItemBasic {
     protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
         getStatusProcessBus().registerStatusNoticeCallback(PS_MODULE_DETECTION_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, OPEN_TIMEING_FLAG * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( OPEN_TIMEING_FLAG * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
                         .setEnableReceiveRemoveNotice(true));
     }

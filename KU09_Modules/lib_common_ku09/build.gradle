@@ -46,14 +46,13 @@ android {
 }
 
 dependencies {
-    compileOnly files('compileOnlyLibs/framework.jar')
-    compileOnly files('compileOnlyLibs/eventbus-3.1.1.jar')
+    api files('compileOnlyLibs/eventbus-3.1.1.jar')
 
-    compileOnly project(path: ':lib_common')
+    compileOnly files('compileOnlyLibs/framework.jar')
+
+    api project(path: ':lib_common')
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'com.google.code.gson:gson:2.8.0'
 }
 
 //added by wgx
@@ -66,8 +65,8 @@ def versionNumberCustom() {
     return "${project.moduleName}_" + "${buildType}_" + rootProject.ext.versionDate;
 }
 
-boolean isReleaseBuildType(){
-    for(String s : gradle.startParameter.taskNames) {
+boolean isReleaseBuildType() {
+    for (String s : gradle.startParameter.taskNames) {
         if (s.contains("Release") | s.contains("release")) {
             return true
         }
@@ -76,5 +75,5 @@ boolean isReleaseBuildType(){
 }
 
 configurations {
-    all*. exclude group: 'org.greenrobot.eventbus.AsyncPoster'
+    all*.exclude group: 'org.greenrobot.eventbus.AsyncPoster'
 }

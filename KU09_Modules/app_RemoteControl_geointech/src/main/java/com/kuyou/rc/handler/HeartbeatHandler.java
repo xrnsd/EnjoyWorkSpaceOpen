@@ -130,19 +130,24 @@ public class HeartbeatHandler extends BasicAssistHandler {
         super.initReceiveProcessStatusNotices();
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 2000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq(2000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_HEARTBEAT_REPORT,
-                new StatusProcessBusCallbackImpl(true, getDeviceConfig().getHeartbeatInterval())
+                new StatusProcessBusCallbackImpl()
+                        .setAutoNoticeReceiveCycle(true)
+                        .setNoticeReceiveFreq(getDeviceConfig().getHeartbeatInterval())
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_HEARTBEAT_REPORT_START_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 5000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq(5000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DEVICE_OFF_LINE,
-                new StatusProcessBusCallbackImpl(false, 5000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq(5000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

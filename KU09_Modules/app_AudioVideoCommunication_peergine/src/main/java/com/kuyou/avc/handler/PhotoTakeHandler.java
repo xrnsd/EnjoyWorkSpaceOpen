@@ -68,7 +68,8 @@ public class PhotoTakeHandler extends BasicAssistHandler {
     protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
         getStatusProcessBus().registerStatusNoticeCallback(PS_TAKE_PHOTO_TIMEOUT,
-                new StatusProcessBusCallbackImpl(false, 3000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 3000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

@@ -410,32 +410,35 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         super.initReceiveProcessStatusNotices();
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_REQUEST_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0)
+                new StatusProcessBusCallbackImpl()
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN)
                         .setEnableReceiveRemoveNotice(true));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 15 * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 15 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_HANDLE_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0)
+                new StatusProcessBusCallbackImpl()
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_PARAMETER_PARSE_FAIL,
-                new StatusProcessBusCallbackImpl(false, 5 * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 5 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_CLOSE_BE_EXECUTING,
-                new StatusProcessBusCallbackImpl(false, 0)
+                new StatusProcessBusCallbackImpl()
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_DEVICE_OFF_LINE_RECOVERY_TIME_OUT,
-                new StatusProcessBusCallbackImpl(false, 30 * 1000)
+                new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( 30 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_CACHE_STATUS_CHECK,
-                new StatusProcessBusCallbackImpl(false, 0)
+                new StatusProcessBusCallbackImpl()
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_BACKGROUND));
     }
 
@@ -446,6 +449,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         switch (statusCode) {
             case PS_OPEN_REQUEST_BE_EXECUTING:
                 if (isRemove) {
+                    Log.d(TAG, "onReceiveProcessStatusNotice > remove PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT");
                     getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
                     break;
                 }
@@ -609,6 +613,7 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
         if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
             Log.i(TAG, "performOperate > 终端取消,正在申请的通话");
             getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING);
+            getStatusProcessBus().stop(PS_OPEN_REQUEST_BE_EXECUTING_TIME_OUT);
             setHandleStatus(HS_NORMAL);
             play(getTitleByMediaType(mMediaTypeLocal, R.string.media_request_cancel_request));
             return;
@@ -675,6 +680,26 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
                 final int eventType = EventAudioVideoOperateRequest.getEventType(event);
 
+                //来自语音控制
+                if (EventAudioVideoOperateRequest.isVoiceControl(event)) {
+
+                    final int mediaType = EventAudioVideoOperateRequest.getMediaType(event);
+                    if (isItInHandlerState(HS_NORMAL) && !isLiveOnlineByType(-1)) {
+                        if (IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType) {
+                            break;
+                        }
+                        mMediaTypeLocal = mediaType;
+                    } else {
+                        if (IJT808ExtensionProtocol.EVENT_TYPE_CLOSE != eventType
+                                && mediaType != mMediaTypeLocal) {
+                            play(getTitleByMediaType(mMediaTypeLocal, R.string.key_switch_mode_cancel_title));
+                            break;
+                        }
+                    }
+                    performOperate();
+                    break;
+                }
+
                 //平台拒绝
                 if (IJT808ExtensionProtocol.EVENT_TYPE_REMOTE_PLATFORM_REFUSE == eventType) {
                     if (isItInHandlerState(HS_OPEN_REQUEST_BE_EXECUTING)) {
@@ -690,11 +715,11 @@ public class PeergineAudioVideoHandler extends AudioVideoRequestResultHandler {
 
                 //关闭通话
                 if (IJT808ExtensionProtocol.EVENT_TYPE_CLOSE == eventType) {
-                    if (HS_NORMAL == getHandlerStatus() && !isLiveOnlineByType(-1)) {
+                    if (isItInHandlerState(HS_NORMAL) && !isLiveOnlineByType(-1)) {
                         Log.i(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话 > 没有已打开通话，取消操作");
                         break;
                     }
-                    if (HS_CLOSE_BE_EXECUTING == getHandlerStatus()) {
+                    if (isItInHandlerState(HS_CLOSE_BE_EXECUTING)) {
                         Log.d(TAG, "onReceiveEventNotice > 处理音视频请求 > 关闭通话 > 正在关闭，请稍等");
                         break;
                     }

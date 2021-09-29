@@ -93,10 +93,11 @@ public abstract class TestItemThermalCameraBasic extends TestItemBasic {
     protected void initReceiveProcessStatusNotices() {
         super.initReceiveProcessStatusNotices();
 
-        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_TIME_OUT, new StatusProcessBusCallbackImpl(false, OPEN_TIMEING_FLAG * 1000)
+        getStatusProcessBus().registerStatusNoticeCallback(PS_OPEN_TIME_OUT, new StatusProcessBusCallbackImpl()
+                        .setNoticeReceiveFreq( OPEN_TIMEING_FLAG * 1000)
                 .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
 
-        getStatusProcessBus().registerStatusNoticeCallback(PS_SHOW, new StatusProcessBusCallbackImpl(false, 0)
+        getStatusProcessBus().registerStatusNoticeCallback(PS_SHOW, new StatusProcessBusCallbackImpl()
                 .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 

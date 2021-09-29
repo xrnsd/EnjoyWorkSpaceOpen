@@ -64,6 +64,8 @@
 #uwb protocol
 -keep class kuyou.common.ku09.protocol.uwb.**  {*;}
 
+-keep class com.loc.**{*;}
+-keep class com.amap.api.services.**{*;}
 -keep class com.amap.api.**  {*;}     
 -keep class com.autonavi.**  {*;}
 -keep class com.a.a.**  {*;}
