@@ -1,5 +1,7 @@
 package com.kuyou.avc.ui;
 
+import android.util.Log;
+
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.basic.MultiCapture;
 

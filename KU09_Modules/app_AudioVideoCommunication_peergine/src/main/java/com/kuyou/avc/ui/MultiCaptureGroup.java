@@ -7,9 +7,6 @@ import android.util.Log;
 import com.kuyou.avc.R;
 import com.kuyou.avc.ui.basic.MultiCapture;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
@@ -24,12 +21,8 @@ public class MultiCaptureGroup extends MultiCapture {
 
     protected final static String TAG = "com.kuyou.avc.ui > MultiCaptureGroup";
 
-    protected final static String S_ACTION_EVENT_RENDER_JOIN = "RenderJoin";
-    protected final static String S_ACTION_EVENT_RENDER_LEAVE = "RenderLeave";
-
     private Runnable mRunnableWaitingForRenderConnectTimeout = null;
     private Handler mHandlerWaitingForRenderConnectTimeout = null;
-    private List<String> mRenderList = null;
 
     @Override
     protected int getContentViewResId() {
@@ -59,21 +52,6 @@ public class MultiCaptureGroup extends MultiCapture {
         super.exit();
     }
 
-    @Override
-    protected boolean onPeergineEvent(String sAct, String sData, String sRenID) {
-        switch (sAct) {
-            case S_ACTION_EVENT_RENDER_JOIN:
-                refreshRenderList(true, sRenID);
-                break;
-            case S_ACTION_EVENT_RENDER_LEAVE:
-                refreshRenderList(false, sRenID);
-                break;
-            default:
-                break;
-        }
-        return super.onPeergineEvent(sAct, sData, sRenID);
-    }
-
     public Handler getHandlerWaitingForRenderConnectTimeout() {
         Log.d(TAG, "getHandlerWaitingForRenderConnectTimeout > ");
         if (null == mHandlerWaitingForRenderConnectTimeout) {
@@ -99,24 +77,10 @@ public class MultiCaptureGroup extends MultiCapture {
         getAudioVideoRequestCallback().performOperate();
     }
 
-    public List<String> getRenderList() {
-        if (null == mRenderList) {
-            mRenderList = new ArrayList<>();
-        }
-        return mRenderList;
-    }
-
+    @Override
     protected void refreshRenderList(boolean isAdd, String renderId) {
-        int size = -1;
-        synchronized (getRenderList()) {
-            if (isAdd) {
-                getRenderList().add(renderId);
-            } else {
-                getRenderList().remove(renderId);
-            }
-            size = getRenderList().size();
-        }
-        Log.d(TAG, "refreshRenderList > count = " + size);
+        super.refreshRenderList(isAdd, renderId);
+        final int size = getRenderList().size();
         if (0 < size) {
             Log.i(TAG, "refreshRenderList > 群组不空，清除超时回调");
             getHandlerWaitingForRenderConnectTimeout().removeCallbacks(mRunnableWaitingForRenderConnectTimeout);

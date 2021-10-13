@@ -48,6 +48,11 @@ public interface IJT808ExtensionProtocol extends IJT808BasicProtocol {
      * flow：server > client
      */
     public final static int S2C_RESULT_PHOTO_UPLOAD_REPLY = 0x8F01;
+    /**
+     * action : 服务器接收报警处理后的应答
+     * flow：server > client
+     */
+    public final static int S2C_ALARM_REPLY = 0x8F04;
 
     // C2S_REQUEST
     /**
@@ -148,4 +153,22 @@ public interface IJT808ExtensionProtocol extends IJT808BasicProtocol {
      * action:跌倒报警标志位
      */
     public static final int ALARM_FLAG_FALL = 30;
+
+
+    /**
+     * action:服务器接收报警处理后的应答[默认]
+     */
+    public static final int ALARM_REPLY_NORMAL = 0;
+    /**
+     * action:服务器接收报警处理后的应答[平台已处理]
+     */
+    public static final int ALARM_REPLY_PLATFORM_PROCESSED = 1;
+    /**
+     * action:服务器接收报警处理后的应答[平台已处理,关闭报警]
+     */
+    public static final int ALARM_REPLY_PLATFORM_PROCESSED_CLOSE_ALARM = 2;
+    /**
+     * action:服务器接收报警处理后的应答[平台已处理,关闭本次连续报警]
+     */
+    public static final int ALARM_REPLY_PLATFORM_PROCESSED_CLOSE_CONTINUOUS_ALARM = 3;
 }

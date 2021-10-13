@@ -93,7 +93,8 @@ public class Jt808ExtendProtocolCodec {
             Log.e(TAG, "handler > process fail : check fail");
             return;
         }
-        Log.d(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
+        Log.d(TAG, "handler > " + ByteUtils.bytes2hex(data.getBodyBytes()));
+        //Log.d(TAG, "handler > " + ByteUtils.bytes2hex(bytes));
 
         SicBasic instruction = null;
         JTT808Bean bean = JTT808Coding.resolve808(bytes);
@@ -108,15 +109,17 @@ public class Jt808ExtendProtocolCodec {
             getInstructionParserListener().onRemote2LocalBasic(bean, bytes);
             return;
         }
+        instruction.setFlowNumber(bean.getMsgFlowNumber());
+        instruction.parse(bytes, getInstructionParserListener());
 
         SicGeneralReply reply = (SicGeneralReply) mRequestParserList.get(IJT808ExtensionProtocol.C2S_REPLY);
         if (null != reply) {
-            reply.setFlowNumber(instruction.getFlowNumber());
+            Log.d(TAG, "handler > getMsgFlowNumber = "+bean.getMsgFlowNumber());
+            reply.setFlowNumber(bean.getMsgFlowNumber());
             reply.setMsgId(bean.getMsgId());
             reply.setResultCode(SicGeneralReply.ResultCode.SUCCESS);
             getInstructionParserListener().onRemote2LocalExpand(reply);
         }
-        instruction.parse(bytes, getInstructionParserListener());
     }
 
     protected Codec.IAutoLoadAllInfoCallBack getAutoLoadAllInfoCallBack() {

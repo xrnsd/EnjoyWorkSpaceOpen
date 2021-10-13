@@ -8,13 +8,13 @@ public class Generate808andSeqBean {
         this.bytes = bytes;
     }
 
-    public Generate808andSeqBean(int seqNo, byte[] bytes, long timestamp) {
+    public Generate808andSeqBean(long seqNo, byte[] bytes, long timestamp) {
         this.seqNo = seqNo;
         this.bytes = bytes;
         this.timestamp = timestamp;
     }
 
-    private int seqNo;
+    private long seqNo;
     private byte[] bytes;
     private long timestamp;
 
@@ -26,7 +26,7 @@ public class Generate808andSeqBean {
         this.timestamp = timestamp;
     }
 
-    public int getSeqNo() {
+    public long getSeqNo() {
         return seqNo;
     }
 

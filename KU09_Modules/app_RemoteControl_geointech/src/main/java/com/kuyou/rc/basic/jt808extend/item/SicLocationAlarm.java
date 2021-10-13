@@ -6,8 +6,6 @@ import android.util.Log;
 import com.kuyou.rc.BuildConfig;
 import com.kuyou.rc.basic.location.ILocationProvider;
 
-import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +14,7 @@ import java.util.TimeZone;
 
 import kuyou.common.bytes.BitOperator;
 import kuyou.common.bytes.ByteUtils;
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 /**
  * action :JT808扩展的单项指令编解码器[位置心跳,报警]
@@ -210,6 +209,13 @@ public class SicLocationAlarm extends SicBasic {
      */
     public void setAlarmFlag(int index) {
         mAlarmFlags[index] = 1;
+    }
+
+    /**
+     * action:获取设定报警标识位的信息
+     */
+    public void resetAlarmFlags(int index) {
+        mAlarmFlags[index] = 0;
     }
 
     public byte[] getLocation808ItemAlarmFlag() {

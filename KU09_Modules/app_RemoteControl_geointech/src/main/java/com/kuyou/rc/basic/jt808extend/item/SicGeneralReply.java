@@ -1,11 +1,14 @@
 package com.kuyou.rc.basic.jt808extend.item;
 
+import android.util.Log;
+
 import com.kuyou.rc.basic.jt808extend.InstructionParserListener;
 
+import kuyou.common.bytes.BitOperator;
 import kuyou.common.bytes.ByteUtils;
 
 /**
- * action :JT808扩展的单项指令编解码器[语音短信]
+ * action :JT808扩展的单项指令编解码器[通用应答]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -42,16 +45,16 @@ public class SicGeneralReply extends SicBasic {
 
     @Override
     public byte[] getBody(final int config) {
-        byte[] flowNumber = ByteUtils.longToDword(getFlowNumber());
+        byte[] flowNumber = BitOperator.numToByteArray(getFlowNumber(), 2);
         byte[] msgId = ByteUtils.int2Word(getMsgId());
         byte result = ByteUtils.int2Byte(getResultCode());
-
 
         byte[] body = ByteUtils.byteMergerAll(
                 flowNumber,
                 msgId,
                 new byte[]{result}
         );
+        //Log.d(TAG, "getBody > body ="+ByteUtils.bytes2hex(body));
         return getPackToJt808(C2S_REPLY, body);
     }
 
@@ -74,8 +77,9 @@ public class SicGeneralReply extends SicBasic {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(1024);
-        sb.append("mMsgId = ").append(mMsgId);
-        sb.append("\nmResultCode = ").append(mResultCode);
+        sb.append("\nFlowNumber = ").append(ByteUtils.bytes2Hex(ByteUtils.long2Word(getFlowNumber())));
+        sb.append("\nMsgId = ").append(ByteUtils.bytes2Hex(ByteUtils.int2Word(getMsgId())));
+        sb.append("\nResultCode = ").append(mResultCode);
         return sb.toString();
     }
 }

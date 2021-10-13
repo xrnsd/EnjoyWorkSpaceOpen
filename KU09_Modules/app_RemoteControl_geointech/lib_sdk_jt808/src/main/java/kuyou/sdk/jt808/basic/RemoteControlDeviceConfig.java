@@ -13,7 +13,7 @@ public abstract class RemoteControlDeviceConfig {
          */
         public final static String RESERVE = "00";
     }
-    
+
     private String mOrderId = "1234567";  // 订单号
 
     /**
@@ -21,8 +21,10 @@ public abstract class RemoteControlDeviceConfig {
      */
     public abstract String getDevId();
 
-    public int getSocketMsgCount() {
-        return 0;
+    private long mFlowNumLocal = 0;
+
+    public long getFlowNumLocal() {
+        return mFlowNumLocal++;
     }
 
     public String getOrderId() {

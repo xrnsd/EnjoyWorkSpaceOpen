@@ -27,6 +27,8 @@ public abstract class EventCommon extends RemoteEventCommon {
         public final static int ALARM_NEAR_POWER = FLAG_CODE + 7;
         public final static int ALARM_SOS = FLAG_CODE + 8;
 
+        public final static int ALARM_REPLY = FLAG_CODE + 9;
+
         public final static int NETWORK_CONNECTED = FLAG_CODE + 9;
         public final static int NETWORK_DISCONNECT = FLAG_CODE + 10;
     }

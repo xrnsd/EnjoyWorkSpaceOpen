@@ -73,7 +73,7 @@ public class JTT808Coding {
         //[4,9]终端手机号 BCD[6](占6位)
         byte[] terminalPhone = BCD8421Operater.string2Bcd(config.getDevId());
         //[10,11]流水号
-        byte[] flowNum = BitOperator.numToByteArray(config.getSocketMsgCount(), 2);
+        byte[] flowNum = BitOperator.numToByteArray(config.getFlowNumLocal(), 2);
         //[12]消息包封装项 不分包 就没有
         //[12]消息包封装项 不分包 就没有
         byte[] msgHeader;
@@ -140,7 +140,7 @@ public class JTT808Coding {
         //[4,9]终端手机号 BCD[6](占6位)
         byte[] terminalPhone = BCD8421Operater.string2Bcd(config.getDevId());
         //[10,11]流水号
-        int seqNo = config.getSocketMsgCount();
+        long seqNo = config.getFlowNumLocal();
         byte[] flowNum = BitOperator.numToByteArray(seqNo, 2);
         //[12]消息包封装项 不分包 就没有
         //[12]消息包封装项 不分包 就没有

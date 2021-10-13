@@ -148,9 +148,11 @@ public abstract class AVCActivity extends BasicPermissionsHandlerActivity {
                 isLoginSuccess = true;
             } else {
                 if ("8".equals(sData)) {//用户无效，也有可能是授权到期
+                    Log.w(TAG, "onPeergineEvent > !!!!!!!!!!!!!!!!!!!    用户无效，也有可能是授权到期   !!!!!!!!!!!!!!!!!!!");
                     onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
                 }
                 if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
+                    Log.w(TAG, "onPeergineEvent > !!!!!!!!!!!!!!!!!!!    操作超时，可能是网络连接不稳定   !!!!!!!!!!!!!!!!!!!");
                     if (!isLoginSuccess) {//false表示没登录成功过，不是重新登录
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
                     }

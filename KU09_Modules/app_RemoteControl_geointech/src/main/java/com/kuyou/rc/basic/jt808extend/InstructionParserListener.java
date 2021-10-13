@@ -1,5 +1,6 @@
 package com.kuyou.rc.basic.jt808extend;
 
+import com.kuyou.rc.basic.jt808extend.item.SicAlarmReply;
 import com.kuyou.rc.basic.jt808extend.item.SicAudioVideo;
 import com.kuyou.rc.basic.jt808extend.item.SicGeneralReply;
 import com.kuyou.rc.basic.jt808extend.item.SicPhotoTake;
@@ -24,4 +25,6 @@ public interface InstructionParserListener {
     public void onRemote2LocalExpand(SicAudioVideo instruction);
     public void onRemote2LocalExpand(SicPhotoTake instruction);
     public void onRemote2LocalExpand(SicTextMessage instruction);
+    public void onRemote2LocalExpand(SicAlarmReply instruction);
+    
 }

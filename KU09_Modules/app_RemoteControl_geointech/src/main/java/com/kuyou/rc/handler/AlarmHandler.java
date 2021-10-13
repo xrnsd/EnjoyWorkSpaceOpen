@@ -2,13 +2,14 @@ package com.kuyou.rc.handler;
 
 import android.util.Log;
 
-import com.kuyou.rc.basic.alarm.ALARM;
-import com.kuyou.rc.basic.location.ILocationProvider;
+import com.kuyou.rc.basic.jt808extend.item.SicAlarmReply;
 import com.kuyou.rc.basic.jt808extend.item.SicLocationAlarm;
+import com.kuyou.rc.basic.location.ILocationProvider;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.event.common.EventPowerChange;
 import kuyou.common.ku09.event.rc.alarm.EventAlarm;
+import kuyou.common.ku09.event.rc.alarm.EventAlarmReply;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
@@ -20,7 +21,7 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
  * date: 21-4-12 <br/>
  * </p>
  */
-public class AlarmHandler extends BasicAssistHandler implements ALARM {
+public class AlarmHandler extends BasicAssistHandler {
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
     private ILocationProvider mLocationProvider;
@@ -41,11 +42,33 @@ public class AlarmHandler extends BasicAssistHandler implements ALARM {
         registerHandleEvent(EventAlarm.Code.ALARM_FALL, false);
         registerHandleEvent(EventAlarm.Code.ALARM_GAS, false);
         registerHandleEvent(EventAlarm.Code.ALARM_SOS, false);
+
+        registerHandleEvent(EventAlarm.Code.ALARM_REPLY, false);
     }
 
     @Override
     public boolean onReceiveEventNotice(RemoteEvent event) {
         switch (event.getCode()) {
+            case EventAlarm.Code.ALARM_REPLY:
+                final int alarmType = EventAlarmReply.getAlarmType(event);
+                final int eventType = EventAlarmReply.getEventType(event);
+
+                switch (eventType) {
+                    case IJT808ExtensionProtocol.ALARM_REPLY_PLATFORM_PROCESSED_CLOSE_ALARM:
+                        getLocationProvider().getLocationInfo().resetAlarmFlags(alarmType);
+                        break;
+                    case IJT808ExtensionProtocol.ALARM_REPLY_PLATFORM_PROCESSED_CLOSE_CONTINUOUS_ALARM:
+                        getLocationProvider().getLocationInfo().resetAlarmFlags(alarmType);
+                        if (IJT808ExtensionProtocol.ALARM_FLAG_SOS == alarmType) {
+                            getLocationProvider().getLocationInfo().setAutoAddSosFlag(false, IJT808ExtensionProtocol.ALARM_FLAG_SOS);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                Log.d(TAG, "onReceiveEventNotice > 平台操作报警状态 : \n " + SicAlarmReply.getAlarmInfo(alarmType, eventType));
+                break;
+
             case EventAlarm.Code.ALARM_NEAR_POWER:
                 play("您已进入强电非安全区域");
                 getLocationProvider().getLocationInfo().setAlarmFlag(IJT808ExtensionProtocol.ALARM_FLAG_NEAR_POWER);

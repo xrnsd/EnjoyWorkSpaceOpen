@@ -87,33 +87,9 @@ public class TestItemKey extends TestItemBasic {
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent paramKeyEvent) {
-        //super.onKeyDown(keyCode,paramKeyEvent);
         Log.d(TAG, "keyCode" + keyCode);
+
         switch (keyCode) {
-            case KeyEvent.KEYCODE_MENU:
-                mStrKeyInfo = getString(R.string.key_menu);
-                android.util.Log.d(TAG, "onKeyDown:key_menu");
-                break;
-            case KeyEvent.KEYCODE_BACK:
-                mStrKeyInfo = getString(R.string.key_back);
-                android.util.Log.d(TAG, "onKeyDown:key_back");
-                break;
-            case KeyEvent.KEYCODE_HOME:
-                mStrKeyInfo = getString(R.string.key_home);
-                android.util.Log.d(TAG, "onKeyDown:key_home");
-                break;
-            case KeyEvent.KEYCODE_SEARCH:
-                mStrKeyInfo = getString(R.string.key_search);
-                android.util.Log.d(TAG, "onKeyDown:key_search");
-                break;
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                mStrKeyInfo = getString(R.string.key_volume_up);
-                android.util.Log.d(TAG, "onKeyDown:key_volume_up");
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                mStrKeyInfo = getString(R.string.key_volume_down);
-                android.util.Log.d(TAG, "onKeyDown:key_volume_down");
-                break;
             case KeyEvent.KEYCODE_POWER:
                 mStrKeyInfo = getString(R.string.key_power);
                 android.util.Log.d(TAG, "onKeyDown:key_power");

@@ -31,7 +31,7 @@
     <string name="test_tcamera">红外热成像摄像头</string>
     <string name="test_radio">收音机</string>
     <string name="test_sim">SIM卡</string>
-    <string name="test_led_light">指示灯</string>
+    <string name="test_led_light">指示灯[呼吸灯]</string>
     <string name="test_gestrue">手势</string>
     <string name="test_uv">红外UV测试</string>
     <string name="test_footprint">指纹测试</string>
@@ -79,6 +79,7 @@
     <string name="key_voice">语音键</string>
     <string name="key_camera">Camera键</string>
     <string name="key_flashlight">手电筒键</string>
+    
     <string name="num">数值：</string>
     <string name="power_fangdian">放电</string>
     <string name="power_chongdian">充电</string>

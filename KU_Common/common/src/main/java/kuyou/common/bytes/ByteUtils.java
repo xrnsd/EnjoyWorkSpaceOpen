@@ -375,6 +375,13 @@ public class ByteUtils {
     }
 
     /**
+     * long转WORD数据类型
+     */
+    public static byte[] long2Word(long value) {
+        return BitOperator.numToByteArray(value, 2);
+    }
+
+    /**
      * 一个int转WORD
      *
      * @param value

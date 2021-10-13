@@ -6,6 +6,7 @@ import android.util.Log;
 import com.kuyou.rc.basic.jt808extend.InstructionParserListener;
 import com.kuyou.rc.basic.jt808extend.Jt808ExtendProtocolCodec;
 import com.kuyou.rc.basic.jt808extend.PlatformConnectManager;
+import com.kuyou.rc.basic.jt808extend.item.SicAlarmReply;
 import com.kuyou.rc.basic.jt808extend.item.SicAudioVideo;
 import com.kuyou.rc.basic.jt808extend.item.SicAuthentication;
 import com.kuyou.rc.basic.jt808extend.item.SicBasic;
@@ -36,6 +37,7 @@ import kuyou.common.ku09.event.rc.EventHeartbeatReply;
 import kuyou.common.ku09.event.rc.EventHeartbeatRequest;
 import kuyou.common.ku09.event.rc.EventLocalDeviceStatus;
 import kuyou.common.ku09.event.rc.EventSendToRemoteControlPlatformRequest;
+import kuyou.common.ku09.event.rc.alarm.EventAlarmReply;
 import kuyou.common.ku09.event.rc.basic.EventRemoteControl;
 import kuyou.common.ku09.event.rc.basic.EventRequest;
 import kuyou.common.ku09.event.rc.basic.EventResult;
@@ -78,7 +80,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
         getStatusProcessBus().registerStatusNoticeCallback(PS_AUTHENTICATION_REQUEST_WAIT_TIME_OUT,
                 new StatusProcessBusCallbackImpl()
-                        .setNoticeReceiveFreq( 10 * 1000)
+                        .setNoticeReceiveFreq(10 * 1000)
                         .setNoticeHandleLooperPolicy(IStatusProcessBusCallback.LOOPER_POLICY_MAIN));
     }
 
@@ -354,7 +356,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
                 @Override
                 public void onRemote2LocalExpand(SicGeneralReply instruction) {
-                    Log.d(TAG, "onRemote2LocalExpand > 自动回复：" + instruction.toString());
+                    //Log.d(TAG, "onRemote2LocalExpand > 自动回复：" + instruction.toString());
                     PlatformInteractiveHandler.this.sendToRemoteControlPlatform(instruction.getBody());
                 }
 
@@ -397,6 +399,14 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                             .setFileName(instruction.getFileName())
                             .setUpload(true)
                             .setRemote(true));
+                }
+
+                @Override
+                public void onRemote2LocalExpand(SicAlarmReply instruction) {
+                    PlatformInteractiveHandler.this.dispatchEvent(new EventAlarmReply()
+                            .setEventType(instruction.getEventType())
+                            .setAlarmType(instruction.getAlarmType())
+                            .setRemote(false));
                 }
             }).load(PlatformInteractiveHandler.this.getDeviceConfig());
         }
@@ -475,7 +485,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
 
     protected SicBasic getSingleInstructionParserByEventCode(RemoteEvent event) {
         if (null == event) {
-            Log.e(TAG, "getSicByEventCode > process fail : event is null");
+            Log.e(TAG, "getSingleInstructionParserByEventCode > process fail : event is null");
             return null;
         }
         return getSingleInstructionParserByEventCode(event.getCode());
@@ -487,7 +497,17 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
                 return singleInstructionParse;
             }
         }
-        Log.e(TAG, "getSicByEventCode > process fail : event is invalid =" + eventCode);
+        Log.e(TAG, "getSingleInstructionParserByEventCode > process fail : event is invalid =" + eventCode);
+        return null;
+    }
+
+    protected SicBasic getSingleInstructionParserByFlag(final int flag) {
+        for (SicBasic singleInstructionParse : getJt808ExtendProtocolCodec().getSicBasicList()) {
+            if (flag == singleInstructionParse.getFlag()) {
+                return singleInstructionParse;
+            }
+        }
+        Log.e(TAG, "getSingleInstructionParserByFlag > process fail : flag is invalid =" + flag);
         return null;
     }
 }

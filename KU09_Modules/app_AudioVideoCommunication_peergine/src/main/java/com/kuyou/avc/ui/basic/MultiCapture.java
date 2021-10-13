@@ -23,8 +23,10 @@ import com.peergine.android.livemulti.pgLibLiveMultiCapture;
 import com.peergine.android.livemulti.pgLibLiveMultiError;
 import com.peergine.plugin.lib.pgLibJNINode;
 
-import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
+import java.util.ArrayList;
+import java.util.List;
 
+import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
 
 public abstract class MultiCapture extends AVCActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     protected final String TAG = "com.kuyou.avc.ui.basic > MultiCapture";
@@ -48,7 +50,6 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
     private String m_sReplyFile = "";
     private String m_sTransferPeer = "";
     private boolean m_bIsReplying = false;
-
 
     String m_sServerAddr = "connect.peergine.com:7781";
     String m_sDevID = "";
@@ -131,7 +132,7 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
                 } else {
                     if ("1".equals(sData) || "8".equals(sData)) {//用户无效，也有可能是授权到期
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_PARAMETER_PARSE_FAIL);
-                    }else if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
+                    } else if ("12".equals(sData)) {//操作超时，可能是网络连接不稳定
                         //onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_OTHER);
                     } else {
                         onResult(IJT808ExtensionProtocol.RESULT_FAIL_FAILURE_AUDIO_VIDEO_SERVER_EXCEPTION);
@@ -670,6 +671,44 @@ public abstract class MultiCapture extends AVCActivity implements ActivityCompat
     }
 
     //@{ added by wgx Usefulness:
+
+    protected final static String S_ACTION_EVENT_RENDER_JOIN = "RenderJoin";
+    protected final static String S_ACTION_EVENT_RENDER_LEAVE = "RenderLeave";
+    private List<String> mRenderList = null;
+
+    public List<String> getRenderList() {
+        if (null == mRenderList) {
+            mRenderList = new ArrayList<>();
+        }
+        return mRenderList;
+    }
+
+    @Override
+    protected boolean onPeergineEvent(String sAct, String sData, String sRenID) {
+        switch (sAct) {
+            case S_ACTION_EVENT_RENDER_JOIN:
+                refreshRenderList(true, sRenID);
+                break;
+            case S_ACTION_EVENT_RENDER_LEAVE:
+                refreshRenderList(false, sRenID);
+                break;
+            default:
+                break;
+        }
+        return super.onPeergineEvent(sAct, sData, sRenID);
+    }
+
+    protected void refreshRenderList(boolean isAdd, String renderId) {
+        synchronized (getRenderList()) {
+            if (isAdd) {
+                getRenderList().add(renderId);
+            } else {
+                getRenderList().remove(renderId);
+            }
+        }
+        Log.d(TAG, "refreshRenderList > getRenderList().size = " + getRenderList().size());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

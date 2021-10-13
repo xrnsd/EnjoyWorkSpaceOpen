@@ -33,8 +33,8 @@ public class PeergineConfig {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("\nmServerAddress='").append(mServerAddress)
-                .append("\nmDevCollectingEndId='").append(mDevCollectingEndId)
+                .append("\nmServerAddress=").append(mServerAddress)
+                .append("\nmDevCollectingEndId=").append(mDevCollectingEndId)
                 .toString();
     }
 }
