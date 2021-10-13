@@ -1,11 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ import java.util.List;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.设置电话本)
-public class T8401 extends AbstractMessage<Header> {
+public class T8401 extends JTMessage {
 
     /** @see org.yzh.protocol.commons.Action */
     private int type;
@@ -59,9 +57,7 @@ public class T8401 extends AbstractMessage<Header> {
 
     public static class Item {
         private int sign;
-        private int phoneLength;
         private String phone;
-        private int nameLength;
         private String name;
 
         public Item() {
@@ -69,8 +65,8 @@ public class T8401 extends AbstractMessage<Header> {
 
         public Item(int sign, String phone, String name) {
             this.sign = sign;
-            this.setPhone(phone);
-            this.setName(name);
+            this.phone = phone;
+            this.name = name;
         }
 
         @Field(index = 0, type = DataType.BYTE, desc = "标志")
@@ -82,42 +78,22 @@ public class T8401 extends AbstractMessage<Header> {
             this.sign = sign;
         }
 
-        @Field(index = 1, type = DataType.BYTE, desc = "电话号码长度")
-        public int getPhoneLength() {
-            return phoneLength;
-        }
-
-        public void setPhoneLength(int phoneLength) {
-            this.phoneLength = phoneLength;
-        }
-
-        @Field(index = 2, type = DataType.STRING, lengthName = "phoneLength", desc = "电话号码")
+        @Field(index = 2, type = DataType.STRING, lengthSize = 1, desc = "电话号码")
         public String getPhone() {
             return phone;
         }
 
         public void setPhone(String phone) {
             this.phone = phone;
-            this.phoneLength = phone.getBytes(Charsets.GBK).length;
         }
 
-        @Field(index = 2, indexOffsetName = "phoneLength", type = DataType.BYTE, desc = "联系人长度")
-        public int getNameLength() {
-            return nameLength;
-        }
-
-        public void setNameLength(int nameLength) {
-            this.nameLength = nameLength;
-        }
-
-        @Field(index = 3, indexOffsetName = "phoneLength", type = DataType.STRING, lengthName = "nameLength", desc = "联系人")
+        @Field(index = 3, type = DataType.STRING, lengthSize = 1, desc = "联系人")
         public String getName() {
             return name;
         }
 
         public void setName(String name) {
             this.name = name;
-            this.nameLength = name.getBytes(Charsets.GBK).length;
         }
     }
 }

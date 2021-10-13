@@ -1,62 +1,79 @@
 package org.yzh.web.config;
 
+import io.github.yezhihao.netmc.NettyConfig;
+import io.github.yezhihao.netmc.TCPServer;
+import io.github.yezhihao.netmc.codec.Delimiter;
+import io.github.yezhihao.netmc.core.HandlerInterceptor;
+import io.github.yezhihao.netmc.core.HandlerMapping;
+import io.github.yezhihao.netmc.core.SpringHandlerMapping;
+import io.github.yezhihao.netmc.session.MessageManager;
+import io.github.yezhihao.netmc.session.SessionListener;
+import io.github.yezhihao.netmc.session.SessionManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.yzh.framework.codec.Delimiter;
-import org.yzh.framework.codec.MessageDecoder;
-import org.yzh.framework.codec.MessageEncoder;
-import org.yzh.framework.mvc.HandlerMapping;
-import org.yzh.framework.mvc.SpringHandlerMapping;
-import org.yzh.framework.netty.NettyConfig;
-import org.yzh.framework.netty.TCPServer;
-import org.yzh.framework.session.MessageManager;
-import org.yzh.framework.session.SessionListener;
-import org.yzh.framework.session.SessionManager;
-import org.yzh.protocol.codec.JTMessageDecoder;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.yzh.protocol.codec.JTMessageEncoder;
+import org.yzh.protocol.codec.MultiPacketDecoder;
+import org.yzh.web.component.adapter.JTMessageAdapter;
 import org.yzh.web.endpoint.JTHandlerInterceptor;
 import org.yzh.web.endpoint.JTMultiPacketListener;
 import org.yzh.web.endpoint.JTSessionListener;
 
 @Configuration
-@ConditionalOnProperty(value = "tpc-server.jt808.enable", havingValue = "true")
-public class JTConfig implements InitializingBean, DisposableBean {
+@ConditionalOnProperty(value = "tcp-server.jt808.enable", havingValue = "true")
+public class JTConfig {
 
-    @Value("${tpc-server.jt808.port}")
-    private int port;
+    @Order(Integer.MIN_VALUE)
+    @Component
+    public class Starter implements InitializingBean, DisposableBean {
 
-    @Autowired
-    private TCPServer jt808Server;
+        private TCPServer jt808Server;
 
-    @Bean
-    public TCPServer jt808Server() {
-        NettyConfig jtConfig = NettyConfig.custom()
-                .setPort(port)
-                .setMaxFrameLength(2 + 21 + 1023 + 2)
-                .setDelimiters(new Delimiter(new byte[]{0x7e}))
-                .setDecoder(messageDecoder())
-                .setEncoder(messageEncoder())
-                .setSessionManager(sessionManager())
-                .setHandlerMapping(handlerMapping())
-                .setHandlerInterceptor(handlerInterceptor())
-                .setMultiPacketListener(multiPacketListener())
-                .build();
-        return new TCPServer("808服务", jtConfig);
+        public Starter(@Value("${tcp-server.jt808.port}") int port,
+                       JTMessageAdapter messageAdapter,
+                       SessionManager sessionManager,
+                       HandlerMapping handlerMapping,
+                       HandlerInterceptor handlerInterceptor) {
+            NettyConfig jtConfig = NettyConfig.custom()
+                    .setPort(port)
+                    .setMaxFrameLength(2 + 21 + 1023 + 2)
+                    .setDelimiters(new Delimiter(new byte[]{0x7e}))
+                    .setDecoder(messageAdapter)
+                    .setEncoder(messageAdapter)
+                    .setSessionManager(sessionManager)
+                    .setHandlerMapping(handlerMapping)
+                    .setHandlerInterceptor(handlerInterceptor)
+                    .build();
+            this.jt808Server = new TCPServer("808服务", jtConfig);
+        }
+
+        @Override
+        public void afterPropertiesSet() {
+            jt808Server.start();
+        }
+
+        @Override
+        public void destroy() {
+            jt808Server.stop();
+        }
     }
 
     @Bean
-    public MessageDecoder messageDecoder() {
-        return new JTMessageDecoder("org.yzh.protocol");
+    public JTMessageAdapter messageAdapter() {
+        return new JTMessageAdapter(
+                new JTMessageEncoder("org.yzh.protocol"),
+                new MultiPacketDecoder("org.yzh.protocol", multiPacketListener())
+        );
     }
 
     @Bean
-    public MessageEncoder messageEncoder() {
-        return new JTMessageEncoder("org.yzh.protocol");
+    public JTMultiPacketListener multiPacketListener() {
+        return new JTMultiPacketListener(10);
     }
 
     @Bean
@@ -82,21 +99,5 @@ public class JTConfig implements InitializingBean, DisposableBean {
     @Bean
     public JTHandlerInterceptor handlerInterceptor() {
         return new JTHandlerInterceptor();
-    }
-
-    @Bean
-    public JTMultiPacketListener multiPacketListener() {
-        return new JTMultiPacketListener(10);
-    }
-
-
-    @Override
-    public void afterPropertiesSet() {
-        jt808Server.start();
-    }
-
-    @Override
-    public void destroy() {
-        jt808Server.stop();
     }
 }

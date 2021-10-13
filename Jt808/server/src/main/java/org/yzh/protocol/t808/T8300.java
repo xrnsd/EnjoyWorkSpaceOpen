@@ -1,12 +1,11 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.commons.transform.Bin;
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Fs;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
 import org.yzh.protocol.basics.Header;
+import org.yzh.protocol.basics.JTMessage;
+import org.yzh.protocol.commons.Bin;
 import org.yzh.protocol.commons.JT808;
 
 /**
@@ -14,7 +13,7 @@ import org.yzh.protocol.commons.JT808;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.文本信息下发)
-public class T8300 extends AbstractMessage<Header> {
+public class T8300 extends JTMessage {
     /**
      * 0 1.紧急
      * 1    保留
@@ -49,12 +48,7 @@ public class T8300 extends AbstractMessage<Header> {
     }
 
     public void setSign(int... sign) {
-        //this.sign = Bin.writeInt(sign);
-        StringBuilder sb=new StringBuilder();
-        for (int val:sign) {
-            sb.append(val);
-        }
-        this.sign = Integer.valueOf(sb.toString(),2).intValue();
+        this.sign = Bin.writeInt(sign);
     }
 
     @Field(index = 1, type = DataType.BYTE, desc = "类型", version = 1)
@@ -66,8 +60,8 @@ public class T8300 extends AbstractMessage<Header> {
         this.type = type;
     }
 
-    @Fs({@Field(index = 1, type = DataType.STRING, desc = "文本信息", version = 0),
-            @Field(index = 2, type = DataType.STRING, desc = "文本信息", version = 1)})
+    @Field(index = 1, type = DataType.STRING, desc = "文本信息", version = 0)
+    @Field(index = 2, type = DataType.STRING, desc = "文本信息", version = 1)
     public String getContent() {
         return content;
     }

@@ -1,10 +1,9 @@
 package org.yzh.protocol.jsatl12;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 
 import java.nio.ByteBuffer;
 
@@ -15,7 +14,7 @@ import java.nio.ByteBuffer;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message
-public class DataPacket extends AbstractMessage<Header> {
+public class DataPacket extends JTMessage {
 
     private int flag;
     private String name;
@@ -24,7 +23,7 @@ public class DataPacket extends AbstractMessage<Header> {
     private ByteBuffer data;
 
     @Override
-    public int getMessageId() {
+    public Object getMessageType() {
         return flag;
     }
 
@@ -64,7 +63,7 @@ public class DataPacket extends AbstractMessage<Header> {
         this.length = length;
     }
 
-    @Field(index = 62, type = DataType.BYTES, lengthName = "length", desc = "数据体")
+    @Field(index = 62, type = DataType.BYTES, desc = "数据体")
     public ByteBuffer getData() {
         return data;
     }

@@ -126,13 +126,6 @@ public class MessageId {
         //============================================ JSATL12End
 
         //added by wgx
-        messageId.put(音视频参数下发, "音视频参数下发");
-        messageId.put(拍照指令下发, "拍照指令下发");
-        messageId.put(接收拍照上报消息应答, "接收拍照上报消息应答");
-        //added by wgx
-        messageId.put(终端拍照上报, "终端拍照上报");
-        messageId.put(终端音视频请求, "终端音视频请求");
-        messageId.put(应答终端音视频请求, "应答终端音视频请求");
-        //end wgx
+        messageId.put(平台报警应答, "平台报警应答");
     }
 }

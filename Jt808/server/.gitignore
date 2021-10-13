@@ -1,36 +1,42 @@
-HELP.md
+# Operating System Files
+
+*.DS_Store
+Thumbs.db
+*.sw?
+.#*
+*#
+*~
+*.sublime-*
+
+# Build Artifacts
+
+.git*
+.gradle/
+build/
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+bin/
+out/
+dependency-reduced-pom.xml
 
-### STS ###
-.apt_generated
+# Eclipse Project Files
+
 .classpath
-.factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IntelliJ IDEA Files
+
 *.iml
 *.ipr
+*.iws
+*.idea
+*.log
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+README.html
 
-### VS Code ###
-.vscode/
+# HTML resourse Files
+#src/main/resources/static/index.html
+#src/main/resources/static/view/
 
-logs
-
+# temp ignore
+src/main/resources/swagger.yaml

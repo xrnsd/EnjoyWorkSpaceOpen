@@ -1,11 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 /**
@@ -13,15 +11,13 @@ import org.yzh.protocol.commons.JT808;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.驾驶员身份信息采集上报)
-public class T0702 extends AbstractMessage<Header> {
+public class T0702 extends JTMessage {
 
     private int status;
     private String dateTime;
     private int cardStatus;
-    private int nameLen;
     private String name;
     private String licenseNo;
-    private int institutionLen;
     private String institution;
     private String licenseValidPeriod;
     private String idCard;
@@ -53,26 +49,16 @@ public class T0702 extends AbstractMessage<Header> {
         this.cardStatus = cardStatus;
     }
 
-    @Field(index = 8, type = DataType.BYTE, desc = "驾驶员姓名长度")
-    public int getNameLen() {
-        return nameLen;
-    }
-
-    public void setNameLen(int nameLen) {
-        this.nameLen = nameLen;
-    }
-
-    @Field(index = 9, type = DataType.STRING, lengthName = "nameLen", desc = "驾驶员姓名")
+    @Field(index = 9, type = DataType.STRING, lengthSize = 1, desc = "驾驶员姓名")
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-        this.nameLen = name.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 9, indexOffsetName = "nameLen", type = DataType.STRING, length = 20, desc = "从业资格证编码")
+    @Field(index = 9, type = DataType.STRING, length = 20, desc = "从业资格证编码")
     public String getLicenseNo() {
         return licenseNo;
     }
@@ -81,26 +67,16 @@ public class T0702 extends AbstractMessage<Header> {
         this.licenseNo = licenseNo;
     }
 
-    @Field(index = 29, indexOffsetName = "nameLen", type = DataType.BYTE, desc = "发证机构名称长度")
-    public int getInstitutionLen() {
-        return institutionLen;
-    }
-
-    public void setInstitutionLen(int institutionLen) {
-        this.institutionLen = institutionLen;
-    }
-
-    @Field(index = 30, indexOffsetName = "nameLen", type = DataType.STRING, lengthName = "institutionLen", desc = "从业资格证发证机构名称")
+    @Field(index = 30, type = DataType.STRING, lengthSize = 1, desc = "从业资格证发证机构名称")
     public String getInstitution() {
         return institution;
     }
 
     public void setInstitution(String institution) {
         this.institution = institution;
-        this.institutionLen = institution.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 30, indexOffsetName = {"nameLen", "institutionLen"}, type = DataType.BCD8421, length = 4, desc = "证件有效期")
+    @Field(index = 30, type = DataType.BCD8421, length = 4, desc = "证件有效期")
     public String getLicenseValidPeriod() {
         return licenseValidPeriod;
     }
@@ -109,7 +85,7 @@ public class T0702 extends AbstractMessage<Header> {
         this.licenseValidPeriod = licenseValidPeriod;
     }
 
-    @Field(index = 34, indexOffsetName = {"nameLen", "institutionLen"}, type = DataType.STRING, length = 4, desc = "驾驶员身份证号", version = 1)
+    @Field(index = 34, type = DataType.STRING, length = 4, desc = "驾驶员身份证号", version = 1)
     public String getIdCard() {
         return idCard;
     }

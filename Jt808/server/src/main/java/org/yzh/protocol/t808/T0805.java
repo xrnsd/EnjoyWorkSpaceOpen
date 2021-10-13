@@ -1,10 +1,10 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
+import io.github.yezhihao.netmc.core.model.Response;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 /**
@@ -12,12 +12,12 @@ import org.yzh.protocol.commons.JT808;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.摄像头立即拍摄命令应答)
-public class T0805 extends AbstractMessage<Header> {
+public class T0805 extends JTMessage implements Response {
 
     private int serialNo;
     private int result;
     private int total;
-    private byte[] items;
+    private int[] items;
 
     public T0805() {
     }
@@ -49,12 +49,12 @@ public class T0805 extends AbstractMessage<Header> {
         this.total = total;
     }
 
-    @Field(index = 4, type = DataType.BYTES, desc = "多媒体ID列表")
-    public byte[] getItems() {
+    @Field(index = 4, type = DataType.DWORD, desc = "多媒体ID列表")
+    public int[] getItems() {
         return items;
     }
 
-    public void setItems(byte[] items) {
+    public void setItems(int[] items) {
         this.items = items;
         this.total = items.length;
     }

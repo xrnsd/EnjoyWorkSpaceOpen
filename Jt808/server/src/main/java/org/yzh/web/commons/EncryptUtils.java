@@ -19,7 +19,8 @@ public class EncryptUtils {
 
     private static volatile IvParameterSpec DefInitVector;
 
-    private static final String MODE = "AES/CBC/PKCS5Padding";
+    private static final String MODE = "AES/CTR/NoPadding";
+//    private static final String MODE = "AES/CBC/PKCS5Padding";
 
     static {
         initial();
@@ -39,10 +40,14 @@ public class EncryptUtils {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 
-            keyGenerator.init(128, new SecureRandom("test~!@_128".getBytes(StandardCharsets.UTF_8)));
+            SecureRandom keyRandom = SecureRandom.getInstance("SHA1PRNG");
+            keyRandom.setSeed("test~!@_128".getBytes(StandardCharsets.UTF_8));
+            keyGenerator.init(128, keyRandom);
             byte[] key = keyGenerator.generateKey().getEncoded();
 
-            keyGenerator.init(128, new SecureRandom("test~!@_128".getBytes(StandardCharsets.UTF_8)));
+            SecureRandom ivRandom = SecureRandom.getInstance("SHA1PRNG");
+            ivRandom.setSeed("test~!@_128".getBytes(StandardCharsets.UTF_8));
+            keyGenerator.init(128, ivRandom);
             byte[] initVector = keyGenerator.generateKey().getEncoded();
 
             initial(key, initVector);

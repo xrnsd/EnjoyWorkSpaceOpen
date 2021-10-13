@@ -1,11 +1,9 @@
 package org.yzh.protocol.t1078;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT1078;
 
 /**
@@ -13,50 +11,32 @@ import org.yzh.protocol.commons.JT1078;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT1078.文件上传指令)
-public class T9206 extends AbstractMessage<Header> {
+public class T9206 extends JTMessage {
 
-    private int ipLength;
     private String ip;
     private int port;
-
-    private int usernameLength;
     private String username;
-
-    private int passwordLength;
     private String password;
-
-    private int pathLength;
     private String path;
-
     private int channelNo;
     private String startTime;
     private String endTime;
     private byte[] warningMark;
-    private int dataType;
+    private int mediaType;
     private int streamType;
-    private int storageType;
+    private int memoryType;
     private int condition;
 
-    @Field(index = 0, type = DataType.BYTE, desc = "服务器地址长度")
-    public int getIpLength() {
-        return ipLength;
-    }
-
-    public void setIpLength(int ipLength) {
-        this.ipLength = ipLength;
-    }
-
-    @Field(index = 1, lengthName = "ipLength", type = DataType.STRING, desc = "服务器地址")
+    @Field(index = 1, type = DataType.STRING, lengthSize = 1, desc = "服务器地址")
     public String getIp() {
         return ip;
     }
 
     public void setIp(String ip) {
         this.ip = ip;
-        this.ipLength = ip.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 1, indexOffsetName = "ipLength", type = DataType.WORD, desc = "端口")
+    @Field(index = 1, type = DataType.WORD, desc = "端口")
     public int getPort() {
         return port;
     }
@@ -65,64 +45,34 @@ public class T9206 extends AbstractMessage<Header> {
         this.port = port;
     }
 
-    @Field(index = 3, indexOffsetName = "ipLength", type = DataType.BYTE, desc = "用户名长度")
-    public int getUsernameLength() {
-        return usernameLength;
-    }
-
-    public void setUsernameLength(int usernameLength) {
-        this.usernameLength = usernameLength;
-    }
-
-    @Field(index = 4, indexOffsetName = "ipLength", lengthName = "usernameLength", type = DataType.STRING, desc = "用户名")
+    @Field(index = 4, type = DataType.STRING, lengthSize = 1, desc = "用户名")
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-        this.usernameLength = username.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 4, indexOffsetName = {"ipLength", "usernameLength"}, type = DataType.BYTE, desc = "密码长度")
-    public int getPasswordLength() {
-        return passwordLength;
-    }
-
-    public void setPasswordLength(int passwordLength) {
-        this.passwordLength = passwordLength;
-    }
-
-    @Field(index = 5, indexOffsetName = {"ipLength", "usernameLength"}, lengthName = "passwordLength", type = DataType.STRING, desc = "密码")
+    @Field(index = 5, type = DataType.STRING, lengthSize = 1, desc = "密码")
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-        this.passwordLength = password.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 5, indexOffsetName = {"ipLength", "usernameLength", "passwordLength"}, type = DataType.BYTE, desc = "文件上传路径长度")
-    public int getPathLength() {
-        return pathLength;
-    }
-
-    public void setPathLength(int pathLength) {
-        this.pathLength = pathLength;
-    }
-
-    @Field(index = 6, indexOffsetName = {"ipLength", "usernameLength", "passwordLength"}, lengthName = "pathLength", type = DataType.STRING, desc = "文件上传路径")
+    @Field(index = 6, type = DataType.STRING, lengthSize = 1, desc = "文件上传路径")
     public String getPath() {
         return path;
     }
 
     public void setPath(String path) {
         this.path = path;
-        this.pathLength = path.getBytes(Charsets.GBK).length;
     }
 
-    @Field(index = 6, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTE, desc = "逻辑通道号")
+    @Field(index = 6, type = DataType.BYTE, desc = "逻辑通道号")
     public int getChannelNo() {
         return channelNo;
     }
@@ -131,7 +81,7 @@ public class T9206 extends AbstractMessage<Header> {
         this.channelNo = channelNo;
     }
 
-    @Field(index = 7, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BCD8421, length = 6, desc = "开始时间（yyMMddHHmmss）")
+    @Field(index = 7, type = DataType.BCD8421, length = 6, desc = "开始时间（yyMMddHHmmss）")
     public String getStartTime() {
         return startTime;
     }
@@ -140,7 +90,7 @@ public class T9206 extends AbstractMessage<Header> {
         this.startTime = startTime;
     }
 
-    @Field(index = 13, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BCD8421, length = 6, desc = "结束时间（yyMMddHHmmss）")
+    @Field(index = 13, type = DataType.BCD8421, length = 6, desc = "结束时间（yyMMddHHmmss）")
     public String getEndTime() {
         return endTime;
     }
@@ -149,7 +99,7 @@ public class T9206 extends AbstractMessage<Header> {
         this.endTime = endTime;
     }
 
-    @Field(index = 19, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTES, length = 8, desc = "报警标志")
+    @Field(index = 19, type = DataType.BYTES, length = 8, desc = "报警标志")
     public byte[] getWarningMark() {
         return warningMark;
     }
@@ -158,16 +108,16 @@ public class T9206 extends AbstractMessage<Header> {
         this.warningMark = warningMark;
     }
 
-    @Field(index = 27, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTE, desc = "音视频资源类型")
-    public int getDataType() {
-        return dataType;
+    @Field(index = 27, type = DataType.BYTE, desc = "音视频资源类型")
+    public int getMediaType() {
+        return mediaType;
     }
 
-    public void setDataType(int dataType) {
-        this.dataType = dataType;
+    public void setMediaType(int mediaType) {
+        this.mediaType = mediaType;
     }
 
-    @Field(index = 28, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTE, desc = "码流类型")
+    @Field(index = 28, type = DataType.BYTE, desc = "码流类型")
     public int getStreamType() {
         return streamType;
     }
@@ -176,17 +126,16 @@ public class T9206 extends AbstractMessage<Header> {
         this.streamType = streamType;
     }
 
-    @Field(index = 29, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTE, desc = "存储位置")
-    public int getStorageType() {
-        return storageType;
+    @Field(index = 29, type = DataType.BYTE, desc = "存储位置")
+    public int getMemoryType() {
+        return memoryType;
     }
 
-    public void setStorageType(int storageType) {
-        this.storageType = storageType;
+    public void setMemoryType(int memoryType) {
+        this.memoryType = memoryType;
     }
 
-
-    @Field(index = 30, indexOffsetName = {"ipLength", "usernameLength", "passwordLength", "pathLength"}, type = DataType.BYTE, desc = "任务执行条件")
+    @Field(index = 30, type = DataType.BYTE, desc = "任务执行条件")
     public int getCondition() {
         return condition;
     }

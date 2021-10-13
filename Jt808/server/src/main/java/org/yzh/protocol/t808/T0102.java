@@ -1,12 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Fs;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 /**
@@ -14,36 +11,25 @@ import org.yzh.protocol.commons.JT808;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.终端鉴权)
-public class T0102 extends AbstractMessage<Header> {
+public class T0102 extends JTMessage {
 
-    private int tokenLength;
     /** 终端重连后上报鉴权码 */
     private String token;
     private String imei;
     private String version;
 
-    @Field(index = 0, type = DataType.BYTE, desc = "鉴权码长度", version = 1)
-    public int getTokenLength() {
-        return tokenLength;
-    }
-
-    public void setTokenLength(int tokenLength) {
-        this.tokenLength = tokenLength;
-    }
-
-    @Fs({@Field(index = 0, type = DataType.STRING, desc = "鉴权码", version = 0),
-            @Field(index = 1, type = DataType.STRING, lengthName = "tokenLength", desc = "鉴权码", version = 1)})
+    @Field(index = 0, type = DataType.STRING, desc = "鉴权码", version = 0)
+    @Field(index = 1, type = DataType.STRING, lengthSize = 1, desc = "鉴权码", version = 1)
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-        this.tokenLength = token.getBytes(Charsets.GBK).length;
     }
 
 
-    @Field(index = 2, indexOffsetName = "tokenLength", type = DataType.STRING, length = 15, desc = "终端IMEI", version = 1)
+    @Field(index = 2, type = DataType.STRING, length = 15, desc = "终端IMEI", version = 1)
     public String getImei() {
         return imei;
     }
@@ -52,7 +38,7 @@ public class T0102 extends AbstractMessage<Header> {
         this.imei = imei;
     }
 
-    @Field(index = 17, indexOffsetName = "tokenLength", type = DataType.STRING, length = 20, desc = "软件版本号", version = 1)
+    @Field(index = 17, type = DataType.STRING, length = 20, desc = "软件版本号", version = 1)
     public String getVersion() {
         return version;
     }

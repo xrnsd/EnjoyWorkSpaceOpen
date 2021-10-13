@@ -1,15 +1,19 @@
 package org.yzh.protocol.commons.transform.attribute;
 
-import org.yzh.framework.commons.transform.Bit;
-import org.yzh.protocol.commons.transform.Attribute;
+import io.netty.buffer.ByteBuf;
 
 /**
  * 路段行驶时间不足/过长报警附加信息见表 30
  * length 7
  */
-public class RouteDriveTimeAlarm extends Attribute {
+public class RouteDriveTimeAlarm {
 
-    public static final int attributeId = 0x13;
+    public static final int id = 0x13;
+
+    public static int id() {
+        return id;
+    }
+
     /** 路段ID */
     private int routeId;
     /** 行驶时间,单位为秒(s) */
@@ -24,27 +28,6 @@ public class RouteDriveTimeAlarm extends Attribute {
         this.routeId = routeId;
         this.driveTime = driveTime;
         this.result = result;
-    }
-
-    public int getAttributeId() {
-        return attributeId;
-    }
-
-    @Override
-    public RouteDriveTimeAlarm formBytes(byte[] bytes) {
-        this.routeId = Bit.readInt32(bytes, 0);
-        this.driveTime = Bit.readInt16(bytes, 4);
-        this.result = bytes[6];
-        return this;
-    }
-
-    @Override
-    public byte[] toBytes() {
-        byte[] bytes = new byte[7];
-        Bit.write4Byte(bytes, 0, this.routeId);
-        Bit.write2Byte(bytes, 4, this.driveTime);
-        bytes[6] = this.result;
-        return bytes;
     }
 
     public int getRouteId() {
@@ -69,5 +52,29 @@ public class RouteDriveTimeAlarm extends Attribute {
 
     public void setResult(byte result) {
         this.result = result;
+    }
+
+    public static class Schema implements io.github.yezhihao.protostar.Schema<RouteDriveTimeAlarm> {
+
+        public static final Schema INSTANCE = new Schema();
+
+        private Schema() {
+        }
+
+        @Override
+        public RouteDriveTimeAlarm readFrom(ByteBuf input) {
+            RouteDriveTimeAlarm message = new RouteDriveTimeAlarm();
+            message.routeId = (int) input.readUnsignedInt();
+            message.driveTime = input.readUnsignedShort();
+            message.result = input.readByte();
+            return message;
+        }
+
+        @Override
+        public void writeTo(ByteBuf output, RouteDriveTimeAlarm message) {
+            output.writeInt(message.routeId);
+            output.writeShort(message.driveTime);
+            output.writeByte(message.result);
+        }
     }
 }

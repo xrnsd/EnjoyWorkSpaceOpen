@@ -12,6 +12,7 @@ import org.yzh.web.model.entity.DeviceDO;
 import org.yzh.web.model.vo.DeviceInfo;
 import org.yzh.web.service.DeviceService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
@@ -47,8 +48,8 @@ public class DeviceServiceImpl implements DeviceService {
         if (deviceDO == null || deviceDO.getInstallTime() == null)
             record.setInstallTime(now);
 
-        int protocolVersion = request.getSession().getProtocolVersion();
-        if (protocolVersion != -1)
+        Integer protocolVersion = request.getSession().getProtocolVersion();
+        if (protocolVersion == null)
             protocolVersion = request.getHeader().getVersionNo();
         record.setProtocolVersion(protocolVersion);
 
@@ -60,11 +61,12 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         DeviceInfo device = new DeviceInfo();
-        device.setIssuedAt((int) (System.currentTimeMillis() / 1000));
-        device.setValidAt(60 * 60 * 24 * 7);
+        device.setIssuedAt(LocalDate.now());
+        device.setDeviceId(deviceId);
+
+        device.setReserved((byte) 0);
         device.setPlateColor((byte) request.getPlateColor());
         device.setPlateNo(request.getPlateNo());
-        device.setDeviceId(deviceId);
         return device;
     }
 
@@ -77,20 +79,23 @@ public class DeviceServiceImpl implements DeviceService {
             bytes = EncryptUtils.decrypt(bytes);
             DeviceInfo device = DeviceInfo.formBytes(bytes);
 
-            int currentTime = (int) (System.currentTimeMillis() / 1000);
-            int expiresAt = device.getIssuedAt() + device.getValidAt();
-            if (expiresAt < currentTime) {
-                log.warn("鉴权失败：过期的token，{}", token);
-                return null;
+            DeviceDO record = deviceMapper.get(device.getDeviceId());
+            if (record != null) {
+                device.setPlateNo(record.getPlateNo());
+
+                record = new DeviceDO(device.getDeviceId(), true, LocalDateTime.now());
+                record.setImei(request.getImei());
+                record.setSoftwareVersion(request.getVersion());
+                deviceMapper.update(record);
             }
-            DeviceDO record = new DeviceDO(device.getDeviceId(), true, LocalDateTime.now());
-            record.setImei(request.getImei());
-            record.setSoftwareVersion(request.getVersion());
-            deviceMapper.update(record);
             return device;
         } catch (Exception e) {
-            log.warn("鉴权失败：错误的token，{}", e.getMessage());
-            return null;
+            log.warn("鉴权失败：错误的token[{}]，{}", token, e.getMessage());
+            //TODO 鉴权失败，使用测试车辆，仅供测试！
+            DeviceInfo deviceInfo = new DeviceInfo();
+            deviceInfo.setDeviceId("015651821858");
+            deviceInfo.setPlateNo("测A12345");
+            return deviceInfo;
         }
     }
 }

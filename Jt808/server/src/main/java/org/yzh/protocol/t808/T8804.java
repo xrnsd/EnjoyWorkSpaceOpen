@@ -1,10 +1,10 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
 import org.yzh.protocol.basics.Header;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 /**
@@ -12,12 +12,12 @@ import org.yzh.protocol.commons.JT808;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.录音开始命令)
-public class T8804 extends AbstractMessage<Header> {
+public class T8804 extends JTMessage {
 
     private int command;
     private int time;
     private int save;
-    private int audioSampleRate;
+    private int audioSamplingRate;
 
     public T8804() {
     }
@@ -63,11 +63,11 @@ public class T8804 extends AbstractMessage<Header> {
      * 其他保留
      */
     @Field(index = 4, type = DataType.BYTE, desc = "音频采样率")
-    public int getAudioSampleRate() {
-        return audioSampleRate;
+    public int getAudioSamplingRate() {
+        return audioSamplingRate;
     }
 
-    public void setAudioSampleRate(int audioSampleRate) {
-        this.audioSampleRate = audioSampleRate;
+    public void setAudioSamplingRate(int audioSamplingRate) {
+        this.audioSamplingRate = audioSamplingRate;
     }
 }

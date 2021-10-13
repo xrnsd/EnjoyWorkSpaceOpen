@@ -1,11 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 import java.util.ArrayList;
@@ -17,7 +15,7 @@ import java.util.List;
  * 该消息2019版本已删除
  */
 @Message(JT808.信息点播菜单设置)
-public class T8303 extends AbstractMessage<Header> {
+public class T8303 extends JTMessage {
 
     /** @see org.yzh.protocol.commons.Action */
     private int type;
@@ -60,7 +58,6 @@ public class T8303 extends AbstractMessage<Header> {
 
     public static class Item {
         private int id;
-        private int length;
         private String content;
 
         public Item() {
@@ -69,7 +66,6 @@ public class T8303 extends AbstractMessage<Header> {
         public Item(int id, String content) {
             this.id = id;
             this.content = content;
-            this.length = content.getBytes(Charsets.GBK).length;
         }
 
         @Field(index = 0, type = DataType.BYTE, desc = "事件ID")
@@ -81,23 +77,13 @@ public class T8303 extends AbstractMessage<Header> {
             this.id = id;
         }
 
-        @Field(index = 1, type = DataType.WORD, desc = "长度")
-        public int getLength() {
-            return length;
-        }
-
-        public void setLength(int length) {
-            this.length = length;
-        }
-
-        @Field(index = 3, type = DataType.STRING, lengthName = "length", desc = "信息名称")
+        @Field(index = 3, type = DataType.STRING, lengthSize = 2, desc = "信息名称")
         public String getContent() {
             return content;
         }
 
         public void setContent(String content) {
             this.content = content;
-            this.length = content.getBytes(Charsets.GBK).length;
         }
     }
 }

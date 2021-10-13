@@ -1,15 +1,19 @@
 package org.yzh.protocol.commons.transform.attribute;
 
-import org.yzh.framework.commons.transform.Bit;
-import org.yzh.protocol.commons.transform.Attribute;
+import io.netty.buffer.ByteBuf;
 
 /**
  * 超速报警附加信息见表 28
  * length 1 或 5
  */
-public class OverSpeedAlarm extends Attribute {
+public class OverSpeedAlarm {
 
-    public static final int attributeId = 0x11;
+    public static final int id = 0x11;
+
+    public static int id() {
+        return id;
+    }
+
     /** 位置类型 */
     private byte positionType;
     /** 区域或路段ID */
@@ -21,29 +25,6 @@ public class OverSpeedAlarm extends Attribute {
     public OverSpeedAlarm(byte positionType, Integer areaId) {
         this.positionType = positionType;
         this.areaId = areaId;
-    }
-
-    public int getAttributeId() {
-        return attributeId;
-    }
-
-    @Override
-    public OverSpeedAlarm formBytes(byte[] bytes) {
-        this.positionType = bytes[0];
-        if (bytes.length >= 5)
-            this.areaId = Bit.readInt32(bytes, 1);
-        return this;
-    }
-
-    @Override
-    public byte[] toBytes() {
-        if (areaId == null)
-            return new byte[]{positionType};
-
-        byte[] bytes = new byte[5];
-        bytes[0] = positionType;
-        Bit.write4Byte(bytes, 1, areaId);
-        return bytes;
     }
 
     public byte getPositionType() {
@@ -60,5 +41,29 @@ public class OverSpeedAlarm extends Attribute {
 
     public void setAreaId(Integer areaId) {
         this.areaId = areaId;
+    }
+
+    public static class Schema implements io.github.yezhihao.protostar.Schema<OverSpeedAlarm> {
+
+        public static final Schema INSTANCE = new Schema();
+
+        private Schema() {
+        }
+
+        @Override
+        public OverSpeedAlarm readFrom(ByteBuf input) {
+            OverSpeedAlarm message = new OverSpeedAlarm();
+            message.positionType = input.readByte();
+            if (message.positionType > 0)
+                message.areaId = (int) input.readUnsignedInt();
+            return message;
+        }
+
+        @Override
+        public void writeTo(ByteBuf output, OverSpeedAlarm message) {
+            output.writeByte(message.positionType);
+            if (message.positionType > 0)
+                output.writeInt(message.areaId);
+        }
     }
 }

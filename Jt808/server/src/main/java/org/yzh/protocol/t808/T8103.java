@@ -1,27 +1,26 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.BytesParameter;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Convert;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
 import org.yzh.protocol.basics.Header;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
-import org.yzh.protocol.commons.transform.TerminalParameterUtils;
+import org.yzh.protocol.commons.transform.ParameterConverter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author yezhihao
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.设置终端参数)
-public class T8103 extends AbstractMessage<Header> {
+public class T8103 extends JTMessage {
 
     private int total;
-    private List<BytesParameter> bytesParameters;
+    private Map<Integer, Object> parameters;
 
     public T8103() {
     }
@@ -32,8 +31,8 @@ public class T8103 extends AbstractMessage<Header> {
 
     @Field(index = 0, type = DataType.BYTE, desc = "参数总数")
     public int getTotal() {
-        if (bytesParameters != null)
-            return bytesParameters.size();
+        if (parameters != null)
+            return parameters.size();
         return total;
     }
 
@@ -41,26 +40,19 @@ public class T8103 extends AbstractMessage<Header> {
         this.total = total;
     }
 
-    @Field(index = 1, type = DataType.LIST, desc = "参数项列表")
-    public List<BytesParameter> getBytesParameters() {
-        return bytesParameters;
+    @Convert(converter = ParameterConverter.class)
+    @Field(index = 1, type = DataType.MAP, desc = "参数项列表")
+    public Map<Integer, Object> getParameters() {
+        return parameters;
     }
 
-    public void setBytesParameters(List<BytesParameter> bytesParameters) {
-        this.bytesParameters = bytesParameters;
+    public void setParameters(Map<Integer, Object> parameters) {
+        this.parameters = parameters;
     }
 
-    public void addParameter(BytesParameter bytesParameter) {
-        if (bytesParameters == null)
-            bytesParameters = new ArrayList<>();
-        bytesParameters.add(bytesParameter);
-    }
-
-    public Map<Integer, String> getParameters() {
-        return TerminalParameterUtils.transform(bytesParameters);
-    }
-
-    public void setParameters(Map<Integer, String> parameters) {
-        this.bytesParameters = TerminalParameterUtils.transform(parameters);
+    public void addParameter(Integer key, Object value) {
+        if (parameters == null)
+            parameters = new TreeMap();
+        parameters.put(key, value);
     }
 }

@@ -1,10 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.定位数据批量上传)
-public class T0704 extends AbstractMessage<Header> {
+public class T0704 extends JTMessage {
 
     private int total;
     private int type;
@@ -49,28 +48,16 @@ public class T0704 extends AbstractMessage<Header> {
     }
 
     public static class Item {
-
-        private int length;
         private T0200 position;
 
         public Item() {
         }
 
-        public Item(int length, T0200 position) {
-            this.length = length;
+        public Item(T0200 position) {
             this.position = position;
         }
 
-        @Field(index = 0, type = DataType.WORD, desc = "位置汇报数据体长度")
-        public int getLength() {
-            return length;
-        }
-
-        public void setLength(int length) {
-            this.length = length;
-        }
-
-        @Field(index = 2, type = DataType.OBJ, lengthName = "length", desc = "位置汇报数据体")
+        @Field(index = 2, type = DataType.OBJ, lengthSize = 2, desc = "位置汇报数据体")
         public T0200 getPosition() {
             return position;
         }

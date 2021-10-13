@@ -89,14 +89,7 @@ public interface JT808 {
     int 平台下行消息保留 = 0x8F00 - 0x8FFF;
     int 厂商自定义上行消息 = 0xE000 - 0xEFFF;//2019 new
     int 商自定义下行消息 = 0xF000 - 0xFFFF;//2019 new
-    //added by wgx
-    int 音视频参数下发 = 0x8F03;
-    int 拍照指令下发 = 0x8F02;
-    int 接收拍照上报消息应答 = 0x8F01;
-    //added by wgx
-    int 应答终端音视频请求 = 0x0F03;
-    int 终端音视频请求 = 0x0F02;
-    int 终端拍照上报 = 0x0F01;
-    //end wgx
 
+    //added by wgx
+    int 平台报警应答 = 0x8F04;
 }

@@ -1,10 +1,9 @@
 package org.yzh.protocol.jsatl12;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JSATL12;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JSATL12.报警附件信息消息)
-public class T1210 extends AbstractMessage<Header> {
+public class T1210 extends JTMessage {
 
     private String terminalId;
     private AlarmId alarmId;
@@ -82,20 +81,10 @@ public class T1210 extends AbstractMessage<Header> {
     }
 
     public static class Item {
-        private int nameLength;
         private String name;
         private long size;
 
-        @Field(index = 0, type = DataType.BYTE, desc = "文件名称长度")
-        public int getNameLength() {
-            return nameLength;
-        }
-
-        public void setNameLength(int nameLength) {
-            this.nameLength = nameLength;
-        }
-
-        @Field(index = 1, type = DataType.STRING, lengthName = "nameLength", desc = "文件名称")
+        @Field(index = 1, type = DataType.STRING, lengthSize = 1, desc = "文件名称")
         public String getName() {
             return name;
         }
@@ -104,7 +93,7 @@ public class T1210 extends AbstractMessage<Header> {
             this.name = name;
         }
 
-        @Field(index = 1, indexOffsetName = "nameLength", type = DataType.DWORD, desc = "文件大小")
+        @Field(index = 1, type = DataType.DWORD, desc = "文件大小")
         public long getSize() {
             return size;
         }

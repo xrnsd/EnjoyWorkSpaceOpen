@@ -1,16 +1,17 @@
 package org.yzh.web.endpoint;
 
+import io.github.yezhihao.netmc.core.annotation.AsyncBatch;
+import io.github.yezhihao.netmc.core.annotation.Endpoint;
+import io.github.yezhihao.netmc.core.annotation.Mapping;
+import io.github.yezhihao.netmc.session.MessageManager;
+import io.github.yezhihao.netmc.session.Session;
+import io.github.yezhihao.netmc.util.AdapterList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.yzh.framework.mvc.annotation.AsyncBatch;
-import org.yzh.framework.mvc.annotation.Endpoint;
-import org.yzh.framework.mvc.annotation.Mapping;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.session.MessageManager;
-import org.yzh.framework.session.Session;
 import org.yzh.protocol.basics.Header;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.t808.*;
 import org.yzh.web.commons.DateUtils;
 import org.yzh.web.commons.EncryptUtils;
@@ -20,7 +21,6 @@ import org.yzh.web.service.LocationService;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -73,9 +73,11 @@ public class JT808Endpoint {
     public T8100 register(T0100 message, Session session) {
         Header header = message.getHeader();
         if (message.getPlateNo() == null) {
-            session.setProtocolVersion(header.getClientId(), -1);
+            session.recordProtocolVersion(header.getClientId(), -1);
             log.warn(">>>>>>>>>>可能为2011版本协议，将在下次请求时尝试解析{},{}", session, message);
             return null;
+        } else {
+            session.setProtocolVersion(header.getVersionNo());
         }
 
         T8100 result = new T8100(session.nextSerialNo(), header.getMobileNo());
@@ -136,37 +138,28 @@ public class JT808Endpoint {
         Header header = message.getHeader();
     }
 
-    //异步批量处理默认 4线程 最大累积100条记录处理一次 最大等待时间1秒
-    @AsyncBatch
+    /**
+     * 异步批量处理
+     * poolSize：参考数据库CPU核心数量
+     * maxElements：最大累积4000条记录处理一次
+     * maxWait：最大等待时间1秒
+     */
+    @AsyncBatch(poolSize = 2, maxElements = 4000, maxWait = 1000)
     @Mapping(types = 位置信息汇报, desc = "位置信息汇报")
     public void 位置信息汇报(List<T0200> list) {
-        int index=0;
-        for (T0200 location:list) {
-            log.info("=================  位置信息汇报 解析 {}{}{}{}===================",index,index,index,index);
-            log.info("getWarningMark = {}", location.getWarningMark());
-            log.info("getStatus = {}", location.getStatus());
-            log.info("getLatitude = {}", location.getLatitude());
-            log.info("getLongitude = {}", location.getLongitude());
-            log.info("getAltitude = {}", location.getAltitude());
-            log.info("getSpeed = {}", location.getSpeed());
-            log.info("getDirection = {}", location.getDirection());
-            log.info("getDateTime = {}", location.getDateTime());
-            log.info("======================================================");
-            index+=1;
-        }
         locationService.batchInsert(list);
     }
 
     @Mapping(types = 定位数据批量上传, desc = "定位数据批量上传")
     public void 定位数据批量上传(T0704 message) {
         Header header = message.getHeader();
-        List<T0704.Item> items = message.getItems();
-        List<T0200> list = new ArrayList<>(items.size());
-        for (T0704.Item item : items) {
+        Session session = message.getSession();
+        List<T0200> list = new AdapterList<>(message.getItems(), item -> {
             T0200 position = item.getPosition();
             position.setHeader(header);
-            list.add(position);
-        }
+            position.setSession(session);
+            return position;
+        });
         locationService.batchInsert(list);
     }
 
@@ -194,18 +187,18 @@ public class JT808Endpoint {
     }
 
     @Mapping(types = 查询区域或线路数据应答, desc = "查询区域或线路数据应答")
-    public void 查询区域或线路数据应答(AbstractMessage message, Session session) {
-        Header header = (Header) message.getHeader();
+    public void 查询区域或线路数据应答(JTMessage message, Session session) {
+        Header header = message.getHeader();
     }
 
     @Mapping(types = 行驶记录数据上传, desc = "行驶记录仪数据上传")
     public void 行驶记录仪数据上传(T0700 message, Session session) {
-        Header header = (Header) message.getHeader();
+        Header header = message.getHeader();
     }
 
     @Mapping(types = 电子运单上报, desc = "电子运单上报")
-    public void 电子运单上报(AbstractMessage message, Session session) {
-        Header header = (Header) message.getHeader();
+    public void 电子运单上报(JTMessage message, Session session) {
+        Header header = message.getHeader();
     }
 
     @Mapping(types = 驾驶员身份信息采集上报, desc = "驾驶员身份信息采集上报")
@@ -213,7 +206,7 @@ public class JT808Endpoint {
         Header header = message.getHeader();
     }
 
-    @Mapping(types = CAN总线数据上传, desc = "定位数据批量上传")
+    @Mapping(types = CAN总线数据上传, desc = "CAN总线数据上传")
     public void CAN总线数据上传(T0705 message, Session session) {
         Header header = message.getHeader();
     }
@@ -253,7 +246,7 @@ public class JT808Endpoint {
     }
 
     @Mapping(types = 数据上行透传, desc = "数据上行透传")
-    public void passthrough(T8900_0900 message, Session session) {
+    public void passthrough(T0900 message, Session session) {
         Header header = message.getHeader();
     }
 
@@ -268,57 +261,4 @@ public class JT808Endpoint {
         String mobileNo = header.getMobileNo();
         messageManager.response(message);
     }
-
-    //added by wgx
-    @Mapping(types = 终端拍照上报, desc = "终端拍照上报")
-    public T0001 authentication(T0F01 request, Session session) {
-        log.info("=================  终端拍照上报 解析 ===================");
-        log.info("getMediaId = {}", request.getMediaId());
-        log.info("getMediaFormatCode = {}", request.getMediaFormatCode());
-        log.info("getEventType = {}", request.getEventType());
-        log.info("getShootTime = {}", request.getShootTime());
-        log.info("getImgUri = {}", request.getImgUri());
-        log.info("======================================================");
-
-        Header header = request.getHeader();
-        T0001 result = new T0001(session.nextSerialNo(), header.getMobileNo());
-        result.setSerialNo(header.getSerialNo());
-        result.setReplyId(header.getMessageId());
-        result.setResultCode(T0001.Success);
-        return result;
-    }
-
-    @Mapping(types = 终端音视频请求, desc = "终端音视频请求")
-    public T0001 authentication(T0F02 request, Session session) {
-        log.info("=================  终端音视频请求 解析 ===================");
-        log.info("getMediaType = {}", request.getMediaType());
-        log.info("getEventType = {}", request.getEventType());
-        log.info("getMediaId = {}", request.getMediaId());
-        log.info("======================================================");
-
-        Header header = request.getHeader();
-        T0001 result = new T0001(session.nextSerialNo(), header.getMobileNo());
-        result.setSerialNo(header.getSerialNo());
-        result.setReplyId(header.getMessageId());
-        result.setResultCode(T0001.Success);
-        return result;
-    }
-
-    @Mapping(types = 应答终端音视频请求, desc = "应答终端音视频请求")
-    public T0001 authentication(T0F03 request, Session session) {
-        log.info("=================  应答终端音视频请求 解析 ===================");
-        log.info("getFlowId = {}", request.getFlowId());
-        log.info("getMediaId = {}", request.getMediaId());
-        log.info("getResult = {}", request.getResult());
-        log.info("getFailReason = {}", request.getFailReason());
-        log.info("======================================================");
-
-        Header header = request.getHeader();
-        T0001 result = new T0001(session.nextSerialNo(), header.getMobileNo());
-        result.setSerialNo(header.getSerialNo());
-        result.setReplyId(header.getMessageId());
-        result.setResultCode(T0001.Success);
-        return result;
-    }
-    //end wgx
 }

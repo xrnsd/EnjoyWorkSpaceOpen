@@ -1,8 +1,12 @@
 package org.yzh.protocol.codec;
 
+import io.github.yezhihao.netmc.session.Session;
+import io.github.yezhihao.netmc.util.ByteBufUtils;
+import io.github.yezhihao.protostar.ProtostarUtil;
+import io.github.yezhihao.protostar.Schema;
 import io.netty.buffer.ByteBuf;
-import org.yzh.framework.commons.transform.ByteBufUtils;
-import org.yzh.framework.orm.model.AbstractMessage;
+import org.yzh.protocol.basics.JTMessage;
+import org.yzh.protocol.jsatl12.DataPacket;
 
 /**
  * 数据帧解码器
@@ -11,18 +15,19 @@ import org.yzh.framework.orm.model.AbstractMessage;
  */
 public class DataFrameMessageDecoder extends JTMessageDecoder {
 
-    private Class<? extends AbstractMessage> dataFrameClass;
+    private Schema<? extends JTMessage> dataFrameSchema;
     private byte[] dataFramePrefix;
 
-    public DataFrameMessageDecoder(String basePackage, Class<? extends AbstractMessage> dataFrameClass, byte[] dataFramePrefix) {
+    public DataFrameMessageDecoder(String basePackage, byte[] dataFramePrefix) {
         super(basePackage);
-        this.dataFrameClass = dataFrameClass;
         this.dataFramePrefix = dataFramePrefix;
+        this.dataFrameSchema = ProtostarUtil.getSchema(DataPacket.class, 0);
     }
 
-    public AbstractMessage decode(ByteBuf buf, int version) {
+    @Override
+    public JTMessage decode(ByteBuf buf, Session session) {
         if (ByteBufUtils.startsWith(buf, dataFramePrefix))
-            return decode(buf, dataFrameClass, 0);
-        return super.decode(buf, 0);
+            return dataFrameSchema.readFrom(buf);
+        return super.decode(buf, session);
     }
 }

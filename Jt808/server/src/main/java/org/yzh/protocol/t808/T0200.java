@@ -1,17 +1,14 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.BytesAttribute;
-import org.yzh.protocol.basics.Header;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Convert;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
-import org.yzh.protocol.commons.transform.Attribute;
-import org.yzh.protocol.commons.transform.PositionAttributeUtils;
+import org.yzh.protocol.commons.transform.AttributeConverter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +16,7 @@ import java.util.Map;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.位置信息汇报)
-public class T0200 extends AbstractMessage<Header> {
+public class T0200 extends JTMessage {
 
     private int warningMark;
     private int status;
@@ -29,7 +26,7 @@ public class T0200 extends AbstractMessage<Header> {
     private int speed;
     private int direction;
     private LocalDateTime dateTime;
-    private List<BytesAttribute> bytesAttributes;
+    private Map<Integer, Object> attributes;
 
     @Field(index = 0, type = DataType.DWORD, desc = "报警标志")
     public int getWarningMark() {
@@ -103,20 +100,13 @@ public class T0200 extends AbstractMessage<Header> {
         this.dateTime = dateTime;
     }
 
-    @Field(index = 28, type = DataType.LIST, desc = "位置附加信息")
-    public List<BytesAttribute> getBytesAttributes() {
-        return bytesAttributes;
+    @Convert(converter = AttributeConverter.class)
+    @Field(index = 28, type = DataType.MAP, desc = "位置附加信息")
+    public Map<Integer, Object> getAttributes() {
+        return attributes;
     }
 
-    public void setBytesAttributes(List<BytesAttribute> bytesAttributes) {
-        this.bytesAttributes = bytesAttributes;
-    }
-
-    public Map<Integer, Attribute> getAttributes() {
-        return PositionAttributeUtils.transform(bytesAttributes);
-    }
-
-    public void setAttributes(Map<Integer, Attribute> attributes) {
-        this.bytesAttributes = PositionAttributeUtils.transform(attributes);
+    public void setAttributes(Map<Integer, Object> attributes) {
+        this.attributes = attributes;
     }
 }

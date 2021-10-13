@@ -1,11 +1,9 @@
 package org.yzh.protocol.t808;
 
-import org.yzh.framework.orm.annotation.Field;
-import org.yzh.framework.orm.annotation.Message;
-import org.yzh.framework.orm.model.AbstractMessage;
-import org.yzh.framework.orm.model.DataType;
-import org.yzh.protocol.basics.Header;
-import org.yzh.protocol.commons.Charsets;
+import io.github.yezhihao.protostar.DataType;
+import io.github.yezhihao.protostar.annotation.Field;
+import io.github.yezhihao.protostar.annotation.Message;
+import org.yzh.protocol.basics.JTMessage;
 import org.yzh.protocol.commons.JT808;
 
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
  * @home https://gitee.com/yezhihao/jt808-server
  */
 @Message(JT808.设置圆形区域)
-public class T8600 extends AbstractMessage<Header> {
+public class T8600 extends JTMessage {
 
     /** @see org.yzh.protocol.commons.ShapeAction */
     private int action;
@@ -62,7 +60,6 @@ public class T8600 extends AbstractMessage<Header> {
         private int duration;
 
         private int nightMaxSpeed;
-        private int nameLength;
         private String name;
 
         public Item() {
@@ -92,7 +89,6 @@ public class T8600 extends AbstractMessage<Header> {
             this.duration = duration;
             this.nightMaxSpeed = nightMaxSpeed;
             this.name = name;
-            this.nameLength = name.getBytes(Charsets.GBK).length;
         }
 
         @Field(index = 0, type = DataType.DWORD, desc = "区域ID")
@@ -185,23 +181,13 @@ public class T8600 extends AbstractMessage<Header> {
             this.nightMaxSpeed = nightMaxSpeed;
         }
 
-        @Field(index = 35, type = DataType.WORD, desc = "名称长度", version = 1)
-        public int getNameLength() {
-            return nameLength;
-        }
-
-        public void setNameLength(int nameLength) {
-            this.nameLength = nameLength;
-        }
-
-        @Field(index = 37, type = DataType.STRING, lengthName = "nameLength", desc = "区域名称", version = 1)
+        @Field(index = 37, type = DataType.STRING, lengthSize = 2, desc = "区域名称", version = 1)
         public String getName() {
             return name;
         }
 
         public void setName(String name) {
             this.name = name;
-            this.nameLength = name.getBytes(Charsets.GBK).length;
         }
     }
 }
