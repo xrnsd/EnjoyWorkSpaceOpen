@@ -79,7 +79,7 @@ public class LogcatHelper {
      * @param dirPath log的相对路径
      */
     public LogcatHelper setLogSizeMax(long val) {
-        mLogDumper.setLogSizeMax(val);
+        mLogDumper.setLogDirSizeMax(val);
         return this;
     }
 
@@ -124,7 +124,8 @@ public class LogcatHelper {
         private String mLogPolicy = null;
         private String mDirPathSaveLog = null;
 
-        private long mLogSizeMax = 1024 * 1024 * 50;//def:50M
+        private long mLogFileLineMax = 10000;
+        private long mLogDirSizeMax = 1024 * 1024 * 150;//def:150M
 
         private FileUtils mFileUtils;
         private FileUtils.Flag mRunning = new FileUtils.Flag(true);
@@ -133,8 +134,8 @@ public class LogcatHelper {
             mFileUtils = fu;
         }
 
-        public void setLogSizeMax(long logSizeMax) {
-            mLogSizeMax = logSizeMax;
+        public void setLogDirSizeMax(long logDirSizeMax) {
+            mLogDirSizeMax = logDirSizeMax;
         }
 
         public void stopLogs() {
@@ -160,10 +161,7 @@ public class LogcatHelper {
         public void run() {
             if (null == mFileUtils)
                 return;
-            final String logFilePath = new StringBuilder(mDirPathSaveLog)
-                    .append(File.separator)
-                    .append(CommonUtils.formatLocalTimeByMilSecond(System.currentTimeMillis(), "yyyyMMdd_HHmmss")).append(FILE_NAME_END)
-                    .toString();
+            final String logFilePath = getLogFilePathNow();
             if (null == mFileUtils.createFile(logFilePath))
                 return;
 
@@ -173,6 +171,13 @@ public class LogcatHelper {
                 writeLogFromInput(logFilePath, logcatProc.getInputStream(), mRunning);
                 logcatProc.destroy();
             }
+        }
+
+        private String getLogFilePathNow() {
+            return new StringBuilder(mDirPathSaveLog)
+                    .append(File.separator)
+                    .append(CommonUtils.formatLocalTimeByMilSecond(System.currentTimeMillis(), "yyyyMMdd_HHmmss")).append(FILE_NAME_END)
+                    .toString();
         }
 
         public boolean writeLogFromInput(String fileRelativePath, InputStream input, FileUtils.Flag flag) {
@@ -205,13 +210,11 @@ public class LogcatHelper {
                         out.write((line + "\n").getBytes());
                     }
                     lineCount += 1;
-                    if (lineCount > 5000) { //log文件大小控制
-                        mFileUtils.autoClean(mDirPathSaveLog, mLogSizeMax);
-                        String filePath = currentFile.getPath();
-                        String filrPathBase = filePath.substring(0, filePath.lastIndexOf("."));
-                        String filrPathSuffix = filePath.substring(filePath.lastIndexOf(".") + 1);
-                        currentFile = mFileUtils.createFile(new StringBuilder(filrPathBase).append("_e.").append(filrPathSuffix).toString());
+                    if (lineCount > mLogFileLineMax) { //log文件大小控制
+                        mFileUtils.autoClean(mDirPathSaveLog, mLogDirSizeMax);
+                        currentFile = mFileUtils.createFile(getLogFilePathNow());
                         if (null == currentFile) {
+                            Log.e(TAG, "writeLogFromInput > process fail : new log file create fail");
                             return false;
                         }
                         out = new FileOutputStream(currentFile);

@@ -406,6 +406,7 @@ public abstract class BasicModuleApplication extends Application {
                 @Override
                 public void onIpcFrameResisterSuccess() {
                     Log.d(TAG, "onIpcFrameResisterSuccess > ");
+                    BasicModuleApplication.this.onIpcFrameResisterSuccess();
                 }
 
                 @Override
@@ -415,6 +416,10 @@ public abstract class BasicModuleApplication extends Application {
             };
         }
         return mFrameLiveListener;
+    }
+    
+    protected void onIpcFrameResisterSuccess(){
+        
     }
 
     protected BasicModuleApplication registerEventHandler(BasicAssistHandler handler) {

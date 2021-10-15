@@ -1,12 +1,13 @@
 package com.kuyou.rc;
 
+import com.kuyou.rc.basic.location.ILocationProviderPolicy;
 import com.kuyou.rc.handler.AlarmHandler;
+import com.kuyou.rc.handler.HardwareModuleDetectionHandler;
 import com.kuyou.rc.handler.LocalKeyHandler;
 import com.kuyou.rc.handler.LocationHandler;
-import com.kuyou.rc.handler.photo.PhotoUploadHandler;
 import com.kuyou.rc.handler.PlatformInteractiveHandler;
-import com.kuyou.rc.handler.HardwareModuleDetectionHandler;
-import com.kuyou.rc.basic.location.ILocationProviderPolicy;
+import com.kuyou.rc.handler.SensorHandler;
+import com.kuyou.rc.handler.photo.PhotoUploadHandler;
 
 import kuyou.common.ipc.RemoteEvent;
 import kuyou.common.ku09.BasicModuleApplication;
@@ -26,6 +27,7 @@ public class ModuleApplication extends BasicModuleApplication {
     protected final static String TAG = "com.kuyou.rc > ModuleApplication";
 
     private AlarmHandler mAlarmHandler;
+    private SensorHandler mSensorHandler;
     private LocalKeyHandler mLocalKeyHandler;
     private LocationHandler mLocationHandler;
     private PhotoUploadHandler mPhotoUploadHandler;
@@ -42,11 +44,19 @@ public class ModuleApplication extends BasicModuleApplication {
         registerEventHandler(getAlarmHandler());
         registerEventHandler(getLocationHandler());
         registerEventHandler(getHardwareModuleDetectionHandler());
+        registerEventHandler(getSensorHandler());
     }
 
     @Override
     protected void init() {
         super.init();
+        //getHardwareModuleDetectionHandler().start();
+        //getPlatformInteractiveHandler().start();
+    }
+
+    @Override
+    protected void onIpcFrameResisterSuccess() {
+        super.onIpcFrameResisterSuccess();
         getHardwareModuleDetectionHandler().start();
         getPlatformInteractiveHandler().start();
     }
@@ -62,6 +72,11 @@ public class ModuleApplication extends BasicModuleApplication {
         status = getPlatformInteractiveHandler().isReady();
         if (null != status) {
             return status;
+        }
+
+        //开始传感器检测
+        if (!getSensorHandler().isStart()) {
+            getSensorHandler().start();
         }
 
         //设备定位是否正常
@@ -108,6 +123,13 @@ public class ModuleApplication extends BasicModuleApplication {
 
         }
         return mLocationHandler;
+    }
+
+    protected SensorHandler getSensorHandler() {
+        if (null == mSensorHandler) {
+            mSensorHandler = new SensorHandler();
+        }
+        return mSensorHandler;
     }
 
     protected LocalKeyHandler getLocalKeyHandler() {

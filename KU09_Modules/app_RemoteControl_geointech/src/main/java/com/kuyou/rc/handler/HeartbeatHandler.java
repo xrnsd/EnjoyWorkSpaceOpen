@@ -103,7 +103,6 @@ public class HeartbeatHandler extends BasicAssistHandler {
                                 .setEnableConsumeSeparately(false)
                                 .setRemote(true));
                         play("设备上线成功");
-
                         isDeviceOnLine = true;
                     } else {
                         play("设备上线失败,错误3");

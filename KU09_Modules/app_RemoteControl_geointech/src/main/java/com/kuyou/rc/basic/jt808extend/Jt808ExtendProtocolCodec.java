@@ -114,7 +114,7 @@ public class Jt808ExtendProtocolCodec {
 
         SicGeneralReply reply = (SicGeneralReply) mRequestParserList.get(IJT808ExtensionProtocol.C2S_REPLY);
         if (null != reply) {
-            Log.d(TAG, "handler > getMsgFlowNumber = "+bean.getMsgFlowNumber());
+            //Log.d(TAG, "handler > getMsgFlowNumber = "+bean.getMsgFlowNumber());
             reply.setFlowNumber(bean.getMsgFlowNumber());
             reply.setMsgId(bean.getMsgId());
             reply.setResultCode(SicGeneralReply.ResultCode.SUCCESS);

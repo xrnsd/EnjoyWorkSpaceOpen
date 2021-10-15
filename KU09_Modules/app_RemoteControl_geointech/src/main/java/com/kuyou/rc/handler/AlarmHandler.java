@@ -22,6 +22,8 @@ import kuyou.common.ku09.protocol.basic.IJT808ExtensionProtocol;
  * </p>
  */
 public class AlarmHandler extends BasicAssistHandler {
+    protected final String TAG = "com.kuyou.rc.handler > AlarmHandler";
+
     private int mPowerStatus = EventPowerChange.POWER_STATUS.BOOT_READY;
 
     private ILocationProvider mLocationProvider;
@@ -61,12 +63,13 @@ public class AlarmHandler extends BasicAssistHandler {
                         getLocationProvider().getLocationInfo().resetAlarmFlags(alarmType);
                         if (IJT808ExtensionProtocol.ALARM_FLAG_SOS == alarmType) {
                             getLocationProvider().getLocationInfo().setAutoAddSosFlag(false, IJT808ExtensionProtocol.ALARM_FLAG_SOS);
+                            play("已关闭SOS");
                         }
                         break;
                     default:
                         break;
                 }
-                Log.d(TAG, "onReceiveEventNotice > 平台操作报警状态 : \n " + SicAlarmReply.getAlarmInfo(alarmType, eventType));
+                Log.d(TAG, "onReceiveEventNotice > " + SicAlarmReply.getAlarmInfo(alarmType, eventType));
                 break;
 
             case EventAlarm.Code.ALARM_NEAR_POWER:
