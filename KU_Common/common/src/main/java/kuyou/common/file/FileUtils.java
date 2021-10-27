@@ -73,6 +73,17 @@ public class FileUtils {
         }
         return false;
     }
+    
+    //路径相关转换
+    public static String getFileNameByPath(String path){
+        return new File(path).getName();
+    }
+
+    public static String getParentByPath(String path){
+        return new File(path).getParent();
+    }
+
+    
 
     /**
      * ----------------注意权限的添加----------------
@@ -109,6 +120,10 @@ public class FileUtils {
     public File createFile(String... items) {
         return createFile(getFileByRelativePath(items));
 
+    }
+
+    public static boolean isExists(String path) {
+        return new File(path).exists();
     }
 
     /**

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WifiConnectionList>
+    <WifiConnect>
+        <ssid>ziweiyitong2</ssid>
+        <password>a88888888</password>
+    </WifiConnect>
+    <WifiConnect>
+        <ssid>ziweiyitong2_5G</ssid>
+        <password>a88888888</password>
+    </WifiConnect>
+    <WifiConnect>
+        <ssid>GeoinTech</ssid>
+        <password>Geoin2018</password>
+    </WifiConnect>
+</WifiConnectionList>

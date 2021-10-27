@@ -22,7 +22,7 @@ import kuyou.common.status.StatusProcessBusCallbackImpl;
 import kuyou.common.status.basic.IStatusProcessBusCallback;
 
 /**
- * action :
+ * action :测试功能项[抽象][红外摄像头]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

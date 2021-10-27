@@ -94,7 +94,7 @@ public abstract class BasicAssistHandler {
         return mStatusProcessBus;
     }
 
-    public void initStatusProcessBus() {
+    final public void initStatusProcessBus() {
         if (null != mStatusProcessBus) {
             return;
         }

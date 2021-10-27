@@ -3,7 +3,7 @@ package com.kuyou.avc.basic.thermal;
 import android.view.View;
 
 /**
- * action :
+ * action :红外采集接口
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

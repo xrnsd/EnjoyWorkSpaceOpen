@@ -67,7 +67,6 @@ public class TTSManager extends SpeechSynthesizer implements TTSConfig {
     public static TTSManager getInstance(Context context, ISynthesizerListener listener) {
         if (null == sMain) {
             sMain = new TTSManager(context, APP_KEY, SECRET);
-
         }
         sMain.addSynthesizerListener(listener);
         return sMain;

@@ -104,6 +104,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         List<BasicAssistHandler> handlers = new ArrayList<>();
 
         handlers.add(getHeartbeatHandler());
+        handlers.add(getWifiControlHandler());
         return handlers;
     }
 
@@ -263,6 +264,7 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         isNetworkAvailable = NetworkUtils.isNetworkAvailable(getContext());
         if (!isNetworkAvailable) {
             Log.e(TAG, "InitialConnect > process fail : isNetworkAvailable is false");
+            getWifiControlHandler().start();
             return;
         }
         connect();
@@ -322,6 +324,15 @@ public class PlatformInteractiveHandler extends BasicAssistHandler {
         }
         return mHeartbeatHandler;
     }
+    
+    protected WifiControlHandler getWifiControlHandler(){
+        if (null == mWifiControlHandler) {
+            mWifiControlHandler = new WifiControlHandler();
+        }
+        return mWifiControlHandler;
+    }
+    
+    WifiControlHandler mWifiControlHandler;
 
     protected Jt808ExtendProtocolCodec getJt808ExtendProtocolCodec() {
         if (null == mJt808ExtendProtocolCodec) {

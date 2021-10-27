@@ -13,6 +13,9 @@ public interface IDeviceConfig {
     public final static String KEY_UWB_ID = "persist.kud.hm.ui";
     public final static String KEY_COLLECTING_END_CODE = "persist.kud.hm.ci";
 
+    public final static String KEY_WIFI_AUTO_ENABLE = "persist.kud.hm.wifi";
+    public final static String KEY_WIFI_CONFIG_FILE_PATH = "persist.kud.hm.wifip";
+
     public final static String VAL_NONE = "-1";
 
     public String getDevId();
@@ -34,4 +37,8 @@ public interface IDeviceConfig {
     public String getDirPathStoragePhoto();
 
     public boolean isHardwareModuleCarry(int typeId);
+
+    public boolean isAutoEnableWifi();
+
+    public String getWifiConfigPath();
 }

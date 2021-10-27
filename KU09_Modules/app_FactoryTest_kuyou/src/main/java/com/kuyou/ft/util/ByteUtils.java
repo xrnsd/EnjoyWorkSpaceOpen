@@ -3,7 +3,7 @@ package com.kuyou.ft.util;
 import android.util.Log;
 
 /**
- * action :
+ * action :字符转换工具包
  * <p>
  * author: wuguoxian <br/>
  * date: 21-1-12 <br/>

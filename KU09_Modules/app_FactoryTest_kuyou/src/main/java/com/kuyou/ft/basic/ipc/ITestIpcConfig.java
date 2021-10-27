@@ -1,7 +1,7 @@
 package com.kuyou.ft.basic.ipc;
 
 /**
- * action :
+ * action :测试项常量[远程]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

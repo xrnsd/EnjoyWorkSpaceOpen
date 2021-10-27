@@ -34,7 +34,7 @@ public class HeartbeatHandler extends BasicAssistHandler {
     protected final static int PS_HEARTBEAT_REPORT_START_TIME_OUT = 2;
     protected final static int PS_DEVICE_OFF_LINE = 43;
 
-    protected final static int DEVICE_OFF_LINE_FLAG = 5;
+    protected final static int DEVICE_OFF_LINE_FLAG = 7;
 
     private boolean isAuthenticationSuccess = false;
     private boolean isDeviceOnLine = false;

@@ -9,7 +9,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 /**
- * action :
+ * action :文件复制工具包
  * <p>
  * author: wuguoxian <br/>
  * date: 20-10-6 <br/>
@@ -40,6 +40,10 @@ public class AssetsCopy {
             fos.close();
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            Log.e(TAG, new StringBuilder()
+                    .append("dirPathStorage = ").append(dirPathStorage)
+                    .append("assetFileName = ").append(assetFileName)
+                    .toString());
         }
     }
 }

@@ -3,7 +3,7 @@ package kuyou.common.protocol.flow;
 import android.os.Bundle;
 
 /**
- * action :
+ * action :Activity生命周期监听器
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>

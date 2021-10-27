@@ -12,13 +12,11 @@ import java.util.Map;
 import java.util.Set;
 
 import kuyou.common.ipc.RemoteEvent;
-import kuyou.common.ku09.event.common.basic.EventCommon;
-import kuyou.common.ku09.event.rc.alarm.EventAlarm;
 import kuyou.common.ku09.handler.BasicAssistHandler;
 import kuyou.common.utils.ClassUtils;
 
 /**
- * action :
+ * action :协处理器[跌倒，脱帽]
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
@@ -35,6 +33,12 @@ public class SensorHandler extends BasicAssistHandler implements BasicAssistSens
     private SensorManager mSensorManager = null;
 
     private boolean isStart = false;
+
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+        mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    }
 
     @Override
     public void start() {
@@ -66,13 +70,11 @@ public class SensorHandler extends BasicAssistHandler implements BasicAssistSens
     }
 
     protected void initSensors() {
-        mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-
-        Log.d(TAG, "enableForegroundMode > ");
-        if (mSensorEventDiscriminatorList.size() > 0) {
-            Log.e(TAG, "initSedList > process warn : mSensorEventDiscriminatorList is not null");
+        if (null == mSensorManager) {
+            Log.e(TAG, "initSensors > process fail : mSensorManager is null");
             return;
         }
+        Log.d(TAG, "initSensors > ");
         try {
             BasicAssistSensorEventDiscriminator instruction;
             for (Class item : ClassUtils.getAllClasses(getContext().getApplicationContext(), BasicAssistSensorEventDiscriminator.class)) {

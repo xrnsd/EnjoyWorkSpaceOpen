@@ -27,6 +27,7 @@ public class DeviceConfigImpl implements IDeviceConfig {
     private String mAuthenticationCode = null;
     private String mCollectingEndId = null;
     private int mHeartbeatInterval = -1;
+    private String mFilePathWifiConfig = null;
 
     @Override
     public String getDevId() {
@@ -135,5 +136,20 @@ public class DeviceConfigImpl implements IDeviceConfig {
             Log.e(TAG, Log.getStackTraceString(e));
         }
         return false;
+    }
+
+    @Override
+    public boolean isAutoEnableWifi() {
+        String result = SystemPropertiesUtils.get(KEY_WIFI_AUTO_ENABLE, String.valueOf(VAL_NONE));
+        return result.equals(String.valueOf(VAL_ON));
+    }
+
+    @Override
+    public String getWifiConfigPath() {
+        if (null == mFilePathWifiConfig) {
+            mFilePathWifiConfig = SystemPropertiesUtils.get(KEY_WIFI_CONFIG_FILE_PATH, VAL_NONE);
+        }
+        Log.d(TAG, "getWifiConfigPath > val = " + mFilePathWifiConfig);
+        return mFilePathWifiConfig;
     }
 }

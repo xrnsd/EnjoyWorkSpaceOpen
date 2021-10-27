@@ -1,7 +1,7 @@
 package com.kuyou.ft.basic.event;
 
 /**
- * action :
+ * action :测试项的测试结果
  * <p>
  * remarks:  <br/>
  * author: wuguoxian <br/>
